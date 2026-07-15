@@ -1,63 +1,50 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Send, FileText, Pencil, Check, X } from "lucide-react";
-import { api } from "@/lib/api";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { BRIEF_READY_SCORE } from "@acc/shared-types";
-import {
-  projectStatusLabel,
-  scoreBarClass,
-  scoreColorClass,
-  scoreHint,
-  toRequirementGroups,
-} from "@/lib/requirement-view";
+import { projectService } from "@/services/project.service";
+import { chatService } from "@/services/chat.service";
+import { WorkspaceHeader } from "@/features/workspace/components/WorkspaceHeader";
+import { ConversationPanel } from "@/features/chat/components/ConversationPanel";
+import { PromptBar } from "@/features/chat/components/PromptBar";
+import { RequirementSummaryPanel } from "@/features/requirement/components/RequirementSummaryPanel";
+import { MissingPanel } from "@/features/requirement/components/MissingPanel";
 
 export default function WorkspacePage() {
-  const params = useParams<{ id: string }>();
-  const id = params.id;
+  const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
 
-  const [draft, setDraft] = useState("");
-  const [editingName, setEditingName] = useState(false);
-  const [nameDraft, setNameDraft] = useState("");
-  const bottomRef = useRef<HTMLDivElement>(null);
+  // Giả định của AI là dữ liệu dẫn xuất, không lưu DB -> giữ ở state.
+  const [assumptions, setAssumptions] = useState<string[]>([]);
 
   const { data: project, isLoading, isError, error } = useQuery({
     queryKey: ["project", id],
-    queryFn: () => api.getProject(id),
+    queryFn: () => projectService.get(id),
     enabled: !!id,
   });
 
-  const sendMutation = useMutation({
-    mutationFn: (message: string) => api.sendMessage(id, message),
-    onSuccess: () => {
-      setDraft("");
-      queryClient.invalidateQueries({ queryKey: ["project", id] });
-    },
-  });
-
-  const renameMutation = useMutation({
-    mutationFn: (name: string) => api.updateProject(id, { name }),
-    onSuccess: () => {
-      setEditingName(false);
+  const analyzeMutation = useMutation({
+    mutationFn: (message: string) => chatService.analyze(id, message),
+    onSuccess: (result) => {
+      setAssumptions(result.assumptions);
       queryClient.invalidateQueries({ queryKey: ["project", id] });
       queryClient.invalidateQueries({ queryKey: ["projects"] });
     },
   });
 
-  // Tự cuộn xuống tin nhắn mới nhất.
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [project?.conversation.length, sendMutation.isPending]);
+  const renameMutation = useMutation({
+    mutationFn: (name: string) => projectService.update(id, { name }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["project", id] });
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+    },
+  });
 
   if (isLoading)
     return <p className="p-8 text-sm text-muted-foreground">Đang tải...</p>;
+
   if (isError || !project)
     return (
       <div className="p-8">
@@ -70,262 +57,39 @@ export default function WorkspacePage() {
       </div>
     );
 
-  const groups = toRequirementGroups(project.requirement);
-
-  function handleSend() {
-    const text = draft.trim();
-    if (!text || sendMutation.isPending) return;
-    sendMutation.mutate(text);
-  }
-
-  function startRename() {
-    setNameDraft(project!.name);
-    setEditingName(true);
-  }
-
-  function submitRename() {
-    const next = nameDraft.trim();
-    if (!next || next === project!.name) {
-      setEditingName(false);
-      return;
-    }
-    renameMutation.mutate(next);
-  }
-
   return (
     <div className="flex h-screen flex-col">
-      {/* Header */}
-      <header className="flex items-center justify-between border-b bg-background px-4 py-3">
-        <div className="flex items-center gap-3">
-          <Link href="/">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-          </Link>
-          <div>
-            {editingName ? (
-              <div className="flex items-center gap-1">
-                <input
-                  autoFocus
-                  className="rounded-md border px-2 py-1 text-sm"
-                  value={nameDraft}
-                  onChange={(e) => setNameDraft(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") submitRename();
-                    if (e.key === "Escape") setEditingName(false);
-                  }}
-                />
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={submitRename}
-                  disabled={renameMutation.isPending}
-                >
-                  <Check className="h-4 w-4" />
-                </Button>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => setEditingName(false)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            ) : (
-              <div className="group flex items-center gap-1">
-                <h1 className="font-semibold leading-tight">{project.name}</h1>
-                <button
-                  onClick={startRename}
-                  title="Đổi tên dự án"
-                  className="opacity-0 transition-opacity group-hover:opacity-100"
-                >
-                  <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
-                </button>
-              </div>
-            )}
-            <p className="text-xs text-muted-foreground">
-              {project.customerName ?? "Chưa có tên khách"} ·{" "}
-              {projectStatusLabel(project.status)}
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="text-right">
-            <span className={`text-lg font-bold ${scoreColorClass(project.score)}`}>
-              {project.score}%
-            </span>
-            <div className="h-1.5 w-32 overflow-hidden rounded-full bg-muted">
-              <div
-                className={`h-full ${scoreBarClass(project.score)}`}
-                style={{ width: `${project.score}%` }}
-              />
-            </div>
-          </div>
-          <Link href={`/projects/${id}/brief`}>
-            <Button variant={project.score >= BRIEF_READY_SCORE ? "default" : "outline"}>
-              <FileText className="h-4 w-4" /> Tạo Project Brief
-            </Button>
-          </Link>
-        </div>
-      </header>
+      <WorkspaceHeader
+        project={project}
+        onRename={(name) => renameMutation.mutate(name)}
+        isRenaming={renameMutation.isPending}
+      />
 
-      {/* 3 panels */}
       <div className="grid flex-1 grid-cols-1 gap-4 overflow-hidden p-4 lg:grid-cols-[1fr_1fr_1fr]">
-        {/* Hội thoại */}
-        <Card className="flex flex-col overflow-hidden">
-          <CardHeader className="border-b">
-            <CardTitle className="text-sm">Hội thoại</CardTitle>
-          </CardHeader>
-          <CardContent className="flex-1 space-y-3 overflow-y-auto pt-4">
-            {project.conversation.length === 0 && !sendMutation.isPending ? (
-              <p className="text-sm text-muted-foreground">
-                Bắt đầu bằng cách mô tả dự án hoặc paste tin nhắn khách hàng ở
-                thanh bên dưới.
-              </p>
-            ) : (
-              project.conversation.map((m) => (
-                <div
-                  key={m.id}
-                  className={m.role === "user" ? "text-right" : "text-left"}
-                >
-                  <span
-                    className={`inline-block max-w-[85%] whitespace-pre-wrap rounded-lg px-3 py-2 text-left text-sm ${
-                      m.role === "user"
-                        ? "bg-primary text-primary-foreground"
-                        : m.role === "system"
-                          ? "bg-amber-50 text-amber-700"
-                          : "bg-muted"
-                    }`}
-                  >
-                    {m.message}
-                  </span>
-                </div>
-              ))
-            )}
-            {sendMutation.isPending && (
-              <div className="text-right">
-                <span className="inline-block rounded-lg bg-primary/50 px-3 py-2 text-sm text-primary-foreground">
-                  Đang gửi...
-                </span>
-              </div>
-            )}
-            {sendMutation.isError && (
-              <p className="text-sm text-destructive">
-                {(sendMutation.error as Error).message}
-              </p>
-            )}
-            <div ref={bottomRef} />
-          </CardContent>
-        </Card>
-
-        {/* Tóm tắt yêu cầu */}
-        <Card className="flex flex-col overflow-hidden">
-          <CardHeader className="border-b">
-            <CardTitle className="text-sm">Tóm tắt yêu cầu</CardTitle>
-          </CardHeader>
-          <CardContent className="flex-1 space-y-4 overflow-y-auto pt-4">
-            <p className={`text-xs ${scoreColorClass(project.score)}`}>
-              {scoreHint(project.score)}
-            </p>
-            {groups.map((g) => (
-              <div key={g.title}>
-                <p className="mb-1 text-xs font-semibold uppercase text-muted-foreground">
-                  {g.title}
-                </p>
-                <div className="space-y-1">
-                  {g.fields.map((f) => (
-                    <div key={f.label} className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">{f.label}</span>
-                      {f.value ? (
-                        <span className="font-medium">{f.value} ✅</span>
-                      ) : (
-                        <span className="text-amber-600">Chưa rõ ⚠️</span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        {/* Thiếu / Câu hỏi */}
-        <Card className="flex flex-col overflow-hidden">
-          <CardHeader className="border-b">
-            <CardTitle className="text-sm">Thiếu / Câu hỏi</CardTitle>
-          </CardHeader>
-          <CardContent className="flex-1 space-y-4 overflow-y-auto pt-4">
-            <div>
-              <p className="mb-1 text-xs font-semibold uppercase text-muted-foreground">
-                Thông tin còn thiếu
-              </p>
-              {project.missingFields.length === 0 ? (
-                <p className="text-sm text-muted-foreground">
-                  Chưa phát hiện thông tin thiếu.
-                </p>
-              ) : (
-                <div className="flex flex-wrap gap-1">
-                  {project.missingFields.map((m) => (
-                    <Badge
-                      key={m.key}
-                      className="border-amber-300 bg-amber-50 text-amber-700"
-                    >
-                      {m.label}
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </div>
-            <div>
-              <p className="mb-1 text-xs font-semibold uppercase text-muted-foreground">
-                Câu hỏi tiếp theo
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Sẽ hiển thị sau khi tích hợp AI (Sprint 3).
-              </p>
-            </div>
-            <div>
-              <p className="mb-1 text-xs font-semibold uppercase text-muted-foreground">
-                Giả định / Mâu thuẫn
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Sẽ hiển thị sau khi tích hợp AI (Sprint 3).
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <ConversationPanel
+          messages={project.conversation}
+          isAnalyzing={analyzeMutation.isPending}
+          error={
+            analyzeMutation.isError
+              ? (analyzeMutation.error as Error).message
+              : null
+          }
+        />
+        <RequirementSummaryPanel
+          requirement={project.requirement}
+          score={project.score}
+        />
+        <MissingPanel
+          missingFields={project.missingFields}
+          questions={project.questions}
+          assumptions={assumptions}
+        />
       </div>
 
-      {/* Prompt bar */}
-      <div className="border-t bg-background p-3">
-        <div className="mx-auto max-w-4xl">
-          <div className="flex items-end gap-2">
-            <textarea
-              rows={1}
-              className="flex-1 resize-none rounded-md border px-3 py-2 text-sm"
-              placeholder="Nhập mô tả dự án, paste tin nhắn khách, hoặc trả lời câu hỏi của AI..."
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSend();
-                }
-              }}
-            />
-            <Button
-              onClick={handleSend}
-              disabled={!draft.trim() || sendMutation.isPending}
-            >
-              <Send className="h-4 w-4" />
-            </Button>
-          </div>
-          <p className="mt-1 text-center text-xs text-muted-foreground">
-            Enter để gửi · Shift + Enter để xuống dòng · Tin nhắn được lưu lại;
-            AI phân tích yêu cầu sẽ có ở Sprint 3.
-          </p>
-        </div>
-      </div>
+      <PromptBar
+        onSend={(message) => analyzeMutation.mutate(message)}
+        disabled={analyzeMutation.isPending}
+      />
     </div>
   );
 }

@@ -1,68 +1,63 @@
 # AI Construction Copilot — MVP
 
-AI Copilot giúp chủ thầu thu thập, làm rõ và chuẩn hóa yêu cầu khách hàng
-(module **AI Project Discovery**). Xem tài liệu nghiệp vụ trong các file `0X-*.md`.
+AI Copilot giúp chủ thầu thu thập, làm rõ và chuẩn hoá yêu cầu khách hàng
+(module **AI Project Discovery**). Tài liệu nghiệp vụ nằm trong [documents/](documents/).
 
-## Cấu trúc (Monorepo — npm workspaces)
+## Cấu trúc
 
 ```
 apps/
-  api/            NestJS + Prisma + PostgreSQL (Neon)
-  web/            Next.js (App Router) + Tailwind + shadcn-style UI
+  web/            TOÀN BỘ MVP — Next.js fullstack (UI + Route Handler + Prisma + AI)
+  api/            NestJS — ĐÓNG BĂNG, backend tương lai (xem apps/api/README.md)
 packages/
-  shared-types/   Contract Requirement dùng chung FE/BE (Zod + TS types)
+  shared-types/   Contract Requirement (Zod) + computeScore/computeMissingFields
 ```
 
-> Quy ước: nếu mâu thuẫn tài liệu → **Data Model > UI > Product Spec**.
+Luồng chạy:
 
-## API hiện có
+```
+Browser → Next.js Route Handler → AIProvider → Prisma → PostgreSQL (Neon)
+```
 
-| Method | Endpoint | Mô tả |
-|---|---|---|
-| GET | `/health` | Kiểm tra API sống |
-| GET | `/projects` | Danh sách dự án (kèm Score) |
-| POST | `/projects` | Tạo dự án |
-| GET | `/projects/:id` | Chi tiết (requirement, hội thoại, field còn thiếu) |
-| PATCH | `/projects/:id` | Đổi tên / thông tin khách |
-| DELETE | `/projects/:id` | Xoá dự án |
-| GET | `/projects/:id/messages` | Lịch sử hội thoại |
-| POST | `/projects/:id/messages` | Gửi tin nhắn |
-
-Mọi response theo dạng `{ success, data, message }`.
+> Thứ tự ưu tiên tài liệu: **chatgpt.md > Data Model > UI > Product Spec**.
 
 ## Yêu cầu
 
 - Node.js >= 20
 - 1 database PostgreSQL trên [Neon](https://neon.tech) (free)
-- 1 OpenAI API key
+- OpenAI API key — **không bắt buộc**, có thể chạy `AI_PROVIDER=mock`
 
 ## Setup (làm 1 lần mỗi máy)
 
 ```bash
-# 1. Cài dependencies cho toàn workspace
-npm install
-
-# 2. Tạo file .env từ mẫu, rồi điền DATABASE_URL (Neon) + OPENAI_API_KEY
-cp .env.example .env        # Windows PowerShell: copy .env.example .env
-
-# 3. Đẩy schema lên database Neon
-npm run db:push
-
-# 4. (tuỳ chọn) Xem dữ liệu bằng Prisma Studio
-npm run db:studio
+npm install                 # cài deps + tự build shared-types
+copy .env.example .env      # rồi điền DATABASE_URL (Neon)
+npm run db:push             # tạo bảng trên Neon
+npm run dev                 # http://localhost:3000
 ```
 
-## Chạy dev
+## Chế độ AI
+
+Đổi trong `.env`:
 
 ```bash
-npm run dev          # chạy song song api (4000) + web (3000)
-# hoặc tách riêng:
-npm run dev:api
-npm run dev:web
+AI_PROVIDER="mock"    # chạy UI đầy đủ, KHÔNG gọi OpenAI, không tốn tiền
+AI_PROVIDER="openai"  # gọi thật, cần OPENAI_API_KEY hợp lệ
 ```
 
-- Web: http://localhost:3000
-- API: http://localhost:4000
+`mock` dò từ khoá tiếng Việt bằng regex — đủ để demo UI, độ chính xác thấp
+hơn OpenAI. Dùng `openai` khi demo với khách thật.
+
+## API (Route Handlers, same-origin)
+
+| Method | Endpoint | Mô tả |
+|---|---|---|
+| GET/POST | `/api/projects` | Danh sách / tạo dự án |
+| GET/PATCH/DELETE | `/api/projects/:id` | Chi tiết / đổi tên / xoá |
+| GET/POST | `/api/projects/:id/messages` | Hội thoại (lưu, không phân tích) |
+| POST | `/api/projects/:id/analyze` | **Luồng chính**: lưu tin nhắn + AI phân tích |
+
+Mọi response theo dạng `{ success, data, message }`.
 
 ## Làm việc ở 2 máy (công ty + nhà)
 
@@ -72,7 +67,14 @@ npm run dev:web
 
 ## Trạng thái
 
-- [x] Sprint 1 — Monorepo + Prisma schema + NestJS skeleton + Next.js 3 màn layout
-- [x] Sprint 2 — Project CRUD (kèm đổi tên) + Workspace + Chat UI lưu hội thoại
-- [ ] Sprint 3 — AI Integration + Requirement Extraction + Summary
-- [ ] Sprint 4 — Missing Detection + Question Engine + Project Brief
+- [x] Sprint 1 — Monorepo + Prisma + 3 màn layout
+- [x] Sprint 2 — Project CRUD + Chat UI lưu hội thoại
+- [x] Sprint 3 — Chuyển Next.js fullstack + AI Integration + Requirement Extraction
+- [ ] Sprint 4 — Project Brief sinh bằng AI + Polish + Demo
+
+### Hạn chế đã biết
+
+- `livingRoom` / `balcony`: `gpt-5-mini` đôi khi trả `false` thay vì `null`
+  cho thông tin khách không nhắc tới. Không ảnh hưởng Requirement Score
+  (các field này không nằm trong công thức tính điểm).
+- Brief hiện dựng từ Requirement bằng code; bản sinh bằng AI thuộc Sprint 4.

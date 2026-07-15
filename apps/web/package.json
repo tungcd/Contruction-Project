@@ -3,21 +3,27 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3000",
-    "build": "next build",
-    "start": "next start -p 3000",
-    "typecheck": "tsc --noEmit"
+    "dev": "dotenv -e ../../.env -- next dev -p 3000",
+    "build": "dotenv -e ../../.env -- next build",
+    "start": "dotenv -e ../../.env -- next start -p 3000",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "dotenv -e ../../.env -- prisma generate",
+    "db:push": "dotenv -e ../../.env -- prisma db push",
+    "db:studio": "dotenv -e ../../.env -- prisma studio"
   },
   "dependencies": {
     "@acc/shared-types": "*",
+    "@prisma/client": "^6.2.1",
     "@tanstack/react-query": "^5.62.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.469.0",
     "next": "^15.1.3",
+    "openai": "^5.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwind-merge": "^2.6.0",
+    "zod": "^3.24.1",
     "zustand": "^5.0.2"
   },
   "devDependencies": {
@@ -25,7 +31,9 @@
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
     "autoprefixer": "^10.4.20",
+    "dotenv-cli": "^8.0.0",
     "postcss": "^8.4.49",
+    "prisma": "^6.2.1",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.2"
   }

@@ -55,4 +55,5 @@ export interface ProjectDetail extends ProjectSummary {
   requirement: z.infer<typeof RequirementSchema>;
   conversation: ConversationMessage[];
   missingFields: { key: string; label: string }[]; // derived
+  questions: string[]; // derived
 }

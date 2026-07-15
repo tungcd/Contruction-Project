@@ -5,20 +5,19 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Copy, RefreshCw } from "lucide-react";
-import { api } from "@/lib/api";
+import { BRIEF_READY_SCORE } from "@acc/shared-types";
+import { projectService } from "@/services/project.service";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { BRIEF_READY_SCORE } from "@acc/shared-types";
-import { toRequirementGroups } from "@/lib/requirement-view";
+import { toRequirementGroups } from "@/features/requirement/requirement-view";
 
 export default function BriefPage() {
-  const params = useParams<{ id: string }>();
-  const id = params.id;
+  const { id } = useParams<{ id: string }>();
   const [copied, setCopied] = useState(false);
 
-  const { data: project, isLoading, isError } = useQuery({
+  const { data: project, isLoading, isError, refetch } = useQuery({
     queryKey: ["project", id],
-    queryFn: () => api.getProject(id),
+    queryFn: () => projectService.get(id),
     enabled: !!id,
   });
 
@@ -26,6 +25,7 @@ export default function BriefPage() {
     if (!project) return "";
     const groups = toRequirementGroups(project.requirement);
     const lines: string[] = [`# Project Brief: ${project.name}`, ""];
+
     for (const g of groups) {
       lines.push(`## ${g.title}`);
       for (const f of g.fields) {
@@ -70,7 +70,7 @@ export default function BriefPage() {
           </Button>
         </Link>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
+          <Button variant="outline" size="sm" onClick={() => refetch()}>
             <RefreshCw className="h-4 w-4" /> Tạo lại
           </Button>
           <Button size="sm" onClick={copy}>
@@ -95,8 +95,8 @@ export default function BriefPage() {
       </Card>
 
       <p className="mt-4 text-xs text-muted-foreground">
-        * Bản Brief tự động từ AI sẽ được hoàn thiện ở Sprint 4. Hiện tại brief
-        được dựng từ Requirement đã thu thập.
+        * Brief sinh bằng AI sẽ được hoàn thiện ở Sprint 4. Hiện tại brief được
+        dựng từ Requirement đã thu thập.
       </p>
     </main>
   );

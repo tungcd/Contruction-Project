@@ -1,10 +1,13 @@
 # 06. Claude Handoff
 
 **Project:** AI Construction Copilot\
-**Version:** v0.1\
+**Version:** v0.2\
 **Audience:** Claude Code\
 **Goal:** Đủ thông tin để bắt đầu triển khai MVP mà không phải đoán
 nghiệp vụ.
+
+> ⚠️ **ĐỌC `chatgpt.md` TRƯỚC TIÊN.** Kiến trúc đã đổi sang **Next.js
+> fullstack, không dùng NestJS**. `chatgpt.md` là nguồn thắng mọi tài liệu khác.
 
 ------------------------------------------------------------------------
 
@@ -40,37 +43,39 @@ Khi kết thúc MVP, người dùng có thể:
 
 # 3. Tài liệu phải đọc theo thứ tự
 
-1.  01-Product-Spec-Lite.md
-2.  02-UI-Flow.md
-3.  03-Data-Model.md
-4.  04-Tech-Stack-and-Coding-Convention.md
-5.  05-Prompt-and-AI-Contract.md
+1.  chatgpt.md ← kiến trúc hiện hành, đọc đầu tiên
+2.  01-Product-Spec-Lite.md
+3.  02-UI-Flow.md
+4.  03-Data-Model.md
+5.  04-Tech-Stack-and-Coding-Convention.md
+6.  05-Prompt-and-AI-Contract.md
 
-Nếu có mâu thuẫn: Data Model \> UI \> Product Spec.
+Nếu có mâu thuẫn:
+
+    chatgpt.md > Data Model > UI > Product Spec
+
+`chatgpt.md` thắng về **kiến trúc & công nghệ**. Data Model vẫn thắng về
+**cấu trúc dữ liệu**.
 
 ------------------------------------------------------------------------
 
 # 4. Công nghệ
 
-Frontend
+Fullstack (toàn bộ trong `apps/web`)
 
--   Next.js App Router
+-   Next.js App Router (UI + Route Handler)
 -   TypeScript
 -   Tailwind
--   shadcn/ui
 -   TanStack Query
--   Zustand
-
-Backend
-
--   NestJS
--   Prisma
--   PostgreSQL
+-   Prisma + PostgreSQL (Neon)
 
 AI
 
--   OpenAI
+-   OpenAI Responses API, model `gpt-5-mini`
 -   Structured Output
+-   Bắt buộc có `AI_PROVIDER=mock`
+
+KHÔNG dùng NestJS trong MVP. `apps/api` đã đóng băng.
 
 ------------------------------------------------------------------------
 
@@ -147,11 +152,14 @@ Mỗi feature chỉ hoàn thành khi:
 
 # 9. Nguyên tắc kiến trúc
 
--   Modular Monolith.
+-   Modular Monolith, fullstack trong Next.js.
 -   Conversation không phải Source of Truth.
 -   Requirement là Source of Truth.
--   Business Rule nằm trong backend.
--   AI chỉ hỗ trợ phân tích.
+-   Business Rule nằm trong code (score, missing, merge, brief-ready),
+    KHÔNG nằm trong AI.
+-   AI chỉ hỗ trợ phân tích ngôn ngữ. Mỗi message chỉ gọi AI 1 lần.
+-   Code không phụ thuộc trực tiếp OpenAI — luôn qua interface `AIProvider`.
+-   API key chỉ tồn tại phía server, không bao giờ ra frontend.
 
 ------------------------------------------------------------------------
 

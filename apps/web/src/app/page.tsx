@@ -1,34 +1,28 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Building2 } from "lucide-react";
-import { api } from "@/lib/api";
+import type { CreateProjectInput } from "@acc/shared-types";
+import { projectService } from "@/services/project.service";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  projectStatusLabel,
-  scoreBarClass,
-  scoreColorClass,
-} from "@/lib/requirement-view";
+import { ProjectCard } from "@/features/project/components/ProjectCard";
+import { CreateProjectForm } from "@/features/project/components/CreateProjectForm";
 
 export default function DashboardPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
-  const [name, setName] = useState("");
-  const [customerName, setCustomerName] = useState("");
 
   const { data: projects, isLoading, isError, error } = useQuery({
     queryKey: ["projects"],
-    queryFn: api.listProjects,
+    queryFn: projectService.list,
   });
 
   const createMutation = useMutation({
-    mutationFn: () =>
-      api.createProject({ name: name.trim(), customerName: customerName.trim() || undefined }),
+    mutationFn: (input: CreateProjectInput) => projectService.create(input),
     onSuccess: (project) => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
       router.push(`/projects/${project.id}`);
@@ -48,54 +42,28 @@ export default function DashboardPage() {
       </header>
 
       {showForm && (
-        <Card className="mb-6">
-          <CardContent className="space-y-3 pt-4">
-            <input
-              autoFocus
-              className="w-full rounded-md border px-3 py-2 text-sm"
-              placeholder="Tên dự án (vd: Anh Hùng - Nhà phố Đan Phượng)"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <input
-              className="w-full rounded-md border px-3 py-2 text-sm"
-              placeholder="Tên khách hàng (tuỳ chọn)"
-              value={customerName}
-              onChange={(e) => setCustomerName(e.target.value)}
-            />
-            <div className="flex gap-2">
-              <Button
-                disabled={!name.trim() || createMutation.isPending}
-                onClick={() => createMutation.mutate()}
-              >
-                {createMutation.isPending ? "Đang tạo..." : "Tạo dự án"}
-              </Button>
-              <Button variant="ghost" onClick={() => setShowForm(false)}>
-                Huỷ
-              </Button>
-            </div>
-            {createMutation.isError && (
-              <p className="text-sm text-destructive">
-                {(createMutation.error as Error).message}
-              </p>
-            )}
-          </CardContent>
-        </Card>
+        <CreateProjectForm
+          onSubmit={(input) => createMutation.mutate(input)}
+          onCancel={() => setShowForm(false)}
+          isPending={createMutation.isPending}
+          error={
+            createMutation.isError
+              ? (createMutation.error as Error).message
+              : null
+          }
+        />
       )}
 
       <h2 className="mb-3 text-sm font-semibold text-muted-foreground">
         Dự án gần đây
       </h2>
 
-      {isLoading && (
-        <p className="text-sm text-muted-foreground">Đang tải...</p>
-      )}
+      {isLoading && <p className="text-sm text-muted-foreground">Đang tải...</p>}
 
       {isError && (
         <Card>
           <CardContent className="pt-4 text-sm text-muted-foreground">
-            Không kết nối được API. Kiểm tra backend đã chạy chưa (
-            <code>npm run dev:api</code>) và DATABASE_URL trong .env.
+            Không tải được danh sách dự án. Kiểm tra DATABASE_URL trong .env.
             <br />
             <span className="text-destructive">{(error as Error).message}</span>
           </CardContent>
@@ -118,30 +86,7 @@ export default function DashboardPage() {
 
       <div className="space-y-3">
         {projects?.map((p) => (
-          <Link key={p.id} href={`/projects/${p.id}`}>
-            <Card className="transition-colors hover:border-primary/50">
-              <CardContent className="flex items-center justify-between py-4">
-                <div>
-                  <p className="font-medium">{p.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {p.customerName ?? "Chưa có tên khách"} ·{" "}
-                    {projectStatusLabel(p.status)}
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="h-1.5 w-24 overflow-hidden rounded-full bg-muted">
-                    <div
-                      className={`h-full ${scoreBarClass(p.score)}`}
-                      style={{ width: `${p.score}%` }}
-                    />
-                  </div>
-                  <span className={`text-sm font-semibold ${scoreColorClass(p.score)}`}>
-                    {p.score}%
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
+          <ProjectCard key={p.id} project={p} />
         ))}
       </div>
     </main>

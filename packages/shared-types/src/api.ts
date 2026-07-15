@@ -20,7 +20,12 @@ export type AnalyzeMessageInput = z.infer<typeof AnalyzeMessageSchema>;
 export interface AnalyzeMessageResult {
   requirement: z.infer<typeof RequirementSchema>;
   missingFields: { key: string; label: string }[];
+  /** Derived — không lưu DB (03-Data-Model mục 7). */
   questions: string[];
+  /** AI tự suy ra, cần chủ thầu xác nhận. Chỉ có sau mỗi lần phân tích. */
+  assumptions: string[];
+  /** Câu AI phản hồi lại người dùng, đã lưu vào Conversation. */
+  summary: string;
   score: number;
   briefReady: boolean;
 }

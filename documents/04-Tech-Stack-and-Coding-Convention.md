@@ -1,8 +1,14 @@
 # 04. Tech Stack & Coding Convention
 
 **Project:** AI Construction Copilot\
-**Version:** v0.1\
-**Status:** Draft
+**Version:** v0.2\
+**Status:** Updated
+
+> ⚠️ **KIẾN TRÚC ĐÃ THAY ĐỔI.** Từ bản v0.2, MVP dùng **Next.js fullstack**
+> (Route Handlers), **KHÔNG dùng NestJS**. Nguồn sự thật về kiến trúc là
+> `chatgpt.md`. Nếu tài liệu này mâu thuẫn với `chatgpt.md`, **`chatgpt.md` thắng**.
+> Thư mục `apps/api` (NestJS) được giữ lại làm backend tương lai nhưng đã
+> đóng băng — không code thêm, không nằm trong luồng chạy.
 
 ------------------------------------------------------------------------
 
@@ -19,12 +25,17 @@ Monorepo
 
 ``` text
 apps/
-  web/
-  api/
+  web/            // TOÀN BỘ MVP (fullstack: UI + Route Handler + Prisma + AI)
+  api/            // NestJS - ĐÓNG BĂNG, backend tương lai, không code thêm
 
 packages/
-  shared-types/
-  ui/
+  shared-types/   // Contract Requirement dùng chung
+```
+
+Luồng chạy thực tế:
+
+``` text
+Browser -> Next.js (Route Handler) -> AIProvider -> Prisma -> PostgreSQL (Neon)
 ```
 
 Ưu tiên **Modular Monolith**, chưa tách microservice.
@@ -46,41 +57,38 @@ packages/
 
 ## Backend
 
--   NestJS
+-   Next.js Route Handlers (KHÔNG dùng NestJS trong MVP)
 -   Prisma
--   PostgreSQL
+-   PostgreSQL (Neon)
 
 ## AI
 
 -   OpenAI Responses API
 -   Structured Output
--   Tool Calling
+-   Model mặc định: `gpt-5-mini`
+-   Bắt buộc hỗ trợ `AI_PROVIDER=mock` để chạy UI không cần API key
 
 ------------------------------------------------------------------------
 
 # 4. Quy ước thư mục
 
-## Web
+## Web (apps/web/src)
 
 ``` text
-app/
-components/
-features/
-hooks/
-lib/
-services/
-types/
-```
-
-## API
-
-``` text
-src/
-  modules/
-  common/
+app/          // page, layout, route handler. KHÔNG chứa business logic
+components/   // UI tái sử dụng, không chứa logic nghiệp vụ
+features/     // business logic từng module (project, chat, requirement, brief)
+lib/          // dùng chung
   ai/
-  prisma/
+    provider/   // AIProvider (interface), OpenAIProvider, MockProvider
+    prompts/    // prompt tách riêng, không hardcode trong service
+    schemas/    // schema output của AI (Zod)
+    parsers/    // merge, normalize
+  db/           // Prisma client singleton
+services/     // client gọi Route Handler. KHÔNG gọi OpenAI từ đây
 ```
+
+Quy tắc: OpenAI **chỉ** được gọi phía server (trong Route Handler).
 
 ------------------------------------------------------------------------
 
