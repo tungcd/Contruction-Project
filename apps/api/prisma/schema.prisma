@@ -1,0 +1,82 @@
+// AI Construction Copilot — Prisma schema
+// Nguồn: 03-Data-Model.md (5 entity). UUID PK, createdAt/updatedAt mọi entity.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ProjectStatus {
+  Discovery
+  ReadyForBrief
+  BriefGenerated
+}
+
+enum MessageRole {
+  user
+  assistant
+  system
+}
+
+model Project {
+  id            String        @id @default(uuid())
+  name          String
+  customerName  String?
+  customerPhone String?
+  status        ProjectStatus @default(Discovery)
+
+  requirement   Requirement?
+  conversations Conversation[]
+  brief         ProjectBrief?
+  histories     History[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// Requirement = Source of Truth. Chỉ 1 phiên bản, ghi đè khi cập nhật.
+/// `data` lưu nguyên Requirement JSON (contract trong @acc/shared-types).
+model Requirement {
+  id        String   @id @default(uuid())
+  projectId String   @unique
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  data      Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// Lịch sử chat. KHÔNG phải nguồn dữ liệu nghiệp vụ.
+model Conversation {
+  id        String      @id @default(uuid())
+  projectId String
+  project   Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  role      MessageRole
+  message   String
+  createdAt DateTime    @default(now())
+
+  @@index([projectId])
+}
+
+/// Bản tóm tắt dự án, sinh từ Requirement.
+model ProjectBrief {
+  id          String   @id @default(uuid())
+  projectId   String   @unique
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  markdown    String
+  generatedAt DateTime @default(now())
+}
+
+/// Các sự kiện chính: Requirement Updated, Brief Generated...
+model History {
+  id        String   @id @default(uuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  event     String
+  createdAt DateTime @default(now())
+
+  @@index([projectId])
+}
