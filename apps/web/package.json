@@ -7,6 +7,7 @@
     "build": "dotenv -e ../../.env -- next build",
     "start": "dotenv -e ../../.env -- next start -p 3000",
     "typecheck": "tsc --noEmit",
+    "test:regression": "node scripts/regression.mjs",
     "db:generate": "dotenv -e ../../.env -- prisma generate",
     "db:push": "dotenv -e ../../.env -- prisma db push",
     "db:studio": "dotenv -e ../../.env -- prisma studio"

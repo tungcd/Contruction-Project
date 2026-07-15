@@ -7,6 +7,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { projectService } from "@/services/project.service";
 import { chatService } from "@/services/chat.service";
 import { WorkspaceHeader } from "@/features/workspace/components/WorkspaceHeader";
+import { MockModeBanner } from "@/features/workspace/components/MockModeBanner";
 import { ConversationPanel } from "@/features/chat/components/ConversationPanel";
 import { PromptBar } from "@/features/chat/components/PromptBar";
 import { RequirementSummaryPanel } from "@/features/requirement/components/RequirementSummaryPanel";
@@ -59,6 +60,7 @@ export default function WorkspacePage() {
 
   return (
     <div className="flex h-screen flex-col">
+      <MockModeBanner />
       <WorkspaceHeader
         project={project}
         onRename={(name) => renameMutation.mutate(name)}

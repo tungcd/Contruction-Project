@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server";
 import { CreateMessageSchema } from "@acc/shared-types";
 import { assertUuid, handle, ok } from "@/lib/http";
 import { prisma } from "@/lib/db/prisma";
+import { sanitizeText } from "@/lib/ai/parsers/normalize";
 import { ensureProjectExists } from "@/features/project/project.repository";
 
 export const dynamic = "force-dynamic";
@@ -41,7 +42,8 @@ export async function POST(req: NextRequest, { params }: Ctx) {
 
     const { message } = CreateMessageSchema.parse(await req.json());
     const row = await prisma.conversation.create({
-      data: { projectId, role: "user", message },
+      // Postgres không lưu được ký tự NULL trong text (lỗi 22P05).
+      data: { projectId, role: "user", message: sanitizeText(message) },
     });
     return ok({
       id: row.id,

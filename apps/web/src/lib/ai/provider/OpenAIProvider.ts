@@ -9,7 +9,7 @@ import {
 import type { ExtractResult } from "../schemas/extractor";
 import { ExtractResultSchema } from "../schemas/extractor";
 import { OpenAIExtractSchema } from "../schemas/openai-extract";
-import { normalizeRequirement } from "../parsers/normalize";
+import { normalizeRequirement, sanitizeText } from "../parsers/normalize";
 import {
   EXTRACT_SYSTEM_PROMPT,
   buildExtractUserPrompt,
@@ -42,12 +42,14 @@ export class OpenAIProvider implements AIProvider {
       1,
     );
 
+    // Mọi chuỗi từ AI đều phải sanitize: chúng sẽ được ghi vào cột text của
+    // Postgres, mà ký tự NULL làm cả query nổ (22P05).
     return ExtractResultSchema.parse({
       // Model hay trả 0 / "chưa rõ" thay cho null -> dọn trước khi validate.
       requirement: normalizeRequirement(parsed.requirement),
-      questions: parsed.questions.slice(0, 3),
-      assumptions: parsed.assumptions,
-      summary: parsed.summary,
+      questions: parsed.questions.slice(0, 3).map(sanitizeText),
+      assumptions: parsed.assumptions.map(sanitizeText),
+      summary: sanitizeText(parsed.summary),
       confidence: parsed.confidence,
     });
   }
@@ -59,12 +61,25 @@ export class OpenAIProvider implements AIProvider {
         { role: "system", content: EXTRACT_SYSTEM_PROMPT },
         { role: "user", content: userPrompt },
       ],
+      // gpt-5-mini là model reasoning: mặc định nó "nghĩ" rất lâu (đo được
+      // 3008 reasoning tokens -> 58s, có lần 180s). Trích xuất thông tin từ
+      // một đoạn chat không cần suy luận sâu, nên hạ effort để demo mượt.
+      reasoning: { effort: "low" },
       text: {
         format: zodTextFormat(OpenAIExtractSchema, "extract_result"),
       },
     });
 
     const parsed = res.output_parsed;
+
+    // Bật AI_DEBUG=1 khi cần soi model thực sự trả gì (rất hữu ích: chính nó
+    // đã lộ ra việc model trả 0 và "flat"/"modern" thay vì null/tiếng Việt).
+    if (process.env.AI_DEBUG === "1") {
+      console.log("[AI DEBUG] status =", res.status);
+      console.log("[AI DEBUG] usage =", JSON.stringify(res.usage));
+      console.log("[AI DEBUG] parsed =", JSON.stringify(parsed)?.slice(0, 800));
+    }
+
     if (!parsed) throw new AIInvalidOutputError();
     return parsed;
   }

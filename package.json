@@ -16,6 +16,7 @@
     "db:generate": "npm run db:generate -w apps/web",
     "db:push": "npm run db:push -w apps/web",
     "db:studio": "npm run db:studio -w apps/web",
+    "test:regression": "npm run test:regression -w apps/web",
     "postinstall": "npm run build -w packages/shared-types"
   },
   "devDependencies": {

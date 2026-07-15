@@ -104,6 +104,26 @@ function extractFromText(raw: string, text: string): PartialRequirement {
     return Number.isFinite(v) ? v : undefined;
   };
 
+  /**
+   * Cộng TỔNG mọi lần xuất hiện, không lấy lần đầu.
+   * Khách hay mô tả theo tầng: "tầng 1 có 1 phòng ngủ... tầng 2 thêm 2 phòng"
+   * -> phải ra 3, không phải 1.
+   */
+  const sumAll = (re: RegExp): number | undefined => {
+    const rx = new RegExp(re.source, re.flags.includes("g") ? re.flags : re.flags + "g");
+    let total = 0;
+    let found = false;
+    for (const m of text.matchAll(rx)) {
+      const raw = m[1];
+      if (!raw) continue;
+      const v = Number(raw.replace(",", "."));
+      if (!Number.isFinite(v)) continue;
+      total += v;
+      found = true;
+    }
+    return found ? total : undefined;
+  };
+
   // --- project ---
   const project: Record<string, unknown> = {};
   if (/cải tạo|sửa nhà|sửa lại/.test(text)) project.projectType = "renovation";
@@ -123,10 +143,19 @@ function extractFromText(raw: string, text: string): PartialRequirement {
 
   // --- site ---
   const site: Record<string, unknown> = {};
+  // "đất 90m2" / "90m2 đất" / "tổng khoảng 90m2" / "diện tích 90m2"
   const landArea =
     num(/đất\s*(?:khoảng\s*)?(\d+(?:[.,]\d+)?)\s*m2/) ??
-    num(/(\d+(?:[.,]\d+)?)\s*m2\s*đất/);
+    num(/(\d+(?:[.,]\d+)?)\s*m2\s*đất/) ??
+    num(/(?:tổng|diện tích|dt)\s*(?:khoảng\s*)?(\d+(?:[.,]\d+)?)\s*m2/);
   if (landArea) site.landArea = landArea;
+
+  // "đất 5x18m" -> mặt tiền 5, chiều sâu 18
+  const dim = text.match(/(\d+(?:[.,]\d+)?)\s*x\s*(\d+(?:[.,]\d+)?)\s*m(?!2)/);
+  if (dim?.[1] && dim[2]) {
+    site.frontage = Number(dim[1].replace(",", "."));
+    site.depth = Number(dim[2].replace(",", "."));
+  }
 
   const consArea = num(
     /(?:xây\s*(?:dựng)?\s*)?(?:khoảng\s*)?(\d+(?:[.,]\d+)?)\s*m2\s*(?:\/|mỗi|một|1)\s*tầng/,
@@ -168,25 +197,69 @@ function extractFromText(raw: string, text: string): PartialRequirement {
 
   // --- functional ---
   const functional: Record<string, unknown> = {};
-  const bedrooms = num(/(\d+)\s*phòng ngủ/);
-  if (bedrooms) functional.bedrooms = bedrooms;
-  const baths = num(/(\d+)\s*(?:wc|nhà vệ sinh|toilet|phòng tắm)/);
+
+  // Cộng tổng số phòng ngủ trên toàn bộ mô tả, kể cả khi tách theo tầng.
+  //
+  // Khoảng trắng phải nằm TRONG lookahead. Nếu viết `phòng\s*(?!tắm)` thì \s*
+  // backtrack về 0 ký tự, lookahead xét ở vị trí dấu cách nên luôn pass và
+  // "2 phòng tắm" vẫn bị đếm thành phòng ngủ.
+  const NOT_BEDROOM = /(?!\s*(?:khách|thờ|tắm|bếp|ăn|làm\s*việc|giặt|kho|vệ\s*sinh|wc))/
+    .source;
+  let bedrooms = sumAll(new RegExp(`(\\d+)\\s*phòng${NOT_BEDROOM}`)) ?? 0;
+
+  // "phòng ngủ master" thường không kèm số -> tính là 1.
+  // Lookbehind loại trường hợp đã có số ("1 phòng master" đã được sumAll đếm),
+  // nếu không sẽ cộng hai lần.
+  const masterCount = [
+    ...text.matchAll(/(?<!\d\s*)phòng\s*(?:ngủ\s*)?master/g),
+  ].length;
+  bedrooms += masterCount;
+  if (bedrooms > 0) functional.bedrooms = bedrooms;
+
+  const baths = sumAll(/(\d+)\s*(?:wc|nhà vệ sinh|toilet|phòng tắm)/);
   if (baths) functional.bathrooms = baths;
-  if (/ô tô|oto|xe hơi|gara|garage/.test(text)) functional.garage = true;
-  if (/phòng thờ|bàn thờ/.test(text)) functional.worshipRoom = true;
-  if (/sân vườn|cây xanh/.test(text)) functional.garden = true;
+
+  // Phủ định phải xét TRƯỚC: "không cần gara" nghĩa là KHÔNG có gara.
+  if (/không\s*(?:cần|có|làm)\s*(?:gara|garage)/.test(text)) {
+    functional.garage = false;
+  } else if (/ô tô|oto|xe hơi|gara|garage/.test(text)) {
+    functional.garage = true;
+  }
+
+  if (/không\s*(?:cần|có|làm)\s*(?:phòng\s*)?thờ/.test(text))
+    functional.worshipRoom = false;
+  else if (/phòng thờ|bàn thờ|chỗ thờ|nơi thờ/.test(text))
+    functional.worshipRoom = true;
+
+  if (/sân vườn|cây xanh|có sân/.test(text)) functional.garden = true;
   if (/ban công/.test(text)) functional.balcony = true;
-  // Không dùng \bkho\b: \b của JS chỉ hiểu ASCII nên nó khớp cả "khoảng".
-  if (/nhà kho|phòng kho|kho chứa|nhà kho/.test(text)) functional.storage = true;
+  // "kho" đứng riêng, KHÔNG khớp "khoảng"/"khoá".
+  // Không dùng \bkho\b vì \b của JS chỉ hiểu ASCII: chữ "ả" không phải word
+  // char nên \b khớp ngay sau "kho" trong "khoảng".
+  if (/(?<!\p{L})kho(?!\p{L})/u.test(text)) functional.storage = true;
+
   if (Object.keys(functional).length) out.functional = functional;
 
   // --- budget ---
   const budget: Record<string, unknown> = {};
-  const money = text.match(/(\d+(?:[.,]\d+)?)\s*(tỷ|tỉ|triệu)/);
-  if (money?.[1] && money[2]) {
-    const v = Number(money[1].replace(",", "."));
-    if (Number.isFinite(v)) {
-      budget.budget = money[2] === "triệu" ? v * 1_000_000 : v * 1_000_000_000;
+  // Dải "2,5 đến 3 tỷ" -> lấy trung bình, không vơ số lớn nhất.
+  const range = text.match(
+    /(\d+(?:[.,]\d+)?)\s*(?:đến|tới|-|~)\s*(\d+(?:[.,]\d+)?)\s*(tỷ|tỉ|triệu)/,
+  );
+  if (range?.[1] && range[2] && range[3]) {
+    const lo = Number(range[1].replace(",", "."));
+    const hi = Number(range[2].replace(",", "."));
+    if (Number.isFinite(lo) && Number.isFinite(hi)) {
+      const unit = range[3] === "triệu" ? 1_000_000 : 1_000_000_000;
+      budget.budget = ((lo + hi) / 2) * unit;
+    }
+  } else {
+    const money = text.match(/(\d+(?:[.,]\d+)?)\s*(tỷ|tỉ|triệu)/);
+    if (money?.[1] && money[2]) {
+      const v = Number(money[1].replace(",", "."));
+      if (Number.isFinite(v)) {
+        budget.budget = money[2] === "triệu" ? v * 1_000_000 : v * 1_000_000_000;
+      }
     }
   }
   if (/trọn gói/.test(text)) budget.constructionScope = "turnkey";

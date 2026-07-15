@@ -8,6 +8,7 @@ import {
 import { prisma } from "@/lib/db/prisma";
 import { getAIProvider } from "@/lib/ai/provider";
 import { mergeRequirement } from "@/lib/ai/parsers/merge";
+import { sanitizeText } from "@/lib/ai/parsers/normalize";
 import { buildQuestionsFromMissing } from "@/lib/ai/question-templates";
 import {
   ensureProjectExists,
@@ -26,9 +27,13 @@ import {
  */
 export async function analyzeMessage(
   projectId: string,
-  message: string,
+  rawMessage: string,
 ): Promise<AnalyzeMessageResult> {
   await ensureProjectExists(projectId);
+
+  // Khách hay paste từ Zalo/Word/PDF, dễ lẫn ký tự điều khiển. Postgres không
+  // lưu được ký tự NULL -> phải dọn trước khi ghi, nếu không cả request 500.
+  const message = sanitizeText(rawMessage);
 
   // 1. Lưu tin nhắn người dùng trước — không mất dữ liệu kể cả khi AI lỗi.
   await prisma.conversation.create({
@@ -82,7 +87,9 @@ export async function analyzeMessage(
   }
 
   // 8. Lưu phản hồi của AI vào hội thoại.
-  const assistantMessage = buildAssistantMessage(result.summary, questions);
+  const assistantMessage = sanitizeText(
+    buildAssistantMessage(result.summary, questions),
+  );
   if (assistantMessage) {
     await prisma.conversation.create({
       data: { projectId, role: "assistant", message: assistantMessage },
