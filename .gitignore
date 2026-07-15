@@ -3,10 +3,26 @@ node_modules/
 .pnp
 .pnp.js
 
-# env
+# ===== SECRETS — TUYỆT ĐỐI KHÔNG COMMIT =====
+# Chứa DATABASE_URL (Neon) và OPENAI_API_KEY.
+# Lọt lên git là phải đổi key ngay, xoá commit KHÔNG cứu được
+# (lịch sử git và mọi bản clone đều còn).
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
+
+# Chặn cả .env nằm sâu trong apps/* hoặc packages/*
+**/.env
+**/.env.*
+!**/.env.example
+
+# Khoá và chứng chỉ
+*.pem
+*.key
+*.p12
+*.pfx
+secrets.json
+credentials.json
 
 # build outputs
 dist/
