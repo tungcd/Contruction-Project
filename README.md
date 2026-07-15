@@ -15,6 +15,21 @@ packages/
 
 > Quy ước: nếu mâu thuẫn tài liệu → **Data Model > UI > Product Spec**.
 
+## API hiện có
+
+| Method | Endpoint | Mô tả |
+|---|---|---|
+| GET | `/health` | Kiểm tra API sống |
+| GET | `/projects` | Danh sách dự án (kèm Score) |
+| POST | `/projects` | Tạo dự án |
+| GET | `/projects/:id` | Chi tiết (requirement, hội thoại, field còn thiếu) |
+| PATCH | `/projects/:id` | Đổi tên / thông tin khách |
+| DELETE | `/projects/:id` | Xoá dự án |
+| GET | `/projects/:id/messages` | Lịch sử hội thoại |
+| POST | `/projects/:id/messages` | Gửi tin nhắn |
+
+Mọi response theo dạng `{ success, data, message }`.
+
 ## Yêu cầu
 
 - Node.js >= 20
@@ -58,6 +73,6 @@ npm run dev:web
 ## Trạng thái
 
 - [x] Sprint 1 — Monorepo + Prisma schema + NestJS skeleton + Next.js 3 màn layout
-- [ ] Sprint 2 — Project CRUD + Workspace + Chat UI
+- [x] Sprint 2 — Project CRUD (kèm đổi tên) + Workspace + Chat UI lưu hội thoại
 - [ ] Sprint 3 — AI Integration + Requirement Extraction + Summary
 - [ ] Sprint 4 — Missing Detection + Question Engine + Project Brief

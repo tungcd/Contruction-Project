@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Send, FileText } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ArrowLeft, Send, FileText, Pencil, Check, X } from "lucide-react";
 import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,14 +21,40 @@ import {
 export default function WorkspacePage() {
   const params = useParams<{ id: string }>();
   const id = params.id;
+  const queryClient = useQueryClient();
+
   const [draft, setDraft] = useState("");
-  const [note, setNote] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState(false);
+  const [nameDraft, setNameDraft] = useState("");
+  const bottomRef = useRef<HTMLDivElement>(null);
 
   const { data: project, isLoading, isError, error } = useQuery({
     queryKey: ["project", id],
     queryFn: () => api.getProject(id),
     enabled: !!id,
   });
+
+  const sendMutation = useMutation({
+    mutationFn: (message: string) => api.sendMessage(id, message),
+    onSuccess: () => {
+      setDraft("");
+      queryClient.invalidateQueries({ queryKey: ["project", id] });
+    },
+  });
+
+  const renameMutation = useMutation({
+    mutationFn: (name: string) => api.updateProject(id, { name }),
+    onSuccess: () => {
+      setEditingName(false);
+      queryClient.invalidateQueries({ queryKey: ["project", id] });
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+    },
+  });
+
+  // Tự cuộn xuống tin nhắn mới nhất.
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [project?.conversation.length, sendMutation.isPending]);
 
   if (isLoading)
     return <p className="p-8 text-sm text-muted-foreground">Đang tải...</p>;
@@ -47,10 +73,23 @@ export default function WorkspacePage() {
   const groups = toRequirementGroups(project.requirement);
 
   function handleSend() {
-    if (!draft.trim()) return;
-    // AI sẽ được tích hợp ở Sprint 3 (05-Prompt-and-AI-Contract).
-    setNote("Tính năng phân tích AI sẽ được tích hợp ở Sprint 3.");
-    setDraft("");
+    const text = draft.trim();
+    if (!text || sendMutation.isPending) return;
+    sendMutation.mutate(text);
+  }
+
+  function startRename() {
+    setNameDraft(project!.name);
+    setEditingName(true);
+  }
+
+  function submitRename() {
+    const next = nameDraft.trim();
+    if (!next || next === project!.name) {
+      setEditingName(false);
+      return;
+    }
+    renameMutation.mutate(next);
   }
 
   return (
@@ -64,7 +103,46 @@ export default function WorkspacePage() {
             </Button>
           </Link>
           <div>
-            <h1 className="font-semibold leading-tight">{project.name}</h1>
+            {editingName ? (
+              <div className="flex items-center gap-1">
+                <input
+                  autoFocus
+                  className="rounded-md border px-2 py-1 text-sm"
+                  value={nameDraft}
+                  onChange={(e) => setNameDraft(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") submitRename();
+                    if (e.key === "Escape") setEditingName(false);
+                  }}
+                />
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={submitRename}
+                  disabled={renameMutation.isPending}
+                >
+                  <Check className="h-4 w-4" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => setEditingName(false)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <div className="group flex items-center gap-1">
+                <h1 className="font-semibold leading-tight">{project.name}</h1>
+                <button
+                  onClick={startRename}
+                  title="Đổi tên dự án"
+                  className="opacity-0 transition-opacity group-hover:opacity-100"
+                >
+                  <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
+                </button>
+              </div>
+            )}
             <p className="text-xs text-muted-foreground">
               {project.customerName ?? "Chưa có tên khách"} ·{" "}
               {projectStatusLabel(project.status)}
@@ -93,13 +171,13 @@ export default function WorkspacePage() {
 
       {/* 3 panels */}
       <div className="grid flex-1 grid-cols-1 gap-4 overflow-hidden p-4 lg:grid-cols-[1fr_1fr_1fr]">
-        {/* Conversation */}
+        {/* Hội thoại */}
         <Card className="flex flex-col overflow-hidden">
           <CardHeader className="border-b">
             <CardTitle className="text-sm">Hội thoại</CardTitle>
           </CardHeader>
           <CardContent className="flex-1 space-y-3 overflow-y-auto pt-4">
-            {project.conversation.length === 0 ? (
+            {project.conversation.length === 0 && !sendMutation.isPending ? (
               <p className="text-sm text-muted-foreground">
                 Bắt đầu bằng cách mô tả dự án hoặc paste tin nhắn khách hàng ở
                 thanh bên dưới.
@@ -110,21 +188,37 @@ export default function WorkspacePage() {
                   key={m.id}
                   className={m.role === "user" ? "text-right" : "text-left"}
                 >
-                  <span className="inline-block rounded-lg bg-muted px-3 py-2 text-sm">
+                  <span
+                    className={`inline-block max-w-[85%] whitespace-pre-wrap rounded-lg px-3 py-2 text-left text-sm ${
+                      m.role === "user"
+                        ? "bg-primary text-primary-foreground"
+                        : m.role === "system"
+                          ? "bg-amber-50 text-amber-700"
+                          : "bg-muted"
+                    }`}
+                  >
                     {m.message}
                   </span>
                 </div>
               ))
             )}
-            {note && (
-              <p className="rounded-md bg-amber-50 p-2 text-xs text-amber-700">
-                {note}
+            {sendMutation.isPending && (
+              <div className="text-right">
+                <span className="inline-block rounded-lg bg-primary/50 px-3 py-2 text-sm text-primary-foreground">
+                  Đang gửi...
+                </span>
+              </div>
+            )}
+            {sendMutation.isError && (
+              <p className="text-sm text-destructive">
+                {(sendMutation.error as Error).message}
               </p>
             )}
+            <div ref={bottomRef} />
           </CardContent>
         </Card>
 
-        {/* Requirement Summary */}
+        {/* Tóm tắt yêu cầu */}
         <Card className="flex flex-col overflow-hidden">
           <CardHeader className="border-b">
             <CardTitle className="text-sm">Tóm tắt yêu cầu</CardTitle>
@@ -140,10 +234,7 @@ export default function WorkspacePage() {
                 </p>
                 <div className="space-y-1">
                   {g.fields.map((f) => (
-                    <div
-                      key={f.label}
-                      className="flex justify-between text-sm"
-                    >
+                    <div key={f.label} className="flex justify-between text-sm">
                       <span className="text-muted-foreground">{f.label}</span>
                       {f.value ? (
                         <span className="font-medium">{f.value} ✅</span>
@@ -158,7 +249,7 @@ export default function WorkspacePage() {
           </CardContent>
         </Card>
 
-        {/* Right panel */}
+        {/* Thiếu / Câu hỏi */}
         <Card className="flex flex-col overflow-hidden">
           <CardHeader className="border-b">
             <CardTitle className="text-sm">Thiếu / Câu hỏi</CardTitle>
@@ -175,7 +266,10 @@ export default function WorkspacePage() {
               ) : (
                 <div className="flex flex-wrap gap-1">
                   {project.missingFields.map((m) => (
-                    <Badge key={m.key} className="border-amber-300 bg-amber-50 text-amber-700">
+                    <Badge
+                      key={m.key}
+                      className="border-amber-300 bg-amber-50 text-amber-700"
+                    >
                       {m.label}
                     </Badge>
                   ))}
@@ -204,23 +298,32 @@ export default function WorkspacePage() {
 
       {/* Prompt bar */}
       <div className="border-t bg-background p-3">
-        <div className="mx-auto flex max-w-4xl items-end gap-2">
-          <textarea
-            rows={1}
-            className="flex-1 resize-none rounded-md border px-3 py-2 text-sm"
-            placeholder="Nhập mô tả dự án, paste tin nhắn khách, hoặc trả lời câu hỏi của AI..."
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                handleSend();
-              }
-            }}
-          />
-          <Button onClick={handleSend} disabled={!draft.trim()}>
-            <Send className="h-4 w-4" />
-          </Button>
+        <div className="mx-auto max-w-4xl">
+          <div className="flex items-end gap-2">
+            <textarea
+              rows={1}
+              className="flex-1 resize-none rounded-md border px-3 py-2 text-sm"
+              placeholder="Nhập mô tả dự án, paste tin nhắn khách, hoặc trả lời câu hỏi của AI..."
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSend();
+                }
+              }}
+            />
+            <Button
+              onClick={handleSend}
+              disabled={!draft.trim() || sendMutation.isPending}
+            >
+              <Send className="h-4 w-4" />
+            </Button>
+          </div>
+          <p className="mt-1 text-center text-xs text-muted-foreground">
+            Enter để gửi · Shift + Enter để xuống dòng · Tin nhắn được lưu lại;
+            AI phân tích yêu cầu sẽ có ở Sprint 3.
+          </p>
         </div>
       </div>
     </div>

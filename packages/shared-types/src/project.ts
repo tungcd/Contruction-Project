@@ -23,6 +23,15 @@ export type CreateProjectInput = z.infer<typeof CreateProjectSchema>;
 export const UpdateProjectSchema = CreateProjectSchema.partial();
 export type UpdateProjectInput = z.infer<typeof UpdateProjectSchema>;
 
+// --- DTO gửi tin nhắn vào Discovery Chat (F02) ---
+export const CreateMessageSchema = z.object({
+  message: z
+    .string()
+    .min(1, "Nội dung tin nhắn không được rỗng")
+    .max(5000, "Tin nhắn quá dài (tối đa 5000 ký tự)"),
+});
+export type CreateMessageInput = z.infer<typeof CreateMessageSchema>;
+
 // --- View models trả về cho FE ---
 export interface ConversationMessage {
   id: string;

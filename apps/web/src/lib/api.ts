@@ -1,8 +1,10 @@
 import type {
   ApiResponse,
+  ConversationMessage,
   CreateProjectInput,
   ProjectDetail,
   ProjectSummary,
+  UpdateProjectInput,
 } from "@acc/shared-types";
 
 const BASE_URL =
@@ -31,6 +33,20 @@ export const api = {
       method: "POST",
       body: JSON.stringify(input),
     }),
+  updateProject: (id: string, input: UpdateProjectInput) =>
+    request<ProjectDetail>(`/projects/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(input),
+    }),
   deleteProject: (id: string) =>
     request<{ id: string }>(`/projects/${id}`, { method: "DELETE" }),
+
+  // --- Discovery Chat (F02) ---
+  listMessages: (projectId: string) =>
+    request<ConversationMessage[]>(`/projects/${projectId}/messages`),
+  sendMessage: (projectId: string, message: string) =>
+    request<ConversationMessage>(`/projects/${projectId}/messages`, {
+      method: "POST",
+      body: JSON.stringify({ message }),
+    }),
 };
