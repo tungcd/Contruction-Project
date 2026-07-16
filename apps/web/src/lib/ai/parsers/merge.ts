@@ -44,6 +44,16 @@ export function mergeRequirement(
     for (const [field, value] of Object.entries(incomingGroup)) {
       // Bỏ qua field AI không nhắc tới -> giữ nguyên giá trị cũ.
       if (value === undefined || value === null) continue;
+
+      // otherRooms là mảng: gộp (union) chứ không ghi đè, để không mất phòng
+      // đã thu thập ở các tin nhắn trước.
+      if (field === "otherRooms" && Array.isArray(value)) {
+        const existing = (target[field] as string[] | undefined) ?? [];
+        const union = [...new Set([...existing, ...value.map(String)])];
+        target[field] = union;
+        continue;
+      }
+
       target[field] = value;
     }
   }

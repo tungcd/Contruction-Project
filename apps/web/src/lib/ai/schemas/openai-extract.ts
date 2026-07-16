@@ -3,38 +3,59 @@ import { z } from "zod";
 /**
  * Schema dành RIÊNG cho OpenAI Structured Output (strict mode).
  *
- * Vì sao không dùng thẳng RequirementSchema trong @acc/shared-types:
- * strict mode của OpenAI KHÔNG cho phép optional field và .default().
- * Mọi field phải required; "chưa biết" phải biểu diễn bằng null.
+ * Vì sao không dùng thẳng RequirementSchema: strict mode KHÔNG cho optional
+ * và .default(). Mọi field phải required; "chưa biết" = null.
+ * null -> mergeRequirement() bỏ qua, giữ giá trị cũ (05 mục 6).
  *
- * null = AI không tìm thấy thông tin -> mergeRequirement() sẽ bỏ qua,
- * giữ nguyên giá trị cũ. Đúng quy tắc "không xoá dữ liệu cũ" (05 mục 6).
+ * Điều kiện 6: enum được ENFORCE ở đây. Model KHÔNG được tự ý coerce style lạ
+ * về giá trị gần nhất — nó phải chọn "other" và ghi nguyên văn vào *Note.
  */
 
 const nn = <T extends z.ZodTypeAny>(s: T) => s.nullable();
 
 export const OpenAIRequirementSchema = z.object({
   project: z.object({
-    projectType: nn(z.enum(["new_build", "renovation", "interior"])),
-    buildingType: nn(z.enum(["townhouse", "villa", "apartment", "other"])),
-    location: nn(z.string()),
+    projectType: nn(z.enum(["new_build", "renovation", "interior", "extension"])),
+    buildingType: nn(
+      z.enum(["townhouse", "villa", "apartment", "level4", "shophouse", "other"]),
+    ),
+    buildingTypeNote: nn(z.string()),
+    province: nn(z.string()),
+    district: nn(z.string()),
+    addressDetail: nn(z.string()),
   }),
   site: z.object({
     landArea: nn(z.number()),
-    constructionArea: nn(z.number()),
+    buildingFootprint: nn(z.number()),
+    totalFloorArea: nn(z.number()),
     frontage: nn(z.number()),
     depth: nn(z.number()),
     roadWidth: nn(z.number()),
   }),
   building: z.object({
     floors: nn(z.number()),
-    roofType: nn(z.string()),
-    architecturalStyle: nn(z.string()),
+    basementLevels: nn(z.number()),
+    roofType: nn(z.enum(["flat", "japanese", "thai", "tile", "metal", "sloped", "other"])),
+    roofTypeNote: nn(z.string()),
+    architecturalStyle: nn(
+      z.enum([
+        "modern",
+        "neoclassical",
+        "classical",
+        "minimalist",
+        "indochine",
+        "tropical",
+        "scandinavian",
+        "other",
+      ]),
+    ),
+    architecturalStyleNote: nn(z.string()),
+    foundationType: nn(z.enum(["single", "strip", "raft", "pile", "unknown"])),
   }),
   household: z.object({
     adults: nn(z.number()),
     children: nn(z.number()),
-    elderly: nn(z.boolean()),
+    hasElderly: nn(z.boolean()),
     cars: nn(z.number()),
   }),
   functional: z.object({
@@ -47,10 +68,21 @@ export const OpenAIRequirementSchema = z.object({
     garage: nn(z.boolean()),
     garden: nn(z.boolean()),
     balcony: nn(z.boolean()),
+    otherRooms: z.array(z.string()),
   }),
   budget: z.object({
-    budget: nn(z.number()),
-    constructionScope: nn(z.enum(["rough", "turnkey", "interior"])),
+    budgetMin: nn(z.number()),
+    budgetMax: nn(z.number()),
+    budgetNote: nn(z.string()),
+    constructionScope: nn(
+      z.enum([
+        "labor_only",
+        "rough_and_finishing_labor",
+        "turnkey",
+        "turnkey_with_interior",
+      ]),
+    ),
+    constructionScopeNote: nn(z.string()),
   }),
   timeline: z.object({
     expectedStart: nn(z.string()),
