@@ -25,7 +25,16 @@ export const useAnalysisStore = create<AnalysisState>((set) => ({
     })),
 }));
 
+// Tham chiếu cố định, KHÔNG tạo mảng mới trong selector bên dưới. Zustand
+// dùng useSyncExternalStore so sánh kết quả selector bằng Object.is — nếu
+// fallback là `[] `viết trực tiếp trong selector, mỗi lần gọi sẽ ra một mảng
+// mới, khiến React nghĩ snapshot đổi liên tục -> lỗi
+// "getServerSnapshot should be cached" / vòng lặp render vô hạn.
+const EMPTY_ASSUMPTIONS: string[] = [];
+
 /** Selector tiện dụng: lấy assumptions của một project (mảng rỗng nếu chưa có). */
 export function useAssumptions(projectId: string): string[] {
-  return useAnalysisStore((s) => s.assumptionsByProject[projectId] ?? []);
+  return useAnalysisStore(
+    (s) => s.assumptionsByProject[projectId] ?? EMPTY_ASSUMPTIONS,
+  );
 }
