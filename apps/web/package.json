@@ -10,7 +10,9 @@
     "test:regression": "node scripts/regression.mjs",
     "db:generate": "dotenv -e ../../.env -- prisma generate",
     "db:push": "dotenv -e ../../.env -- prisma db push",
-    "db:studio": "dotenv -e ../../.env -- prisma studio"
+    "db:studio": "dotenv -e ../../.env -- prisma studio",
+    "db:seed": "dotenv -e ../../.env -- node prisma/seed.mjs",
+    "db:reset": "dotenv -e ../../.env -- node scripts/reset-dev-db.mjs"
   },
   "dependencies": {
     "@acc/shared-types": "*",
