@@ -2,8 +2,15 @@
 
 **Project:** AI Construction Copilot\
 **Module:** AI Project Discovery (MVP)\
-**Version:** v0.1\
-**Status:** Draft
+**Version:** v0.2\
+**Status:** ĐÃ ĐÓNG BĂNG (Frozen) — 2026-07-16
+
+> ⚠️ Data Model đã được Founder **đóng băng**. Không sửa nếu chưa có quyết định
+> mở băng chính thức. Lịch sử review & quyết định nằm trong
+> `documents/CHATGPT_CONTEXT/` (Data-Model-Review, P0-Final-Proposal,
+> Final-Data-Model, và các Founder Decision).
+>
+> Requirement Score và Readiness là **hai khái niệm độc lập** — xem mục 5.3.1.
 
 ------------------------------------------------------------------------
 
@@ -150,57 +157,159 @@ Mọi module sau đều sử dụng Requirement.
   "functional": {},
   "budget": {},
   "timeline": {},
-  "notes": {}
+  "notes": null
 }
 ```
 
+Mọi field đều nullable. `null` = chưa biết (Unknown).
+
 ### Project
 
--   projectType
--   buildingType
--   location
+  Field          Type              Ghi chú
+  -------------- ----------------- --------------------------------------------
+  projectType    enum \| null      new_build, renovation, interior, extension
+  buildingType   enum \| null      townhouse, villa, apartment, level4, shophouse, other
+  buildingTypeNote string \| null  dùng khi buildingType = other
+  province       string \| null    tỉnh/thành — dùng cho Pricing
+  district       string \| null    quận/huyện — dùng cho Pricing
+  addressDetail  string \| null    phần địa chỉ còn lại — cho Proposal/Contract
 
 ### Site
 
--   landArea
--   constructionArea
--   frontage
--   depth
--   roadWidth
+  Field              Type            Ghi chú
+  ------------------ --------------- ------------------------------------------
+  landArea           number \| null  m² — diện tích khu đất
+  buildingFootprint  number \| null  m² — diện tích chiếm đất (tầng 1)
+  totalFloorArea     number \| null  m² — TỔNG diện tích sàn (biến chính của BOQ)
+  frontage           number \| null  m — mặt tiền
+  depth              number \| null  m — chiều sâu
+  roadWidth          number \| null  m — đường vào
 
 ### Building
 
--   floors
--   roofType
--   architecturalStyle
+  Field               Type            Ghi chú
+  ------------------- --------------- -----------------------------------------
+  floors              number \| null  số tầng nổi chính (KHÔNG tính tum/lửng/hầm)
+  basementLevels      number \| null  số tầng hầm (0 = không có)
+  roofType            enum \| null    flat, japanese, thai, tile, metal, sloped, other
+  roofTypeNote        string \| null  dùng khi roofType = other
+  architecturalStyle  enum \| null    modern, neoclassical, classical, minimalist, indochine, tropical, scandinavian, other
+  architecturalStyleNote string\|null dùng khi architecturalStyle = other
+  foundationType      enum \| null    single, strip, raft, pile, unknown
 
 ### Household
 
--   adults
--   children
--   elderly
--   cars
+  Field       Type             Ghi chú
+  ----------- ---------------- ---------------------------
+  adults      number \| null
+  children    number \| null
+  hasElderly  boolean \| null  có người già ở cùng
+  cars        number \| null
 
 ### Functional
 
--   bedrooms
--   bathrooms
--   livingRoom
--   kitchen
--   worshipRoom
--   storage
--   garage
--   garden
+  Field        Type              Ghi chú
+  ------------ ----------------- --------------------------
+  bedrooms     number \| null
+  bathrooms    number \| null
+  livingRoom   boolean \| null
+  kitchen      boolean \| null
+  worshipRoom  boolean \| null   phòng thờ
+  storage      boolean \| null   kho
+  garage       boolean \| null   gara / sân ô tô
+  garden       boolean \| null   sân vườn
+  balcony      boolean \| null   ban công
+  otherRooms   string\[\]        phòng ngoài danh sách (sân phơi, phòng làm việc...)
 
 ### Budget
 
--   budget
--   constructionScope
+  Field                  Type            Ghi chú
+  ---------------------- --------------- ---------------------------------------
+  budgetMin              number \| null  VNĐ — cận dưới ngân sách
+  budgetMax              number \| null  VNĐ — cận trên ngân sách
+  budgetNote             string \| null  nguyên văn khách nói
+  constructionScope      enum \| null    labor_only, rough_and_finishing_labor, turnkey, turnkey_with_interior
+  constructionScopeNote  string \| null  nguyên văn khách nói
+
+Budget là **Requirement**, không phải Estimate. Không quy về một con số.
+Ví dụ: "2,5 đến 3 tỷ" → budgetMin = 2.5 tỷ, budgetMax = 3 tỷ. "hơn 2 tỷ" →
+budgetMin = 2 tỷ, budgetMax = null. "dưới 3 tỷ" → budgetMin = null, budgetMax = 3 tỷ.
 
 ### Timeline
 
--   expectedStart
--   expectedFinish
+  Field           Type            Ghi chú
+  --------------- --------------- ------------------------
+  expectedStart   string \| null  tự do ("đầu năm sau")
+  expectedFinish  string \| null  tự do
+
+------------------------------------------------------------------------
+
+## 5.3.1 Requirement Score vs Readiness (Founder Decision)
+
+**Đây là hai khái niệm ĐỘC LẬP.**
+
+### Requirement Score
+
+-   CHỈ dùng để hiển thị **tiến độ** thu thập requirement.
+-   KHÔNG quyết định readiness.
+-   Là dữ liệu dẫn xuất, tính động, không lưu DB.
+-   Công thức: `% = tổng trọng số field đã có / tổng trọng số field theo dõi`.
+-   `foundationType` KHÔNG tính vào Score (khách không thể biết ở giai đoạn Discovery).
+
+### Readiness (Business Rule riêng)
+
+Kiến trúc chuẩn bị 3 cờ; MVP hiện tại **chỉ implement `briefReady`**:
+
+    readiness = {
+      brief:    { ready, missing },   // implement bây giờ
+      quantity: ...                   // để sau (BOQ)
+      pricing:  ...                   // để sau (Pricing)
+    }
+
+**Quy tắc `briefReady` (chốt):**
+
+    briefReady =
+      projectType   !== null &&
+      buildingType  !== null &&
+      province      !== null &&
+      landArea      !== null &&
+      floors        !== null &&
+      bedrooms      !== null && bedrooms >= 1 &&
+      livingRoom    !== null &&
+      kitchen       !== null
+
+Ghi chú ngữ nghĩa:
+
+-   `coreFunctionalNeeds` = bedrooms + livingRoom + kitchen. bathroom KHÔNG chặn.
+-   `livingRoom` / `kitchen` dùng **"đã xác định" (!== null)**, KHÔNG phải truthy.
+    Giá trị `false` là một requirement đã xác nhận hợp lệ, KHÔNG được chặn Brief.
+-   Địa điểm: chỉ `province` là bắt buộc cho Brief. `district`, `addressDetail` không.
+
+**Thông tin cần xác nhận trong Brief:** các field KHÔNG chặn Brief nhưng nên hỏi nốt
+nếu thiếu — `budgetMin/Max`, `constructionScope`, `totalFloorArea`, `foundationType`.
+Hiển thị thành một mục trong Project Brief.
+
+------------------------------------------------------------------------
+
+## 5.3.2 Enum & Nhãn hiển thị
+
+Enum là giá trị nội bộ / lưu DB. UI **không** hiển thị enum thô — dịch ở tầng hiển thị.
+Enum "mở" (buildingType, roofType, architecturalStyle) có `other` + field `*Note` đi kèm.
+
+  Enum                Giá trị                                                          Đóng/Mở
+  ------------------- ---------------------------------------------------------------- --------
+  projectType         new_build, renovation, interior, extension                       đóng
+  buildingType        townhouse, villa, apartment, level4, shophouse, other            mở
+  roofType            flat, japanese, thai, tile, metal, sloped, other                 mở
+  architecturalStyle  modern, neoclassical, classical, minimalist, indochine, tropical, scandinavian, other  mở
+  constructionScope   labor_only, rough_and_finishing_labor, turnkey, turnkey_with_interior  đóng
+  foundationType      single, strip, raft, pile, unknown                               đóng
+
+**Nhãn UI constructionScope:** labor_only → "Nhân công" · rough_and_finishing_labor →
+"Xây phần thô" · turnkey → "Xây trọn gói" · turnkey_with_interior → "Xây trọn gói + Nội thất".
+
+**Nhãn UI foundationType:** single → "Móng đơn" · strip → "Móng băng" · raft → "Móng bè" ·
+pile → "Móng cọc" · unknown → "Chưa khảo sát".
 
 ------------------------------------------------------------------------
 
@@ -262,7 +371,8 @@ Mọi truy cập đều bắt đầu từ Project.
 
 Không lưu xuống database.
 
--   Requirement Score
+-   Requirement Score (chỉ hiển thị tiến độ — xem 5.3.1)
+-   Readiness (briefReady — business rule riêng, xem 5.3.1)
 -   Missing Fields
 -   AI Questions
 -   AI Assumptions
