@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { RequirementSchema } from "./requirement";
+import type { Readiness } from "./scoring";
 
 /**
  * JSON response thống nhất (xem 04-Tech-Stack mục 5).
@@ -26,8 +27,12 @@ export interface AnalyzeMessageResult {
   assumptions: string[];
   /** Câu AI phản hồi lại người dùng, đã lưu vào Conversation. */
   summary: string;
+  /** Chỉ hiển thị tiến độ, độc lập với readiness. */
   score: number;
-  briefReady: boolean;
+  /** Business rule riêng (chỉ brief ở MVP). */
+  readiness: Readiness;
+  /** Thông tin cần xác nhận — derived, không lưu DB. */
+  toConfirm: { key: string; label: string }[];
 }
 
 // --- AI: Requirement Extractor output (xem mục 4) ---

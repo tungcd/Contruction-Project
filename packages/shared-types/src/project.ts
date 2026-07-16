@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { RequirementSchema } from "./requirement";
+import type { Readiness } from "./scoring";
 
 // Trạng thái Project (xem 03-Data-Model mục 5.1)
 export const ProjectStatus = z.enum([
@@ -56,4 +57,6 @@ export interface ProjectDetail extends ProjectSummary {
   conversation: ConversationMessage[];
   missingFields: { key: string; label: string }[]; // derived
   questions: string[]; // derived
+  readiness: Readiness; // derived — briefReady business rule
+  toConfirm: { key: string; label: string }[]; // derived — cần xác nhận
 }
