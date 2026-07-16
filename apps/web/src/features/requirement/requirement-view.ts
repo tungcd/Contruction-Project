@@ -6,14 +6,14 @@ import type { Requirement } from "@acc/shared-types";
  * Enum "mở" dùng field *Note khi giá trị = "other".
  */
 
-const projectTypeLabel: Record<string, string> = {
+export const projectTypeLabel: Record<string, string> = {
   new_build: "Xây mới",
   renovation: "Cải tạo",
   interior: "Nội thất",
   extension: "Nâng tầng / Cơi nới",
 };
 
-const buildingTypeLabel: Record<string, string> = {
+export const buildingTypeLabel: Record<string, string> = {
   townhouse: "Nhà phố",
   villa: "Biệt thự",
   apartment: "Chung cư",
@@ -22,7 +22,7 @@ const buildingTypeLabel: Record<string, string> = {
   other: "Khác",
 };
 
-const roofTypeLabel: Record<string, string> = {
+export const roofTypeLabel: Record<string, string> = {
   flat: "Mái bằng",
   japanese: "Mái Nhật",
   thai: "Mái Thái",
@@ -32,7 +32,7 @@ const roofTypeLabel: Record<string, string> = {
   other: "Khác",
 };
 
-const architecturalStyleLabel: Record<string, string> = {
+export const architecturalStyleLabel: Record<string, string> = {
   modern: "Hiện đại",
   neoclassical: "Tân cổ điển",
   classical: "Cổ điển",
@@ -43,7 +43,7 @@ const architecturalStyleLabel: Record<string, string> = {
   other: "Khác",
 };
 
-const foundationTypeLabel: Record<string, string> = {
+export const foundationTypeLabel: Record<string, string> = {
   single: "Móng đơn",
   strip: "Móng băng",
   raft: "Móng bè",
@@ -52,19 +52,19 @@ const foundationTypeLabel: Record<string, string> = {
 };
 
 /** Nhãn UI 4 gói — CHỐT bởi Founder (Task Approval mục 2). KHÔNG hiển thị enum thô. */
-const constructionScopeLabel: Record<string, string> = {
+export const constructionScopeLabel: Record<string, string> = {
   labor_only: "Chỉ nhân công",
   rough_and_finishing_labor: "Phần thô + nhân công hoàn thiện",
   turnkey: "Xây dựng trọn gói",
   turnkey_with_interior: "Xây dựng trọn gói + nội thất",
 };
 
-function bool(v: boolean | null): string | null {
+export function bool(v: boolean | null): string | null {
   if (v === null) return null;
   return v ? "Có" : "Không";
 }
 
-function money(v: number | null): string {
+export function money(v: number | null): string {
   if (v === null) return "";
   if (v >= 1_000_000_000)
     return `${(v / 1_000_000_000).toFixed(2).replace(/\.?0+$/, "")} tỷ`;
@@ -73,7 +73,7 @@ function money(v: number | null): string {
 }
 
 /** Hiển thị dải ngân sách (Budget là Requirement, không quy về 1 số — Founder Decision). */
-function budgetRange(min: number | null, max: number | null): string | null {
+export function budgetRange(min: number | null, max: number | null): string | null {
   if (min === null && max === null) return null;
   if (min !== null && max !== null) {
     if (min === max) return money(min);
@@ -84,7 +84,7 @@ function budgetRange(min: number | null, max: number | null): string | null {
 }
 
 /** Dịch giá trị enum "mở": nếu = other thì ưu tiên hiển thị *Note nguyên văn. */
-function openEnumLabel(
+export function openEnumLabel(
   value: string | null,
   table: Record<string, string>,
   note: string | null,

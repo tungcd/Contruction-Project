@@ -7,12 +7,19 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Copy, RefreshCw } from "lucide-react";
 import { projectService } from "@/services/project.service";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { toRequirementGroups } from "@/features/requirement/requirement-view";
+import {
+  buildBudgetSection,
+  buildCoreSections,
+  buildScopeSection,
+  buildSummaryParagraph,
+} from "@/features/requirement/brief-view";
+import { ProjectBriefView } from "@/features/requirement/components/ProjectBriefView";
+import { useAssumptions } from "@/features/requirement/analysis-store";
 
 export default function BriefPage() {
   const { id } = useParams<{ id: string }>();
   const [copied, setCopied] = useState(false);
+  const assumptions = useAssumptions(id);
 
   const { data: project, isLoading, isError, refetch } = useQuery({
     queryKey: ["project", id],
@@ -20,32 +27,50 @@ export default function BriefPage() {
     enabled: !!id,
   });
 
-  const markdown = useMemo(() => {
-    if (!project) return "";
-    const groups = toRequirementGroups(project.requirement);
-    const lines: string[] = [`# Project Brief: ${project.name}`, ""];
+  const brief = useMemo(() => {
+    if (!project) return null;
+    return {
+      coreSections: buildCoreSections(project.requirement),
+      budgetSection: buildBudgetSection(project.requirement),
+      scopeSection: buildScopeSection(project.requirement),
+      summaryParagraph: buildSummaryParagraph(project.requirement),
+    };
+  }, [project]);
 
-    for (const g of groups) {
-      lines.push(`## ${g.title}`);
-      for (const f of g.fields) {
-        lines.push(`- **${f.label}:** ${f.value ?? "_Chưa rõ_"}`);
-      }
+  const plainText = useMemo(() => {
+    if (!project || !brief) return "";
+    const lines: string[] = [`Project Brief: ${project.name}`, ""];
+
+    for (const section of brief.coreSections) {
+      if (!section.fields.length) continue;
+      lines.push(section.title);
+      for (const f of section.fields) lines.push(`- ${f.label}: ${f.value}`);
+      lines.push("");
+    }
+    for (const section of [brief.budgetSection, brief.scopeSection]) {
+      if (!section) continue;
+      lines.push(section.title);
+      for (const f of section.fields) lines.push(`- ${f.label}: ${f.value}`);
       lines.push("");
     }
     if (project.toConfirm.length) {
-      lines.push("## Thông tin cần xác nhận");
-      for (const m of project.toConfirm) lines.push(`- ${m.label}`);
+      lines.push("Các thông tin cần xác nhận");
+      for (const t of project.toConfirm) lines.push(`- ${t.label}`);
       lines.push("");
     }
-    lines.push("## Bước tiếp theo");
-    lines.push("- Bổ sung các thông tin còn thiếu ở trên.");
-    lines.push("- Chuyển brief cho KTS / QS để triển khai.");
+    if (assumptions.length) {
+      lines.push("Giả định của AI");
+      for (const a of assumptions) lines.push(`- ${a}`);
+      lines.push("");
+    }
+    lines.push("Đánh giá sơ bộ");
+    lines.push(brief.summaryParagraph);
     return lines.join("\n");
-  }, [project]);
+  }, [project, brief, assumptions]);
 
   if (isLoading)
     return <p className="p-8 text-sm text-muted-foreground">Đang tải...</p>;
-  if (isError || !project)
+  if (isError || !project || !brief)
     return (
       <div className="p-8">
         <Link href="/" className="text-sm text-primary">
@@ -55,7 +80,7 @@ export default function BriefPage() {
     );
 
   async function copy() {
-    await navigator.clipboard.writeText(markdown);
+    await navigator.clipboard.writeText(plainText);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   }
@@ -73,7 +98,7 @@ export default function BriefPage() {
             <RefreshCw className="h-4 w-4" /> Tạo lại
           </Button>
           <Button size="sm" onClick={copy}>
-            <Copy className="h-4 w-4" /> {copied ? "Đã copy!" : "Copy Markdown"}
+            <Copy className="h-4 w-4" /> {copied ? "Đã copy!" : "Copy"}
           </Button>
         </div>
       </div>
@@ -85,24 +110,16 @@ export default function BriefPage() {
         </div>
       )}
 
-      {project.readiness.brief.ready && project.toConfirm.length > 0 && (
-        <div className="mb-4 rounded-md bg-blue-50 p-3 text-sm text-blue-700">
-          Có thể tạo Brief, nhưng nên xác nhận thêm: {project.toConfirm.map((t) => t.label).join(", ")}.
-        </div>
-      )}
-
-      <Card>
-        <CardContent className="pt-6">
-          <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed">
-            {markdown}
-          </pre>
-        </CardContent>
-      </Card>
-
-      <p className="mt-4 text-xs text-muted-foreground">
-        * Brief sinh bằng AI sẽ được hoàn thiện ở Sprint 4. Hiện tại brief được
-        dựng từ Requirement đã thu thập.
-      </p>
+      <ProjectBriefView
+        projectName={project.name}
+        customerName={project.customerName}
+        coreSections={brief.coreSections}
+        budgetSection={brief.budgetSection}
+        scopeSection={brief.scopeSection}
+        toConfirm={project.toConfirm}
+        assumptions={assumptions}
+        summaryParagraph={brief.summaryParagraph}
+      />
     </main>
   );
 }

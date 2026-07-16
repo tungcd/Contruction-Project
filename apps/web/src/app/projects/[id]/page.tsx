@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -12,13 +11,19 @@ import { ConversationPanel } from "@/features/chat/components/ConversationPanel"
 import { PromptBar } from "@/features/chat/components/PromptBar";
 import { RequirementSummaryPanel } from "@/features/requirement/components/RequirementSummaryPanel";
 import { MissingPanel } from "@/features/requirement/components/MissingPanel";
+import {
+  useAnalysisStore,
+  useAssumptions,
+} from "@/features/requirement/analysis-store";
 
 export default function WorkspacePage() {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
 
-  // Giả định của AI là dữ liệu dẫn xuất, không lưu DB -> giữ ở state.
-  const [assumptions, setAssumptions] = useState<string[]>([]);
+  // Giả định của AI: dữ liệu dẫn xuất, không lưu DB -> giữ ở client store để
+  // mang sang trang Brief trong cùng phiên (xem analysis-store).
+  const assumptions = useAssumptions(id);
+  const setAssumptions = useAnalysisStore((s) => s.setAssumptions);
 
   const { data: project, isLoading, isError, error } = useQuery({
     queryKey: ["project", id],
@@ -29,7 +34,7 @@ export default function WorkspacePage() {
   const analyzeMutation = useMutation({
     mutationFn: (message: string) => chatService.analyze(id, message),
     onSuccess: (result) => {
-      setAssumptions(result.assumptions);
+      setAssumptions(id, result.assumptions);
       queryClient.invalidateQueries({ queryKey: ["project", id] });
       queryClient.invalidateQueries({ queryKey: ["projects"] });
     },
