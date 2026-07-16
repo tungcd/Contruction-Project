@@ -1,7 +1,9 @@
 import type { Prisma, Requirement as RequirementRow, Project } from "@prisma/client";
 import {
   computeMissingFields,
+  computeReadiness,
   computeScore,
+  computeToConfirm,
   emptyRequirement,
   RequirementSchema,
   type ProjectDetail,
@@ -75,6 +77,8 @@ export async function createProject(input: {
     conversation: [],
     missingFields: computeMissingFields(requirement),
     questions: buildQuestionsFromMissing(requirement),
+    readiness: computeReadiness(requirement),
+    toConfirm: computeToConfirm(requirement),
   };
 }
 
@@ -94,6 +98,8 @@ export async function getProjectDetail(id: string): Promise<ProjectDetail> {
     requirement,
     missingFields: computeMissingFields(requirement),
     questions: buildQuestionsFromMissing(requirement),
+    readiness: computeReadiness(requirement),
+    toConfirm: computeToConfirm(requirement),
     conversation: p.conversations.map((c) => ({
       id: c.id,
       role: c.role,

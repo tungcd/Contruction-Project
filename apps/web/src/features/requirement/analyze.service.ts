@@ -1,8 +1,9 @@
 import type { Prisma } from "@prisma/client";
 import {
-  BRIEF_READY_SCORE,
   computeMissingFields,
+  computeReadiness,
   computeScore,
+  computeToConfirm,
   type AnalyzeMessageResult,
 } from "@acc/shared-types";
 import { prisma } from "@/lib/db/prisma";
@@ -69,9 +70,11 @@ export async function analyzeMessage(
   });
 
   // 6. Dữ liệu dẫn xuất — tính bằng code, không hỏi AI.
+  //    Score chỉ hiển thị tiến độ; readiness là business rule ĐỘC LẬP.
   const score = computeScore(merged);
   const missingFields = computeMissingFields(merged);
-  const briefReady = score >= BRIEF_READY_SCORE;
+  const readiness = computeReadiness(merged);
+  const toConfirm = computeToConfirm(merged);
 
   // 7. Lọc lại câu hỏi của AI: đủ thông tin thì không hỏi nữa; AI không
   //    nghĩ ra câu nào thì rơi về template theo field còn thiếu.
@@ -104,7 +107,7 @@ export async function analyzeMessage(
   if (project.status !== "BriefGenerated") {
     await prisma.project.update({
       where: { id: projectId },
-      data: { status: briefReady ? "ReadyForBrief" : "Discovery" },
+      data: { status: readiness.brief.ready ? "ReadyForBrief" : "Discovery" },
     });
   }
   await prisma.history.create({
@@ -118,7 +121,8 @@ export async function analyzeMessage(
     assumptions: result.assumptions,
     summary: result.summary,
     score,
-    briefReady,
+    readiness,
+    toConfirm,
   };
 }
 

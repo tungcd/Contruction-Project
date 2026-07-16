@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Copy, RefreshCw } from "lucide-react";
-import { BRIEF_READY_SCORE } from "@acc/shared-types";
 import { projectService } from "@/services/project.service";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -33,9 +32,9 @@ export default function BriefPage() {
       }
       lines.push("");
     }
-    if (project.missingFields.length) {
-      lines.push("## Thông tin còn thiếu");
-      for (const m of project.missingFields) lines.push(`- ${m.label}`);
+    if (project.toConfirm.length) {
+      lines.push("## Thông tin cần xác nhận");
+      for (const m of project.toConfirm) lines.push(`- ${m.label}`);
       lines.push("");
     }
     lines.push("## Bước tiếp theo");
@@ -79,10 +78,16 @@ export default function BriefPage() {
         </div>
       </div>
 
-      {project.score < BRIEF_READY_SCORE && (
+      {!project.readiness.brief.ready && (
         <div className="mb-4 rounded-md bg-amber-50 p-3 text-sm text-amber-700">
-          Brief còn thiếu thông tin (Score {project.score}% &lt;{" "}
-          {BRIEF_READY_SCORE}%). Nên bổ sung thêm trước khi gửi khách.
+          Brief còn thiếu thông tin bắt buộc: {project.readiness.brief.missing.join(", ")}.
+          Nên bổ sung trước khi gửi khách.
+        </div>
+      )}
+
+      {project.readiness.brief.ready && project.toConfirm.length > 0 && (
+        <div className="mb-4 rounded-md bg-blue-50 p-3 text-sm text-blue-700">
+          Có thể tạo Brief, nhưng nên xác nhận thêm: {project.toConfirm.map((t) => t.label).join(", ")}.
         </div>
       )}
 
