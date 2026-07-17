@@ -3,7 +3,9 @@
 **Ngày:** 2026-07-17
 **Người thiết kế:** Claude Code (Software Engineer)
 **Gửi:** Founder + ChatGPT
-**Trạng thái:** ĐỀ XUẤT THIẾT KẾ. **Không có dòng code nào được viết.**
+**Trạng thái:** ĐỀ XUẤT THIẾT KẾ — đã cập nhật theo 1 vòng Founder Decision
+(giữ section Kết cấu, xem mục 0). Còn 3 câu hỏi mở ở mục 9. **Không có dòng
+code nào được viết.**
 **Tiền đề:** `Analysis-M3-001-BOQ-Mapping-Engine.md` + Founder Decisions (M3-002)
 
 > Theo đúng ticket: "Do not code." Tài liệu này chỉ là data contract + rule
@@ -18,6 +20,7 @@
 | MVP theo triết lý File 1 (đơn giá gộp nhà thầu tự quản lý) | Mục 6 — Price Book đơn giản, không có breakdown Vật liệu/Nhân công/Máy |
 | "Draft 60-70%" = độ phủ hạng mục, KHÔNG phải độ chính xác số lượng/tiền | Mục 3/5 — ưu tiên có mặt đủ dòng hạng mục hơn là số chính xác |
 | MVP target case: nhà ở, mái bằng, không hầm, đơn giá gộp | Mục 4 — Rule Catalog chỉ cover case này, case khác vào backlog |
+| **[Cập nhật]** Giữ section "Kết cấu" — Module Estimate hướng tới nhà xây mới, móng luôn là 1 phần của BOQ. MVP KHÔNG estimate kết cấu — toàn bộ dòng là placeholder `needs_survey`. Nguyên tắc: "Không biết thì để trống. Không được suy đoán." | Mục 3, 3.1, 4 (Rule R8 viết lại), 5 — trả lời câu hỏi 1 ở mục 9 (bản gốc) |
 | Không mở lại Requirement Data Model | Mục 1 — `EstimateSettings` là entity TÁCH RIÊNG, không sửa `Requirement` |
 
 ---
@@ -154,10 +157,13 @@ nêu nguyên tắc.
 
 # 3. MVP BOQ Sections
 
-Dựa theo File 1 (đã duyệt triết lý), map từ 6 sheet gốc sang 6 section:
+Dựa theo File 1 (đã duyệt triết lý) + **1 section bổ sung theo Founder
+Decision** (Module Estimate hướng tới nhà xây mới, móng luôn là 1 phần của
+BOQ dù MVP không estimate được):
 
-| `section.code` | Tên hiển thị | Nguồn (File 1) | Bao gồm khi nào |
+| `section.code` | Tên hiển thị | Nguồn | Bao gồm khi nào |
 |---|---|---|---|
+| `structure` | Kết cấu (móng) | File 2 `Ket cau` — **chỉ để tham khảo danh mục hạng mục, KHÔNG dùng cách tính giá của File 2** | **Luôn có**, toàn bộ dòng placeholder (xem mục 3.2) |
 | `construction` | Phần xây dựng thô | `XÂY DỰNG` (phần thô: tường xây, tôn nền, bê tông+thép, cán nền) | Luôn có, trừ `labor_only` (xem dưới) |
 | `finishing` | Hoàn thiện | `XÂY DỰNG` (phần hoàn thiện: sơn, chống thấm, lát nền, trần, thang, cửa) | Luôn có |
 | `sanitary_equipment` | Thiết bị vệ sinh + bếp | ` THIẾT BỊ` | Chỉ khi `constructionScope = turnkey_with_interior` (xem bảng dưới) |
@@ -167,12 +173,16 @@ Dựa theo File 1 (đã duyệt triết lý), map từ 6 sheet gốc sang 6 sect
 
 ## 3.1 Bật/tắt section theo `constructionScope`
 
-| `constructionScope` | construction | finishing | sanitary_equipment | plumbing | electrical | air_conditioning |
-|---|---|---|---|---|---|---|
-| `labor_only` | Có (chỉ dòng nhân công — nhưng Price Book MVP không tách nhân công/vật liệu, xem mục 6.3 hạn chế) | Có | Không | Có | Có | Không |
-| `rough_and_finishing_labor` | Có | Có | Không | Có | Có | Không |
-| `turnkey` | Có | Có | Không | Có | Có | Tuỳ chọn |
-| `turnkey_with_interior` | Có | Có | **Có** | Có | Có | Tuỳ chọn |
+| `constructionScope` | structure | construction | finishing | sanitary_equipment | plumbing | electrical | air_conditioning |
+|---|---|---|---|---|---|---|---|
+| `labor_only` | Có (placeholder) | Có (chỉ dòng nhân công — nhưng Price Book MVP không tách nhân công/vật liệu, xem mục 6.3 hạn chế) | Có | Không | Có | Có | Không |
+| `rough_and_finishing_labor` | Có (placeholder) | Có | Có | Không | Có | Có | Không |
+| `turnkey` | Có (placeholder) | Có | Có | Không | Có | Có | Tuỳ chọn |
+| `turnkey_with_interior` | Có (placeholder) | Có | Có | **Có** | Có | Có | Tuỳ chọn |
+
+`structure` **luôn bật bất kể `constructionScope`** — móng là hạng mục bắt
+buộc phải có mặt trong mọi công trình xây mới, không phụ thuộc chủ thầu báo
+giá phần nào (kể cả `labor_only` vẫn cần biết khối lượng móng để tính công).
 
 `sanitary_equipment` chỉ bật ở `turnkey_with_interior` vì đây là hạng mục
 "nội thất/thiết bị" — đúng theo cách File 1 tách riêng "THIẾT BỊ VỆ SINH+BẾP"
@@ -184,6 +194,24 @@ tách Vật liệu/Nhân công như File 2, nên `labor_only` với `constructio
 "có" là **chưa chính xác về mặt khái niệm** — chủ thầu sẽ phải tự loại bỏ
 phần vật liệu bằng tay. Đây là giới hạn được chấp nhận theo quyết định
 "theo triết lý File 1", không phải lỗi thiết kế bỏ sót.
+
+## 3.2 Section "Kết cấu" — nguyên tắc riêng theo Founder Decision
+
+> "Không biết thì để trống. Không được suy đoán."
+
+Khác với mọi section khác (có Rule Catalog cố gắng ước lượng), section
+`structure`:
+
+- **KHÔNG có rule nào tính số** — kể cả khi `EstimateSettings.hasStructuralDrawing = true`.
+  MVP không cố gắng ước lượng kết cấu dù có bản vẽ hay không; đây là quyết
+  định phạm vi (scope cut) rõ ràng, không phải giới hạn kỹ thuật.
+- Toàn bộ dòng: `quantitySource = needs_survey`, `quantity = null`,
+  `unitPrice` **có thể có** (tra Price Book theo tên hạng mục chuẩn, để
+  chủ thầu chỉ cần điền `quantity` là ra `amount`), `amount = null` cho tới
+  khi chủ thầu tự điền.
+- Founder bổ sung số liệu **sau khi có khảo sát địa chất + bản vẽ kết cấu**
+  — ngoài phạm vi Rule Engine, ngoài phạm vi MVP.
+- Xem danh mục dòng cụ thể ở mục 5.1.
 
 ---
 
@@ -279,27 +307,66 @@ Mỗi rule ghi đủ 5 mục ticket yêu cầu. Xếp theo `confidence` giảm d
 - **Known limitations:** không tách được nhân công/vật liệu cho `labor_only`
   (đã nêu ở mục 3.1)
 
-## Rule R8 — `foundationType` → hiển thị cảnh báo (KHÔNG sinh dòng)
+## Rule R8 — `structure` section → luôn sinh placeholder, không tính số
 
-- **Input:** `building.foundationType`
-- **Output:** KHÔNG sinh `BOQDraftLine` nào — chỉ set toàn bộ dòng trong
-  nhóm "Móng" (nếu MVP case là xây mới) thành `needs_survey`
-- **Calculation:** không có — đây là rule "chặn", không phải rule "sinh số"
-- **Confidence:** `n/a`
-- **Known limitations:** MVP target case (mục 0) là "nhà ở, không hầm" —
-  không rõ ticket có yêu cầu cover cả phần móng hay không; M3-001 đã nêu cả
-  2 file mẫu đều móng cọc, chưa có Ground Truth cho móng khác. **Đề xuất:
-  MVP KHÔNG sinh section "Kết cấu/Móng" ở bản đầu**, để `needs_survey` toàn
-  bộ nhóm này qua 1 dòng placeholder duy nhất (xem mục 5) — cần Founder xác
-  nhận có đồng ý loại hẳn Kết cấu ra khỏi MVP Sections (mục 3) không, vì
-  hiện mục 3 mới liệt kê 6 section theo File 1 và **không có section
-  "Kết cấu"** (File 1 là nhà cải tạo, không có hạng mục móng — nhất quán
-  với MVP target case "không hầm", nhưng cần xác nhận rõ vì đây là khác
-  biệt so với File 2 có hẳn sheet `Ket cau`)
+> **[Đã chốt theo Founder Decision]** Giữ section "Kết cấu". Module Estimate
+> hướng tới nhà xây mới, móng luôn là 1 phần của BOQ. MVP KHÔNG estimate kết
+> cấu. "Không biết thì để trống. Không được suy đoán."
+
+- **Input Requirement field:** không có — đây là rule KHÔNG đọc field nào
+  của Requirement để tính số (khác mọi rule khác trong catalog này). Sự có
+  mặt của section chỉ phụ thuộc `projectType` (chỉ áp dụng khi xây mới —
+  cải tạo/nội thất thuần tuý không cần section này, xem `Known limitations`)
+- **Output BOQ line:** toàn bộ dòng trong section `structure` (danh mục cụ
+  thể ở mục 5.1), mỗi dòng:
+  - `quantitySource = needs_survey`
+  - `quantity = null`
+  - `unitPrice`: tra Price Book nếu có entry khớp tên hạng mục (để chủ thầu
+    đỡ phải tự tra khi điền số sau này), `null` nếu chưa có trong Price Book
+  - `amount = null`
+- **Calculation:** không có — rule này KHÔNG tính bất kỳ số nào, kể cả khi
+  `EstimateSettings.hasStructuralDrawing = true`. Đây là quyết định phạm vi
+  (scope cut) cố định cho MVP, không phải nhánh điều kiện trong state
+  machine mục 2.2 — `structure` là **ngoại lệ duy nhất** không đi theo state
+  machine chung (state machine mục 2.2 vẫn áp dụng cho các section khác).
+- **Confidence:** `n/a` — không áp dụng khái niệm độ tin cậy cho dòng chưa
+  có số
+- **Known limitations:**
+  - Nếu `projectType = renovation` hoặc `interior` (cải tạo/chỉ nội thất,
+    không đụng móng), section `structure` **có thể không cần thiết** —
+    MVP vẫn tạo section này mặc định để không bỏ sót trường hợp cải tạo có
+    đụng kết cấu (nâng tầng...); chủ thầu tự bỏ qua nếu không áp dụng. Đây
+    là lựa chọn "thà thừa còn hơn thiếu" nhất quán với nguyên tắc Founder.
+  - Vẫn chưa có Ground Truth cho móng không phải móng cọc (M3-001 mục 8.2)
+    — không ảnh hưởng thiết kế vì MVP không tính số cho section này, nhưng
+    danh mục dòng ở mục 5.1 hiện chỉ tham khảo được cấu trúc móng cọc từ
+    File 2 (chưa có ví dụ móng băng/đơn/bè để đối chiếu tên hạng mục).
 
 ---
 
 # 5. Placeholder Catalog
+
+## 5.1 Section "Kết cấu" — placeholder theo Founder Decision
+
+Danh mục dòng, tham khảo tên hạng mục từ File 2 `Ket cau` (M3-001 mục 4.1)
+— **chỉ mượn tên gọi, KHÔNG mượn cách tính/đơn giá định mức Nhà nước**:
+
+| Hạng mục | Đơn vị (tham khảo) | `quantitySource` |
+|---|---|---|
+| Ép cọc bê tông cốt thép | m | `needs_survey` |
+| Đào móng công trình | m³ | `needs_survey` |
+| Bê tông lót móng | m³ | `needs_survey` |
+| Bê tông móng | m³ | `needs_survey` |
+| Cốt thép móng | tấn | `needs_survey` |
+| Ván khuôn móng | m² | `needs_survey` |
+| Xây tường móng | m³ | `needs_survey` |
+| Giằng tường, dầm móng (bê tông + thép + ván khuôn) | m³/tấn/m² | `needs_survey` |
+| Bể nước, bể phốt (nếu có) | m³ | `needs_survey` |
+
+Tất cả: `quantity = null`, `amount = null`, `confidence = n/a`, `note` gợi ý
+"Chờ khảo sát địa chất và bản vẽ kết cấu — Founder bổ sung thủ công."
+
+## 5.2 Các nhóm placeholder khác (ngoài Kết cấu)
 
 Các dòng **luôn được tạo** (để chủ thầu thấy đủ hạng mục — đúng tinh thần
 "60-70% độ phủ") nhưng **không có số** vì Rule Engine không cover:
@@ -307,11 +374,13 @@ Các dòng **luôn được tạo** (để chủ thầu thấy đủ hạng mụ
 | Hạng mục | `quantitySource` | Vì sao |
 |---|---|---|
 | Diện tích tường (đo chính xác, không phải ước lượng R5) | `needs_measurement` | Cần bản vẽ mặt bằng chi tiết từng đoạn tường |
-| Ván khuôn (coppha) | `needs_measurement` | Suy từ hình học cấu kiện bê tông cụ thể |
-| Cốt thép (theo tấn, theo đường kính) | `needs_measurement` (nếu có bản vẽ kết cấu) hoặc `needs_survey` (nếu chưa) | Cần bản vẽ kết cấu chi tiết |
+| Ván khuôn (coppha) — phần thân, không phải móng | `needs_measurement` | Suy từ hình học cấu kiện bê tông cụ thể |
 | Dây điện (theo mét, theo tiết diện) | `needs_measurement` | Cần bản vẽ đi dây |
 | Ống nước (theo mét, theo đường kính) | `needs_measurement` | Cần bản vẽ đi ống |
-| Công tác móng (đào đất, ép cọc, bê tông móng) | `needs_survey` | Cần khảo sát địa chất + thiết kế móng (Rule R8) |
+| Cốt thép sàn/dầm (phần thân, không phải móng) | `needs_measurement` | Cần bản vẽ kết cấu chi tiết phần thân |
+
+Công tác móng (đào đất, ép cọc, bê tông móng, cốt thép móng...) đã liệt kê
+riêng ở mục 5.1 — không lặp lại ở đây.
 
 **Nguyên tắc hiển thị:** các dòng này xuất hiện trong đúng Section tương
 ứng (không dồn vào 1 chỗ), `quantity = null`, `unitPrice` **vẫn có thể có**
@@ -403,10 +472,9 @@ EstimateSettings (materialTier, hasArchitecturalDrawing,
 
 # 9. Câu hỏi cần Founder/ChatGPT xác nhận
 
-1. **Mục 3 không có section "Kết cấu/Móng"** (theo đúng File 1 không có,
-   và MVP target case "không hầm") — xác nhận MVP thực sự KHÔNG cần section
-   này, hay cần thêm 1 section "Kết cấu" chỉ gồm toàn dòng `needs_survey`
-   để chủ thầu không quên hạng mục này khi báo giá?
+1. ~~Mục 3 không có section "Kết cấu/Móng"~~ — **ĐÃ CHỐT bởi Founder
+   Decision:** giữ section `structure`, toàn bộ placeholder `needs_survey`.
+   Đã cập nhật mục 3, 3.1, 3.2, Rule R8, mục 5.1.
 2. **Các hệ số kinh nghiệm ở Rule R4/R5/R6** (0.9, 1.0, 2, 0.85, 18 bậc/tầng)
    là tôi suy luận từ kiến thức chung, **không kiểm chứng được bằng 2 file
    mẫu** (vì cả 2 file đo trực tiếp, không dùng hệ số). Founder có hệ số
