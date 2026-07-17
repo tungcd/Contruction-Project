@@ -1,4 +1,9 @@
-import type { Confidence, QuantitySource } from "@/lib/estimate/types";
+import type {
+  BOQSection,
+  Confidence,
+  EstimateDraft,
+  QuantitySource,
+} from "@/lib/estimate/types";
 
 export const quantitySourceLabel: Record<QuantitySource, string> = {
   rule_estimated: "Ước lượng theo rule",
@@ -44,4 +49,53 @@ export function recomputeAmount(
 ): number | null {
   if (quantity === null || unitPrice === null) return null;
   return round2(quantity * unitPrice);
+}
+
+/** Milestone Estimate MVP — Feature 4: subtotal 1 section (bỏ qua dòng amount=null). */
+export function sectionSubtotal(section: BOQSection): number {
+  return round2(
+    section.lines.reduce((sum, line) => sum + (line.amount ?? 0), 0),
+  );
+}
+
+export interface EstimateSummary {
+  total: number;
+  sectionSubtotals: { code: string; name: string; subtotal: number }[];
+  totalLines: number;
+  needsSurveyOrMeasurementCount: number;
+  userConfirmedCount: number;
+}
+
+/** Milestone Estimate MVP — Feature 4: tổng quan toàn bộ Draft. */
+export function buildEstimateSummary(draft: EstimateDraft): EstimateSummary {
+  let total = 0;
+  let totalLines = 0;
+  let needsSurveyOrMeasurementCount = 0;
+  let userConfirmedCount = 0;
+
+  const sectionSubtotals = draft.sections.map((section) => {
+    const subtotal = sectionSubtotal(section);
+    total += subtotal;
+    for (const line of section.lines) {
+      totalLines += 1;
+      if (
+        line.quantitySource === "needs_survey" ||
+        line.quantitySource === "needs_measurement"
+      ) {
+        needsSurveyOrMeasurementCount += 1;
+      }
+      if (line.quantitySource === "user_confirmed") {
+        userConfirmedCount += 1;
+      }
+    }
+    return { code: section.code, name: section.name, subtotal };
+  });
+
+  return {
+    total: round2(total),
+    sectionSubtotals,
+    totalLines,
+    needsSurveyOrMeasurementCount,
+    userConfirmedCount,
+  };
 }

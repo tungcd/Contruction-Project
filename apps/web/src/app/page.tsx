@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Building2 } from "lucide-react";
+import { Plus, Building2, Wallet } from "lucide-react";
 import type { CreateProjectInput } from "@acc/shared-types";
 import { projectService } from "@/services/project.service";
 import { Button } from "@/components/ui/button";
@@ -36,9 +37,16 @@ export default function DashboardPage() {
           <Building2 className="h-6 w-6 text-primary" />
           <h1 className="text-xl font-bold">AI Construction Copilot</h1>
         </div>
-        <Button onClick={() => setShowForm((s) => !s)}>
-          <Plus className="h-4 w-4" /> Tạo dự án mới
-        </Button>
+        <div className="flex items-center gap-2">
+          <Link href="/pricebooks">
+            <Button variant="outline">
+              <Wallet className="h-4 w-4" /> Bảng giá
+            </Button>
+          </Link>
+          <Button onClick={() => setShowForm((s) => !s)}>
+            <Plus className="h-4 w-4" /> Tạo dự án mới
+          </Button>
+        </div>
       </header>
 
       {showForm && (

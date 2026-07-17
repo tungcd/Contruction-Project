@@ -56,7 +56,7 @@ export async function handle(
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-9a-f][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-export function assertUuid(id: string): string {
-  if (!UUID_RE.test(id)) throw new HttpError("ID dự án không hợp lệ", 400);
+export function assertUuid(id: string, message = "ID không hợp lệ"): string {
+  if (!UUID_RE.test(id)) throw new HttpError(message, 400);
   return id;
 }

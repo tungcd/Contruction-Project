@@ -22,6 +22,19 @@ enum MessageRole {
   system
 }
 
+enum EstimateDraftStatus {
+  draft
+  confirmed
+}
+
+enum MaterialTier {
+  standard
+  mid
+  premium
+  /// Giá không phân biệt phân khúc (Design M3-002 mục 6.2).
+  all
+}
+
 model Project {
   id            String        @id @default(uuid())
   name          String
@@ -29,10 +42,11 @@ model Project {
   customerPhone String?
   status        ProjectStatus @default(Discovery)
 
-  requirement   Requirement?
-  conversations Conversation[]
-  brief         ProjectBrief?
-  histories     History[]
+  requirement    Requirement?
+  conversations  Conversation[]
+  brief          ProjectBrief?
+  histories      History[]
+  estimateDrafts EstimateDraft[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -79,4 +93,64 @@ model History {
   createdAt DateTime @default(now())
 
   @@index([projectId])
+}
+
+/// Milestone Estimate MVP — Feature 1 (Persist) + Feature 2 (History).
+/// Tên entity trong thiết kế Design-M3-002 mục 1.3 là `BOQDraft`; đặt lại
+/// `EstimateDraft` ở đây chỉ để khớp tên type JSON đã có
+/// (apps/web/src/lib/estimate/types.ts) và có accessor Prisma đẹp hơn
+/// (`prisma.estimateDraft` thay vì `prisma.bOQDraft`) — KHÔNG đổi field/ý
+/// nghĩa nào so với thiết kế đã duyệt.
+/// Nhiều bản/project, KHÔNG ghi đè như Requirement (câu hỏi 4, M3-002 mục 9
+/// — chọn "giữ lịch sử" vì Milestone Estimate MVP yêu cầu Estimate History).
+model EstimateDraft {
+  id        String              @id @default(uuid())
+  projectId String
+  project   Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  version   Int
+  status    EstimateDraftStatus @default(draft)
+  /// Không có auth ở MVP — text tự do, server luôn ghi "Founder" (Feature 2).
+  editedBy  String?
+  /// Snapshot Requirement.updatedAt lúc lưu Draft — cảnh báo "Requirement đã
+  /// đổi từ lúc tạo Draft này" (Design M3-002 mục 2.3). Đọc từ DB phía
+  /// server, KHÔNG nhận từ client.
+  generatedFromRequirementVersion DateTime
+  /// Toàn bộ EstimateDraft JSON (priceBookId, priceBookIsDemo, sections[]...)
+  /// — đúng contract apps/web/src/lib/estimate/types.ts, không parse lại ở DB.
+  data      Json
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+
+  @@unique([projectId, version])
+  @@index([projectId])
+}
+
+/// Bảng giá do chủ thầu tự quản lý (Design M3-002 mục 6). KHÔNG gắn 1
+/// Project cụ thể — 1 nhà thầu dùng chung nhiều bảng giá cho nhiều dự án.
+model PriceBook {
+  id            String           @id @default(uuid())
+  name          String
+  pricingRegion String
+  effectiveFrom DateTime
+  /// true = bảng giá demo dựng sẵn để review Rule Engine (M3-003 Founder
+  /// Decision) — KHÔNG phải giá thật, không dùng báo giá khách.
+  isDemo        Boolean          @default(false)
+  entries       PriceBookEntry[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PriceBookEntry {
+  id           String       @id @default(uuid())
+  priceBookId  String
+  priceBook    PriceBook    @relation(fields: [priceBookId], references: [id], onDelete: Cascade)
+  itemCode     String
+  itemName     String
+  unit         String
+  materialTier MaterialTier
+  unitPrice    Float
+  updatedAt    DateTime     @updatedAt
+
+  @@index([priceBookId])
 }

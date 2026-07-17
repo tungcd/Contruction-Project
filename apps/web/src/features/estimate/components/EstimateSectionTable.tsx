@@ -9,21 +9,29 @@ import {
   formatVnd,
   quantitySourceBadgeClass,
   quantitySourceLabel,
+  sectionSubtotal,
 } from "../estimate-view";
 
 interface Props {
   section: BOQSection;
   onChangeLine: (
     lineIndex: number,
-    patch: { quantity?: number | null; unitPrice?: number | null },
+    patch: {
+      quantity?: number | null;
+      unitPrice?: number | null;
+      note?: string | null;
+    },
   ) => void;
 }
 
 export function EstimateSectionTable({ section, onChangeLine }: Props) {
   return (
     <Card>
-      <CardHeader className="border-b">
+      <CardHeader className="flex-row items-center justify-between border-b">
         <CardTitle className="text-sm">{section.name}</CardTitle>
+        <span className="text-sm font-medium text-muted-foreground">
+          Tạm tính: {formatVnd(sectionSubtotal(section))}
+        </span>
       </CardHeader>
       <CardContent className="overflow-x-auto p-0">
         <table className="w-full text-sm">
@@ -91,7 +99,18 @@ export function EstimateSectionTable({ section, onChangeLine }: Props) {
                     {confidenceLabel[line.confidence]}
                   </Badge>
                 </td>
-                <td className="max-w-xs p-2 text-xs text-muted-foreground">{line.note}</td>
+                <td className="p-2">
+                  <textarea
+                    rows={2}
+                    className="w-48 rounded border px-2 py-1 text-xs text-muted-foreground"
+                    value={line.note ?? ""}
+                    onChange={(e) =>
+                      onChangeLine(lineIndex, {
+                        note: e.target.value === "" ? null : e.target.value,
+                      })
+                    }
+                  />
+                </td>
               </tr>
             ))}
           </tbody>
