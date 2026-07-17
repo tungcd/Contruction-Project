@@ -7,8 +7,9 @@
 
 > ⚠️ Data Model đã được Founder **đóng băng**. Không sửa nếu chưa có quyết định
 > mở băng chính thức. Lịch sử review & quyết định nằm trong
-> `documents/CHATGPT_CONTEXT/` (Data-Model-Review, P0-Final-Proposal,
-> Final-Data-Model, và các Founder Decision).
+> `documents/CHATGPT_CONTEXT/2026-07/2026-W29/2026-07-16/` (Data-Model-Review,
+> P0-Final-Proposal, Final-Data-Model, và các Founder Decision). Thư mục
+> `CHATGPT_CONTEXT` tổ chức theo `<năm-tháng>/<tuần ISO>/<ngày>/file.md`.
 >
 > Requirement Score và Readiness là **hai khái niệm độc lập** — xem mục 5.3.1.
 

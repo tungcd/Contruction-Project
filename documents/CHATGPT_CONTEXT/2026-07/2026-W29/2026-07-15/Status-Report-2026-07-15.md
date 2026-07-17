@@ -302,7 +302,7 @@ npm run test:regression    # 8 case
 ```
 
 Tài liệu liên quan:
-- `documents/CHATGPT_CONTEXT/chatgpt.md` — kiến trúc hiện hành (nguồn thắng)
-- `documents/CHATGPT_CONTEXT/Bug-Report-Response-Bedroom-Count.md` — phản hồi bug P0
+- `documents/CHATGPT_CONTEXT/2026-07/2026-W29/2026-07-15/chatgpt.md` — kiến trúc hiện hành (nguồn thắng)
+- `documents/CHATGPT_CONTEXT/2026-07/2026-W29/2026-07-15/Bug-Report-Response-Bedroom-Count.md` — phản hồi bug P0
 - `apps/api/README.md` — vì sao NestJS bị đóng băng
 - `rule.md` — Team Working Agreement
