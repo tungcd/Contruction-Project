@@ -9,6 +9,7 @@ import { pricebookService, type PriceBookEntryInput } from "@/services/pricebook
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatThousandsInput, parseThousandsInput } from "@/lib/utils";
 
 const MATERIAL_TIERS: PriceBookEntryInput["materialTier"][] = [
   "standard",
@@ -206,12 +207,12 @@ export default function PriceBookDetailPage() {
                   </td>
                   <td className="p-2 text-right">
                     <input
-                      type="number"
-                      step="any"
+                      type="text"
+                      inputMode="numeric"
                       className="w-28 rounded border px-2 py-1 text-right"
-                      value={entry.unitPrice}
+                      value={formatThousandsInput(entry.unitPrice)}
                       onChange={(e) =>
-                        updateEntry(index, { unitPrice: Number(e.target.value) || 0 })
+                        updateEntry(index, { unitPrice: parseThousandsInput(e.target.value) ?? 0 })
                       }
                     />
                   </td>

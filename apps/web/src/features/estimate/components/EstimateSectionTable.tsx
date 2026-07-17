@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { formatThousandsInput, parseThousandsInput } from "@/lib/utils";
 import type { BOQSection } from "@/lib/estimate/types";
 import {
   confidenceBadgeClass,
@@ -72,20 +73,15 @@ export function EstimateSectionTable({ section, onChangeLine }: Props) {
                 </td>
                 <td className="p-2 text-right">
                   <input
-                    type="number"
-                    step="any"
+                    type="text"
+                    inputMode="numeric"
                     className="w-28 rounded border px-2 py-1 text-right"
-                    value={line.unitPrice ?? ""}
-                    onChange={(e) => {
-                      const raw = e.target.value;
-                      if (raw === "") {
-                        onChangeLine(lineIndex, { unitPrice: null });
-                        return;
-                      }
-                      const parsed = Number(raw);
-                      if (Number.isNaN(parsed)) return;
-                      onChangeLine(lineIndex, { unitPrice: parsed });
-                    }}
+                    value={formatThousandsInput(line.unitPrice)}
+                    onChange={(e) =>
+                      onChangeLine(lineIndex, {
+                        unitPrice: parseThousandsInput(e.target.value),
+                      })
+                    }
                   />
                 </td>
                 <td className="p-2 text-right font-medium">{formatVnd(line.amount)}</td>
