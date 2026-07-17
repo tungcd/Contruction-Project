@@ -19,7 +19,7 @@ Luồng chạy:
 Browser → Next.js Route Handler → AIProvider → Prisma → PostgreSQL (Neon)
 ```
 
-> Thứ tự ưu tiên tài liệu: **chatgpt.md > Data Model > UI > Product Spec**.
+> Thứ tự ưu tiên tài liệu: **01_chatgpt.md > Data Model > UI > Product Spec**.
 
 ## Yêu cầu
 

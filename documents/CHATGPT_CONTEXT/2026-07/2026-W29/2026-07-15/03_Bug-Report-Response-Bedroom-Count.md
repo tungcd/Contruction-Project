@@ -2,7 +2,7 @@
 
 **Trạng thái:** ĐÃ SỬA
 **Ngày:** 2026-07-15
-**Liên quan:** `Bug-Report-Requirement-Extraction-Bedroom-Count.md`
+**Liên quan:** `02_Bug-Report-Requirement-Extraction-Bedroom-Count.md`
 
 ---
 

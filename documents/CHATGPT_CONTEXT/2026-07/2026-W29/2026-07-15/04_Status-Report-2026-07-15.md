@@ -14,7 +14,7 @@
 
 - **Sprint 1, 2, 3 đã xong.** MVP chạy được end-to-end: tạo dự án → chat →
   AI trích xuất requirement → Score tự tăng → sinh Brief.
-- **Kiến trúc đã đổi** sang Next.js fullstack theo `chatgpt.md`. NestJS đóng băng.
+- **Kiến trúc đã đổi** sang Next.js fullstack theo `01_chatgpt.md`. NestJS đóng băng.
 - **Regression 8/8 pass** trên cả `mock` và `openai`.
 - **Còn 4 việc tôi đã tự quyết mà lẽ ra phải xin duyệt** → xem mục 7.
 - **Sprint 4 chưa bắt đầu**, chờ phê duyệt scope → xem mục 8.
@@ -107,10 +107,10 @@ apps/web/src/
 | Rule 3 — không thêm abstraction thừa | ✅ Không Redis/Queue/Event Bus/CQRS |
 | Rule 4 — business rule nằm trong code | ✅ Score, missing, merge, brief-ready đều ở code |
 | Rule 5 — AI không tính toán business | ✅ AI chỉ extract + summary; merge/score do code |
-| `chatgpt.md` — không phụ thuộc trực tiếp OpenAI | ✅ Qua interface `AIProvider` |
-| `chatgpt.md` — key không ra frontend | ✅ Chỉ gọi phía server |
-| `chatgpt.md` — 1 AI call/message | ✅ |
-| `chatgpt.md` — hỗ trợ mock | ✅ |
+| `01_chatgpt.md` — không phụ thuộc trực tiếp OpenAI | ✅ Qua interface `AIProvider` |
+| `01_chatgpt.md` — key không ra frontend | ✅ Chỉ gọi phía server |
+| `01_chatgpt.md` — 1 AI call/message | ✅ |
+| `01_chatgpt.md` — hỗ trợ mock | ✅ |
 
 ---
 
@@ -138,12 +138,12 @@ tách khối lượng. Score 76% dựng trên số bịa nguy hiểm hơn Score 
 
 ## Đính chính Bug Report của ChatGPT
 
-Báo cáo `Bug-Report-Requirement-Extraction-Bedroom-Count.md` quy lỗi cho AI và
+Báo cáo `02_Bug-Report-Requirement-Extraction-Bedroom-Count.md` quy lỗi cho AI và
 đề nghị sửa prompt. **Chẩn đoán sai địa chỉ**: app khi đó chạy `AI_PROVIDER=mock`
 nên không có AI nào cả — thủ phạm là regex.
 
 Đã kiểm chứng: OpenAI thật cho `bedrooms = 4` **đúng ngay từ đầu, không cần sửa
-prompt**. Chi tiết ở `Bug-Report-Response-Bedroom-Count.md`.
+prompt**. Chi tiết ở `03_Bug-Report-Response-Bedroom-Count.md`.
 
 **Đề nghị ChatGPT ghi nhận:** không đánh giá chất lượng trích xuất bằng mock.
 Đã thêm banner cảnh báo trong UI để tránh lặp lại (xem mục 7.4).
@@ -302,7 +302,7 @@ npm run test:regression    # 8 case
 ```
 
 Tài liệu liên quan:
-- `documents/CHATGPT_CONTEXT/2026-07/2026-W29/2026-07-15/chatgpt.md` — kiến trúc hiện hành (nguồn thắng)
-- `documents/CHATGPT_CONTEXT/2026-07/2026-W29/2026-07-15/Bug-Report-Response-Bedroom-Count.md` — phản hồi bug P0
+- `documents/CHATGPT_CONTEXT/2026-07/2026-W29/2026-07-15/01_chatgpt.md` — kiến trúc hiện hành (nguồn thắng)
+- `documents/CHATGPT_CONTEXT/2026-07/2026-W29/2026-07-15/03_Bug-Report-Response-Bedroom-Count.md` — phản hồi bug P0
 - `apps/api/README.md` — vì sao NestJS bị đóng băng
 - `rule.md` — Team Working Agreement

@@ -6,7 +6,7 @@
 **Nguồn quyết định:** `Founder / PO Decisions — Data Model Review`
 **Trạng thái:** ĐỀ XUẤT CUỐI — **chưa implement dòng code nào.** Chờ Founder duyệt danh sách P0 ở mục 8.
 
-> Tài liệu này thay thế mục 5 (danh sách P0) trong `Data-Model-Review-2026-07-16.md`,
+> Tài liệu này thay thế mục 5 (danh sách P0) trong `02_Data-Model-Review-2026-07-16.md`,
 > cập nhật theo đúng các quyết định đã ban hành. Các phần không bị quyết định đụng tới
 > vẫn giữ nguyên và được đánh dấu "chờ xác nhận".
 

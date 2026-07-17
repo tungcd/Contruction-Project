@@ -4,7 +4,7 @@
 **Người thực hiện:** Claude Code (Software Engineer)
 **Gửi:** Founder + ChatGPT
 **Nguồn duyệt:** Founder Decision (approve toàn bộ 5 quyết định trong
-`Completion-Report-M3-003-Estimate-Engine.md`, kèm 2 yêu cầu code + 1 ghi
+`03_Completion-Report-M3-003-Estimate-Engine.md`, kèm 2 yêu cầu code + 1 ghi
 chú tech debt)
 **Trạng thái:** Đã áp dụng xong. Commit `a1c5b7d`.
 
@@ -83,7 +83,7 @@ loại vì test dùng `constructionScope=turnkey`, không phải
 
 Trong lúc verify, tôi **kiểm tra port 3000 trống trước khi xoá `.next`** —
 áp dụng bài học từ sự cố lần trước (đã báo cáo ở
-`Completion-Report-M3-003-Estimate-Engine.md` mục 6). Không có sự cố nào
+`03_Completion-Report-M3-003-Estimate-Engine.md` mục 6). Không có sự cố nào
 lần này. Khi xong việc, chỉ dừng đúng PID server tôi tự khởi động, không
 đụng process nào khác.
 

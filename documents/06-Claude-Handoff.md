@@ -6,8 +6,8 @@
 **Goal:** Đủ thông tin để bắt đầu triển khai MVP mà không phải đoán
 nghiệp vụ.
 
-> ⚠️ **ĐỌC `chatgpt.md` TRƯỚC TIÊN.** Kiến trúc đã đổi sang **Next.js
-> fullstack, không dùng NestJS**. `chatgpt.md` là nguồn thắng mọi tài liệu khác.
+> ⚠️ **ĐỌC `01_chatgpt.md` TRƯỚC TIÊN.** Kiến trúc đã đổi sang **Next.js
+> fullstack, không dùng NestJS**. `01_chatgpt.md` là nguồn thắng mọi tài liệu khác.
 
 ------------------------------------------------------------------------
 
@@ -43,7 +43,7 @@ Khi kết thúc MVP, người dùng có thể:
 
 # 3. Tài liệu phải đọc theo thứ tự
 
-1.  chatgpt.md ← kiến trúc hiện hành, đọc đầu tiên
+1.  01_chatgpt.md (documents/CHATGPT_CONTEXT/2026-07/2026-W29/2026-07-15/) ← kiến trúc hiện hành, đọc đầu tiên
 2.  01-Product-Spec-Lite.md
 3.  02-UI-Flow.md
 4.  03-Data-Model.md
@@ -52,9 +52,9 @@ Khi kết thúc MVP, người dùng có thể:
 
 Nếu có mâu thuẫn:
 
-    chatgpt.md > Data Model > UI > Product Spec
+    01_chatgpt.md > Data Model > UI > Product Spec
 
-`chatgpt.md` thắng về **kiến trúc & công nghệ**. Data Model vẫn thắng về
+`01_chatgpt.md` thắng về **kiến trúc & công nghệ**. Data Model vẫn thắng về
 **cấu trúc dữ liệu**.
 
 ------------------------------------------------------------------------

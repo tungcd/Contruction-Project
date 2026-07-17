@@ -6,7 +6,7 @@
 **Trạng thái:** ĐỀ XUẤT THIẾT KẾ — đã cập nhật theo 1 vòng Founder Decision
 (giữ section Kết cấu, xem mục 0). Còn 3 câu hỏi mở ở mục 9. **Không có dòng
 code nào được viết.**
-**Tiền đề:** `Analysis-M3-001-BOQ-Mapping-Engine.md` + Founder Decisions (M3-002)
+**Tiền đề:** `01_Analysis-M3-001-BOQ-Mapping-Engine.md` + Founder Decisions (M3-002)
 
 > Theo đúng ticket: "Do not code." Tài liệu này chỉ là data contract + rule
 > catalog để Founder/ChatGPT duyệt trước khi có task implementation riêng.

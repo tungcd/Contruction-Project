@@ -3,7 +3,7 @@
 **Ngày:** 2026-07-17
 **Người thực hiện:** Claude Code (Software Engineer)
 **Gửi:** Founder + ChatGPT
-**Nguồn thiết kế:** `Design-M3-002-BOQ-Draft-Schema-Rule-Catalog.md` (đã có 1 vòng Founder Decision)
+**Nguồn thiết kế:** `02_Design-M3-002-BOQ-Draft-Schema-Rule-Catalog.md` (đã có 1 vòng Founder Decision)
 **Trạng thái:** Implementation xong theo đúng Scope ticket M3-003.
 
 ---

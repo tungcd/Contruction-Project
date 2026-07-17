@@ -3,7 +3,7 @@
 **Ngày:** 2026-07-16
 **Người thực hiện:** Claude Code (Software Engineer)
 **Gửi:** Founder + ChatGPT
-**Nguồn duyệt:** `Implementation-Task-DataModel-2026-07-16.md` — Task Approval (APPROVED WITH CONDITIONS, 8 điều kiện)
+**Nguồn duyệt:** `05_Implementation-Task-DataModel-2026-07-16.md` — Task Approval (APPROVED WITH CONDITIONS, 8 điều kiện)
 **Trạng thái:** Implementation xong theo Scope đã duyệt. **Dừng lại chờ review, KHÔNG bắt đầu Sprint 4.**
 
 ---
@@ -135,7 +135,7 @@ budget range, enum handling — tất cả đúng 100% qua toàn bộ các lần
 **Tôi không tinh chỉnh thêm prompt trong task này** vì hai lý do: (1) tránh
 overfitting prompt theo đúng câu test của tôi thay vì cải thiện tổng quát,
 (2) `reasoning.effort = low` đã được duyệt riêng trước đó
-(`chatgpt-report-1.md` Action Item 5) — đổi lại ảnh hưởng tới quyết định đó,
+(`01_chatgpt-report-1.md` Action Item 5) — đổi lại ảnh hưởng tới quyết định đó,
 không thuộc phạm vi task này. Ghi nhận là hạn chế đã biết ở mục 6.
 
 ## 4.4 Bug tooling tự phát hiện — đã vá
@@ -257,7 +257,7 @@ Nêu ra để không ai nhầm đây là lỗi thật khi tự test lại bằng
 
 # 9. Xác nhận phạm vi
 
-- ✅ Đúng Scope đã duyệt trong `Implementation-Task-DataModel-2026-07-16.md`.
+- ✅ Đúng Scope đã duyệt trong `05_Implementation-Task-DataModel-2026-07-16.md`.
 - ✅ Không code gì thuộc Out of Scope (không viết logic quantity/pricing,
   không xây luồng Brief-by-AI mới, không migration tương thích ngược).
 - ✅ Cả 8 điều kiện Task Approval đã implement và verify bằng bằng chứng thật.

@@ -6,7 +6,7 @@
 
 > ⚠️ **KIẾN TRÚC ĐÃ THAY ĐỔI.** Từ bản v0.2, MVP dùng **Next.js fullstack**
 > (Route Handlers), **KHÔNG dùng NestJS**. Nguồn sự thật về kiến trúc là
-> `chatgpt.md`. Nếu tài liệu này mâu thuẫn với `chatgpt.md`, **`chatgpt.md` thắng**.
+> `01_chatgpt.md`. Nếu tài liệu này mâu thuẫn với `01_chatgpt.md`, **`01_chatgpt.md` thắng**.
 > Thư mục `apps/api` (NestJS) được giữ lại làm backend tương lai nhưng đã
 > đóng băng — không code thêm, không nằm trong luồng chạy.
 
