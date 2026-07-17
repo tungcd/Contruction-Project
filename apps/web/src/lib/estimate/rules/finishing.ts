@@ -15,7 +15,9 @@ const LOW_CONFIDENCE_NOTE =
 /**
  * Rule R3 — `bedrooms` → cửa phòng ngủ (M3-002 mục 4).
  * Confidence: medium — số lượng đáng tin, kích thước/vật liệu là giả định.
- * Known limitations: không tính khoá cửa/phụ kiện riêng (gộp vào đơn giá cửa).
+ * Founder Decision (M3-003 completion review, mục 5.4): CHỐT gộp khoá cửa
+ * + phụ kiện vào đơn giá cửa, không tách dòng riêng — không phải lựa chọn
+ * tạm thời của prototype.
  */
 export function ruleBedroomDoors(
   requirement: Requirement,

@@ -1,7 +1,7 @@
 import type { PriceBook } from "../types";
 
 /**
- * DỮ LIỆU MẪU — CHỈ ĐỂ FOUNDER REVIEW ENGINE (Ticket M3-003).
+ * DỮ LIỆU DEMO — CHỈ ĐỂ FOUNDER REVIEW ENGINE (Ticket M3-003).
  *
  * KHÔNG PHẢI giá thị trường thật. Không lấy từ scraping, không do AI sinh
  * (đúng M3-002 mục 6.3: "Không scraping, không AI sinh giá"). Đơn giá lấy
@@ -9,13 +9,16 @@ import type { PriceBook } from "../types";
  * ra không toàn số `null`, giúp Founder review hình dạng dữ liệu dễ hơn.
  *
  * PriceBook thật do chủ thầu tự nhập/import (M3-002 mục 6.3) — KHÔNG dùng
- * file này cho môi trường thật.
+ * file này cho môi trường thật. `isDemo: true` để engine echo lại trong
+ * `EstimateDraft.priceBookIsDemo` — bất kỳ ai đọc JSON output đều thấy
+ * ngay, không cần lục vào PriceBook (Founder Decision, M3-003 mục 5).
  */
-export const SAMPLE_PRICE_BOOK: PriceBook = {
-  id: "sample-price-book",
-  name: "[MẪU] Bảng giá thử nghiệm — không phải giá thật",
+export const DEMO_PRICE_BOOK: PriceBook = {
+  id: "demo-price-book",
+  name: "[DEMO] Bảng giá thử nghiệm — không phải giá thật",
   pricingRegion: "Hà Nội",
   effectiveFrom: "2026-01-01",
+  isDemo: true,
   entries: [
     // --- Thiết bị vệ sinh (R1) ---
     { itemCode: "sanitary.toilet", itemName: "Bồn cầu", unit: "bộ", materialTier: "all", unitPrice: 2_000_000, updatedAt: "2026-01-01" },

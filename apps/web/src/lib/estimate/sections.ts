@@ -37,10 +37,10 @@ const SECTION_NAMES: Record<SectionCode, string> = {
  * electrical LUÔN bật bất kể constructionScope. Chỉ sanitary_equipment phụ
  * thuộc scope (chỉ bật ở turnkey_with_interior — "nội thất/thiết bị").
  *
- * air_conditioning KHÔNG có trong prototype này: M3-002 mục 3 ghi rõ đây là
- * section "tuỳ chọn, hỏi thêm chủ thầu, không map field Requirement nào
- * trực tiếp" — không có field/EstimateSettings nào hiện tại để engine tự
- * quyết định bật/tắt, nên bỏ qua thay vì đoán. Xem completion report.
+ * air_conditioning KHÔNG có ở đây — Founder Decision (M3-003 completion
+ * review, mục 5.2): bỏ hẳn khỏi MVP, chuyển sang backlog. Đây là quyết
+ * định CHỐT, không phải gap tạm thời của prototype. Không tự thêm lại nếu
+ * chưa có quyết định mới về field/EstimateSettings điều khiển nó.
  */
 function isSectionEnabled(code: SectionCode, requirement: Requirement): boolean {
   if (code === "sanitary_equipment") {

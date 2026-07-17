@@ -38,6 +38,12 @@ export interface PriceBook {
   pricingRegion: string;
   effectiveFrom: string;
   entries: PriceBookEntry[];
+  /**
+   * Founder Decision (M3-003 completion review): đánh dấu rõ bảng giá demo
+   * để tránh dùng nhầm vào báo giá thật. `true` = giá bịa để review Engine,
+   * KHÔNG phải giá thị trường.
+   */
+  isDemo: boolean;
 }
 
 export type QuantitySource =
@@ -55,7 +61,9 @@ export type SectionCode =
   | "sanitary_equipment"
   | "plumbing"
   | "electrical";
-// air_conditioning CHƯA có trong prototype này — xem ghi chú trong engine.ts.
+// air_conditioning: Founder Decision — bỏ hẳn khỏi MVP, chuyển sang backlog
+// (không phải gap tạm thời của prototype). Không thêm lại nếu chưa có
+// quyết định mới về field/EstimateSettings nào điều khiển nó.
 
 export interface BOQDraftLine {
   code: string;
@@ -85,5 +93,13 @@ export interface BOQSection {
 
 export interface EstimateDraft {
   generatedAt: string;
+  /**
+   * Echo lại từ PriceBook đã dùng — để BẤT KỲ AI đọc JSON output cũng thấy
+   * ngay có phải giá demo hay không, không phải lục vào PriceBook riêng.
+   * Founder Decision (M3-003 completion review, mục 5): "tránh dùng nhầm
+   * vào production".
+   */
+  priceBookId: string;
+  priceBookIsDemo: boolean;
   sections: BOQSection[];
 }

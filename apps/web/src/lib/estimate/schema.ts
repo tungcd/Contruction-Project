@@ -32,6 +32,9 @@ export const PriceBookInputSchema = z.object({
   pricingRegion: z.string(),
   effectiveFrom: z.string(),
   entries: z.array(PriceBookEntrySchema),
+  // PriceBook thật do Founder tự gửi lên không cần khai báo field này —
+  // mặc định false (không phải demo). Chỉ DEMO_PRICE_BOOK mới = true.
+  isDemo: z.boolean().default(false),
 });
 
 export const EstimateRequestSchema = z.object({
