@@ -21,11 +21,13 @@ export const DEMO_PRICE_BOOK: PriceBook = {
   isDemo: true,
   entries: [
     // --- Thiết bị vệ sinh (R1) ---
+    // M3-008: itemCode đổi theo Business Code taxonomy mới (xem
+    // rules/sanitaryEquipment.ts) — shower_set -> shower, towel_rack -> accessories.
     { itemCode: "sanitary.toilet", itemName: "Bồn cầu", unit: "bộ", materialTier: "all", unitPrice: 2_000_000, updatedAt: "2026-01-01" },
-    { itemCode: "sanitary.shower_set", itemName: "Sen cây / vòi sen", unit: "bộ", materialTier: "all", unitPrice: 1_800_000, updatedAt: "2026-01-01" },
+    { itemCode: "sanitary.shower", itemName: "Sen cây / vòi sen", unit: "bộ", materialTier: "all", unitPrice: 1_800_000, updatedAt: "2026-01-01" },
     { itemCode: "sanitary.lavabo", itemName: "Lavabo", unit: "bộ", materialTier: "all", unitPrice: 1_200_000, updatedAt: "2026-01-01" },
     { itemCode: "sanitary.bidet_spray", itemName: "Vòi xịt", unit: "bộ", materialTier: "all", unitPrice: 200_000, updatedAt: "2026-01-01" },
-    { itemCode: "sanitary.towel_rack", itemName: "Giá treo khăn", unit: "bộ", materialTier: "all", unitPrice: 350_000, updatedAt: "2026-01-01" },
+    { itemCode: "sanitary.accessories", itemName: "Giá treo khăn", unit: "bộ", materialTier: "all", unitPrice: 350_000, updatedAt: "2026-01-01" },
     { itemCode: "sanitary.floor_drain", itemName: "Thoát sàn", unit: "bộ", materialTier: "all", unitPrice: 100_000, updatedAt: "2026-01-01" },
 
     // --- Thiết bị bếp (R2) ---
@@ -33,36 +35,43 @@ export const DEMO_PRICE_BOOK: PriceBook = {
     { itemCode: "kitchen.faucet", itemName: "Vòi rửa", unit: "bộ", materialTier: "all", unitPrice: 1_000_000, updatedAt: "2026-01-01" },
 
     // --- Cửa phòng ngủ (R3) — có phân biệt materialTier để demo tra cứu tier ---
-    { itemCode: "finishing.bedroom_door", itemName: "Cửa đi phòng ngủ", unit: "bộ", materialTier: "standard", unitPrice: 2_500_000, updatedAt: "2026-01-01" },
-    { itemCode: "finishing.bedroom_door", itemName: "Cửa đi phòng ngủ", unit: "bộ", materialTier: "mid", unitPrice: 3_300_000, updatedAt: "2026-01-01" },
-    { itemCode: "finishing.bedroom_door", itemName: "Cửa đi phòng ngủ", unit: "bộ", materialTier: "premium", unitPrice: 4_500_000, updatedAt: "2026-01-01" },
+    { itemCode: "door.bedroom", itemName: "Cửa đi phòng ngủ", unit: "bộ", materialTier: "standard", unitPrice: 2_500_000, updatedAt: "2026-01-01" },
+    { itemCode: "door.bedroom", itemName: "Cửa đi phòng ngủ", unit: "bộ", materialTier: "mid", unitPrice: 3_300_000, updatedAt: "2026-01-01" },
+    { itemCode: "door.bedroom", itemName: "Cửa đi phòng ngủ", unit: "bộ", materialTier: "premium", unitPrice: 4_500_000, updatedAt: "2026-01-01" },
 
     // --- Lát nền (R4) ---
-    { itemCode: "finishing.floor_tile", itemName: "Gạch lát nền", unit: "m2", materialTier: "standard", unitPrice: 350_000, updatedAt: "2026-01-01" },
-    { itemCode: "finishing.floor_tile", itemName: "Gạch lát nền", unit: "m2", materialTier: "mid", unitPrice: 420_000, updatedAt: "2026-01-01" },
-    { itemCode: "finishing.floor_tile", itemName: "Gạch lát nền", unit: "m2", materialTier: "premium", unitPrice: 600_000, updatedAt: "2026-01-01" },
+    { itemCode: "flooring.tile_600x600", itemName: "Gạch lát nền", unit: "m2", materialTier: "standard", unitPrice: 350_000, updatedAt: "2026-01-01" },
+    { itemCode: "flooring.tile_600x600", itemName: "Gạch lát nền", unit: "m2", materialTier: "mid", unitPrice: 420_000, updatedAt: "2026-01-01" },
+    { itemCode: "flooring.tile_600x600", itemName: "Gạch lát nền", unit: "m2", materialTier: "premium", unitPrice: 600_000, updatedAt: "2026-01-01" },
 
-    // --- Tường / trát / sơn (R5) ---
-    { itemCode: "construction.wall_masonry", itemName: "Xây tường", unit: "m2", materialTier: "all", unitPrice: 460_000, updatedAt: "2026-01-01" },
-    { itemCode: "finishing.plaster", itemName: "Trát tường", unit: "m2", materialTier: "all", unitPrice: 100_000, updatedAt: "2026-01-01" },
-    { itemCode: "finishing.paint", itemName: "Sơn nước", unit: "m2", materialTier: "standard", unitPrice: 65_000, updatedAt: "2026-01-01" },
+    // --- Tường / trát / sơn (R5) — M3-008: tách trong/ngoài theo Business Code mới ---
+    { itemCode: "masonry.wall_110", itemName: "Xây tường 110", unit: "m2", materialTier: "all", unitPrice: 460_000, updatedAt: "2026-01-01" },
+    { itemCode: "plaster.interior_wall", itemName: "Trát tường trong nhà", unit: "m2", materialTier: "all", unitPrice: 100_000, updatedAt: "2026-01-01" },
+    { itemCode: "plaster.exterior_wall", itemName: "Trát tường ngoài nhà", unit: "m2", materialTier: "all", unitPrice: 115_000, updatedAt: "2026-01-01" },
+    { itemCode: "paint.interior", itemName: "Sơn nước trong nhà", unit: "m2", materialTier: "standard", unitPrice: 65_000, updatedAt: "2026-01-01" },
+    { itemCode: "paint.exterior", itemName: "Sơn nước ngoài nhà", unit: "m2", materialTier: "standard", unitPrice: 75_000, updatedAt: "2026-01-01" },
 
     // --- Cầu thang (R6) ---
-    { itemCode: "finishing.stair_steps", itemName: "Bậc cầu thang", unit: "bậc", materialTier: "all", unitPrice: 700_000, updatedAt: "2026-01-01" },
+    // Cố tình KHÔNG có giá — Standard PriceBook V1 cũng không có (chỉ có giá
+    // theo m3 bê tông, khác nghiệp vụ với "bậc" — xem finishing.ts).
+    // itemCode: "stair.step_count" — để trống có chủ đích.
 
-    // --- Kết cấu (placeholder — có giá tham khảo, chưa có khối lượng) ---
-    { itemCode: "structure.pile_driving", itemName: "Ép cọc bê tông cốt thép", unit: "m", materialTier: "all", unitPrice: 210_000, updatedAt: "2026-01-01" },
-    { itemCode: "structure.footing_concrete", itemName: "Bê tông móng", unit: "m3", materialTier: "all", unitPrice: 1_700_000, updatedAt: "2026-01-01" },
-    { itemCode: "structure.footing_rebar", itemName: "Cốt thép móng", unit: "tấn", materialTier: "all", unitPrice: 19_800_000, updatedAt: "2026-01-01" },
-    // Cố tình KHÔNG thêm giá cho các dòng Kết cấu còn lại (đào móng, ván
-    // khuôn, xây móng, giằng, bể nước, bê tông lót) — để JSON demo có cả
+    // --- Kết cấu / Móng (placeholder — có giá tham khảo, chưa có khối lượng) ---
+    { itemCode: "foundation.precast_pile_200x200.driving", itemName: "Ép cọc bê tông cốt thép 200x200", unit: "m", materialTier: "all", unitPrice: 210_000, updatedAt: "2026-01-01" },
+    { itemCode: "foundation.concrete.m250", itemName: "Bê tông móng M250", unit: "m3", materialTier: "all", unitPrice: 1_700_000, updatedAt: "2026-01-01" },
+    { itemCode: "foundation.rebar", itemName: "Cốt thép móng", unit: "kg", materialTier: "all", unitPrice: 19_800, updatedAt: "2026-01-01" },
+    // Cố tình KHÔNG thêm giá cho các dòng còn lại (đào móng, ván khuôn, xây
+    // móng, giằng, bể nước, bể phốt, bê tông lót) — để JSON demo có cả
     // trường hợp unitPrice = null (chưa có trong Price Book), đúng hành vi
     // thiết kế mục 6.3: "không tìm thấy entry -> null, không dùng tạm giá khác".
 
-    // --- MEP / phần thân (placeholder) ---
-    { itemCode: "electrical.wiring", itemName: "Dây điện", unit: "m", materialTier: "all", unitPrice: 12_000, updatedAt: "2026-01-01" },
-    { itemCode: "plumbing.pipe", itemName: "Ống nước", unit: "m", materialTier: "all", unitPrice: 45_000, updatedAt: "2026-01-01" },
-    // construction.formwork_body, construction.rebar_body, construction.wall_area_exact:
+    // --- MEP / phần thân (placeholder) — M3-008: đổi sang đo theo điểm ---
+    { itemCode: "electrical.socket", itemName: "Điểm ổ cắm", unit: "điểm", materialTier: "all", unitPrice: 520_000, updatedAt: "2026-01-01" },
+    { itemCode: "electrical.switch", itemName: "Điểm công tắc/đèn", unit: "điểm", materialTier: "all", unitPrice: 420_000, updatedAt: "2026-01-01" },
+    { itemCode: "plumbing.cold_water", itemName: "Điểm cấp nước lạnh", unit: "điểm", materialTier: "all", unitPrice: 850_000, updatedAt: "2026-01-01" },
+    { itemCode: "plumbing.hot_water", itemName: "Điểm cấp nước nóng", unit: "điểm", materialTier: "all", unitPrice: 950_000, updatedAt: "2026-01-01" },
+    // plumbing.drain, structure.column_formwork/beam_formwork/slab_formwork,
+    // structure.beam_rebar/slab_rebar, masonry.wall_area_measured:
     // cố tình để trống — demo trường hợp chưa có giá tham khảo.
   ],
 };

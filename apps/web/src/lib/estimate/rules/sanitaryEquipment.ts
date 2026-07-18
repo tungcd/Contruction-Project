@@ -17,12 +17,16 @@ export function ruleBathroomFixtures(
   const bathrooms = requirement.functional.bathrooms;
   if (bathrooms === null || bathrooms <= 0) return [];
 
+  // M3-008: sanitary.shower_set -> sanitary.shower, sanitary.towel_rack ->
+  // sanitary.accessories (khớp SAN_004/SAN_006 của Standard PriceBook V1).
+  // sanitary.floor_drain giữ nguyên — Standard PriceBook V1 không có entry
+  // tương ứng, dòng này biết trước sẽ không tự tra được giá (giới hạn đã biết).
   const fixtures: { code: string; itemName: string; unit: string }[] = [
     { code: "sanitary.toilet", itemName: "Bồn cầu", unit: "bộ" },
-    { code: "sanitary.shower_set", itemName: "Sen cây / vòi sen", unit: "bộ" },
+    { code: "sanitary.shower", itemName: "Sen cây / vòi sen", unit: "bộ" },
     { code: "sanitary.lavabo", itemName: "Lavabo", unit: "bộ" },
     { code: "sanitary.bidet_spray", itemName: "Vòi xịt", unit: "bộ" },
-    { code: "sanitary.towel_rack", itemName: "Giá treo khăn", unit: "bộ" },
+    { code: "sanitary.accessories", itemName: "Giá treo khăn", unit: "bộ" },
     { code: "sanitary.floor_drain", itemName: "Thoát sàn", unit: "bộ" },
   ];
 

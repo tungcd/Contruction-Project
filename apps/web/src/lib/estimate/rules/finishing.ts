@@ -18,6 +18,13 @@ const LOW_CONFIDENCE_NOTE =
  * Founder Decision (M3-003 completion review, mục 5.4): CHỐT gộp khoá cửa
  * + phụ kiện vào đơn giá cửa, không tách dòng riêng — không phải lựa chọn
  * tạm thời của prototype.
+ *
+ * M3-008 — Business Code `door.bedroom` đo theo SỐ LƯỢNG bộ cửa (bộ), trong
+ * khi Standard PriceBook V1 định giá cửa composite theo DIỆN TÍCH (m2,
+ * `door.composite_panel`) — khác đơn vị/công thức, KHÔNG được gộp mã (đúng
+ * nguyên tắc ticket M3-008 mục "Unit"). Đây là giới hạn đã biết: dòng này sẽ
+ * không tự tra được giá từ Standard PriceBook cho tới khi có quyết định đổi
+ * công thức R3 sang tính m2 (thay đổi Business Rule — cần Founder duyệt).
  */
 export function ruleBedroomDoors(
   requirement: Requirement,
@@ -29,7 +36,7 @@ export function ruleBedroomDoors(
 
   return [
     buildRuleEstimatedLine({
-      code: "finishing.bedroom_door",
+      code: "door.bedroom",
       category: "Cửa",
       itemName: "Cửa đi phòng ngủ (900x2100, composite, đã gồm khoá + phụ kiện)",
       unit: "bộ",
@@ -47,6 +54,13 @@ export function ruleBedroomDoors(
  * Rule R4 — `totalFloorArea` → ước lượng diện tích lát nền (M3-002 mục 4).
  * Confidence: low — hệ số kinh nghiệm, không kiểm chứng bằng 2 file mẫu.
  * Known limitations: không phân biệt loại gạch/khu vực (WC khác phòng khách).
+ *
+ * M3-008 — Business Code `flooring.tile_600x600`: Standard PriceBook V1 có
+ * 2 dòng gạch lát nền (600x600 và 800x800) với giá khác nhau. Rule Engine
+ * chỉ ra 1 dòng gộp nên PHẢI chọn 1 kích thước mặc định để tra giá — chọn
+ * 600x600 (phổ biến hơn, giá thấp hơn). Đây là giả định ngầm định đã tồn
+ * tại từ M3-002 (rule gộp không phân biệt loại gạch), refactor này chỉ làm
+ * rõ giả định đó bằng tên mã, KHÔNG đổi công thức/Business Rule.
  */
 export function ruleFloorTile(
   requirement: Requirement,
@@ -60,7 +74,7 @@ export function ruleFloorTile(
 
   return [
     buildRuleEstimatedLine({
-      code: "finishing.floor_tile",
+      code: "flooring.tile_600x600",
       category: "Lát nền",
       itemName: "Gạch lát nền (gộp, chưa phân khu vực)",
       unit: "m2",
@@ -83,6 +97,12 @@ export function ruleFloorTile(
  * Trả về cả `plasterArea`/`paintArea` đã tính sẵn để `rulePlasterAndPaint`
  * (thuộc section `finishing`) dùng lại — tránh tính trùng công thức R5 ở
  * 2 nơi khi lắp ráp section (xem sections.ts).
+ *
+ * M3-008 — Business Code `masonry.wall_110`: Standard PriceBook V1 định giá
+ * riêng tường 110 và tường 220 (giá khác nhau nhiều). Rule Engine chỉ ra 1
+ * dòng gộp nên PHẢI chọn 1 độ dày mặc định — chọn 110 (phổ biến hơn cho
+ * tường ngăn phòng nhà ở). Giả định này đã ngầm định từ M3-002, refactor chỉ
+ * làm rõ bằng tên mã, KHÔNG đổi công thức tính `wallArea`.
  */
 export function ruleWallMasonryEstimate(
   requirement: Requirement,
@@ -98,9 +118,9 @@ export function ruleWallMasonryEstimate(
   const wallArea = round2(totalFloorArea * WALL_AREA_PER_FLOOR_AREA);
 
   const line = buildRuleEstimatedLine({
-    code: "construction.wall_masonry",
+    code: "masonry.wall_110",
     category: "Tường xây",
-    itemName: "Xây tường (ước lượng thô)",
+    itemName: "Xây tường 110 (ước lượng thô)",
     unit: "m2",
     quantity: wallArea,
     confidence: "low",
@@ -116,6 +136,15 @@ export function ruleWallMasonryEstimate(
 /**
  * Rule R5 (tiếp) — trát + sơn, thuộc section `finishing`. Nhận `wallArea`
  * đã tính từ `ruleWallMasonryEstimate` để không tính lại công thức R5.
+ *
+ * M3-008 — Standard PriceBook V1 định giá trát/sơn trong nhà và ngoài nhà
+ * KHÁC NHAU (`plaster.interior_wall` vs `plaster.exterior_wall`, tương tự
+ * sơn). Tách 4 dòng (trước là 2) để tra đúng giá từng loại — KHÔNG đổi
+ * công thức: `wallArea` (1 mặt tường) đã đại diện đúng 1 bên trong HOẶC
+ * ngoài; `PLASTER_SIDES_MULTIPLIER=2` trước đây nhân đôi để ra tổng 2 mặt —
+ * nay tách thành interior = `wallArea`, exterior = `wallArea`, tổng vẫn
+ * bằng công thức cũ (interior + exterior = 2 × wallArea). Tương tự cho sơn:
+ * mỗi mặt = plasterArea mặt đó × `PAINT_COVERAGE_RATIO`, tổng không đổi.
  */
 export function rulePlasterAndPaint(
   wallArea: number | null,
@@ -125,30 +154,58 @@ export function rulePlasterAndPaint(
   if (wallArea === null) return [];
 
   const round2 = (n: number) => Math.round(n * 100) / 100;
-  const plasterArea = round2(wallArea * PLASTER_SIDES_MULTIPLIER);
-  const paintArea = round2(plasterArea * PAINT_COVERAGE_RATIO);
+  // Mỗi mặt tường (trong/ngoài) = wallArea — tổng 2 mặt vẫn đúng bằng
+  // wallArea × PLASTER_SIDES_MULTIPLIER (công thức gốc M3-002, không đổi).
+  const interiorPlasterArea = round2(wallArea);
+  const exteriorPlasterArea = round2(wallArea * (PLASTER_SIDES_MULTIPLIER - 1));
+  const interiorPaintArea = round2(interiorPlasterArea * PAINT_COVERAGE_RATIO);
+  const exteriorPaintArea = round2(exteriorPlasterArea * PAINT_COVERAGE_RATIO);
 
   return [
     buildRuleEstimatedLine({
-      code: "finishing.plaster",
+      code: "plaster.interior_wall",
       category: "Trát tường",
-      itemName: "Trát tường trong + ngoài (ước lượng thô)",
+      itemName: "Trát tường trong nhà (ước lượng thô)",
       unit: "m2",
-      quantity: plasterArea,
+      quantity: interiorPlasterArea,
       confidence: "low",
-      note: `${plasterArea} = diện tích tường xây × ${PLASTER_SIDES_MULTIPLIER}. ${LOW_CONFIDENCE_NOTE}`,
+      note: `${interiorPlasterArea} = diện tích tường xây (1 mặt). ${LOW_CONFIDENCE_NOTE}`,
       sourceRuleId: "R5",
       priceBook,
       settings,
     }),
     buildRuleEstimatedLine({
-      code: "finishing.paint",
-      category: "Sơn nước",
-      itemName: "Sơn nước (ước lượng thô)",
+      code: "plaster.exterior_wall",
+      category: "Trát tường",
+      itemName: "Trát tường ngoài nhà (ước lượng thô)",
       unit: "m2",
-      quantity: paintArea,
+      quantity: exteriorPlasterArea,
       confidence: "low",
-      note: `${paintArea} = diện tích trát × ${PAINT_COVERAGE_RATIO} (trừ hao cửa/cửa sổ). ${LOW_CONFIDENCE_NOTE}`,
+      note: `${exteriorPlasterArea} = diện tích tường xây (1 mặt). ${LOW_CONFIDENCE_NOTE}`,
+      sourceRuleId: "R5",
+      priceBook,
+      settings,
+    }),
+    buildRuleEstimatedLine({
+      code: "paint.interior",
+      category: "Sơn nước",
+      itemName: "Sơn nước trong nhà (ước lượng thô)",
+      unit: "m2",
+      quantity: interiorPaintArea,
+      confidence: "low",
+      note: `${interiorPaintArea} = diện tích trát trong × ${PAINT_COVERAGE_RATIO} (trừ hao cửa/cửa sổ). ${LOW_CONFIDENCE_NOTE}`,
+      sourceRuleId: "R5",
+      priceBook,
+      settings,
+    }),
+    buildRuleEstimatedLine({
+      code: "paint.exterior",
+      category: "Sơn nước",
+      itemName: "Sơn nước ngoài nhà (ước lượng thô)",
+      unit: "m2",
+      quantity: exteriorPaintArea,
+      confidence: "low",
+      note: `${exteriorPaintArea} = diện tích trát ngoài × ${PAINT_COVERAGE_RATIO} (trừ hao cửa/cửa sổ). ${LOW_CONFIDENCE_NOTE}`,
       sourceRuleId: "R5",
       priceBook,
       settings,
@@ -161,6 +218,13 @@ export function rulePlasterAndPaint(
  * Confidence: low.
  * Known limitations: không biết loại cầu thang (thẳng/chữ L/chữ U) — field
  * còn thiếu (M3-001 mục 7). Không tách chiếu nghỉ/lan can.
+ *
+ * M3-008 — Business Code `stair.step_count` đo theo SỐ BẬC (bậc). Standard
+ * PriceBook V1 chỉ có giá cầu thang theo THỂ TÍCH bê tông (m3,
+ * `structure.stair_concrete_m250`) — khác đơn vị/nghiệp vụ hoàn toàn (đúng
+ * ví dụ cảnh báo của ticket M3-008: không được map 2 mã này). Dòng này
+ * KHÔNG tự tra được giá từ Standard PriceBook — giới hạn đã biết, không
+ * phải lỗi.
  */
 export function ruleStairSteps(
   requirement: Requirement,
@@ -174,7 +238,7 @@ export function ruleStairSteps(
 
   return [
     buildRuleEstimatedLine({
-      code: "finishing.stair_steps",
+      code: "stair.step_count",
       category: "Cầu thang",
       itemName: "Bậc cầu thang (ước lượng thô, chưa gồm chiếu nghỉ/lan can)",
       unit: "bậc",
