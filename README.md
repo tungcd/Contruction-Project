@@ -3,6 +3,10 @@
 AI Copilot giúp chủ thầu thu thập, làm rõ và chuẩn hoá yêu cầu khách hàng
 (module **AI Project Discovery**). Tài liệu nghiệp vụ nằm trong [documents/](documents/).
 
+Kiến trúc chính thức (Docs-as-Code) nằm trong [docs/](docs/) — nguyên
+tắc, domain model đã freeze, ADR. `documents/` là log thảo luận lịch
+sử; `docs/` là source of truth.
+
 ## Cấu trúc
 
 ```
