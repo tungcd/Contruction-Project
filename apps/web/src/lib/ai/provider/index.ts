@@ -1,6 +1,7 @@
 import type { AIProvider } from "./AIProvider";
 import { MockProvider } from "./MockProvider";
 import { OpenAIProvider } from "./OpenAIProvider";
+import { MODELS } from "../models";
 
 export * from "./AIProvider";
 
@@ -27,9 +28,12 @@ export function getAIProvider(): AIProvider {
           "Điền key thật vào .env hoặc đổi AI_PROVIDER=mock.",
       );
     }
+    // Founder Decision (2026-07-18, xem lib/ai/models.ts): analyzeRequirement
+    // và generateBrief đều là tác vụ "default" — chưa có call site nào cần
+    // model "complex" (MODELS.complex) trong app hiện tại.
     cached = new OpenAIProvider(
       apiKey,
-      process.env.OPENAI_MODEL ?? "gpt-5-mini",
+      process.env.OPENAI_MODEL_DEFAULT ?? MODELS.default,
     );
     return cached;
   }

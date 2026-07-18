@@ -154,6 +154,7 @@ export default function PriceBooksPage() {
                   okText="Xoá"
                   cancelText="Huỷ"
                   okButtonProps={{ danger: true }}
+                  overlayInnerStyle={{ maxWidth: 560 }}
                   onConfirm={() => deleteMutation.mutate(pb.id)}
                 >
                   <Button size="sm" variant="outline" disabled={deleteMutation.isPending}>

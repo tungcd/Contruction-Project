@@ -51,6 +51,7 @@ export function ProjectCard({ project }: { project: ProjectSummary }) {
               okText="Xoá"
               cancelText="Huỷ"
               okButtonProps={{ danger: true }}
+              overlayInnerStyle={{ maxWidth: 560 }}
               onConfirm={() => deleteMutation.mutate()}
             >
               <Button
