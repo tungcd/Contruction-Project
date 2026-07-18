@@ -17,11 +17,23 @@
 
 ## Quy ước
 
-Thư mục này dành cho log thảo luận **mới, phát sinh sau khi `docs/`
-tồn tại** — đặt tên `YYYY-MM-DD-chu-de.md`, không cần đánh số `01_/02_`
-(quy ước đó áp dụng cho từng ngày trong `documents/CHATGPT_CONTEXT/`,
-không lặp lại ở đây vì tên file đã có ngày).
+Dùng lại đúng cấu trúc đã có ở `documents/CHATGPT_CONTEXT/` thay vì phát
+minh quy ước mới (Simplicity before Generality):
 
-Thư mục này hiện chưa có tài liệu nào — các thảo luận trước đó
-(Requirement Domain Model, 5+2 vòng) vẫn nằm nguyên trong
-`documents/milestone_1/`.
+```text
+meeting-notes/
+  <year>-<month>/
+    <ISO-week>/
+      <YYYY-MM-DD>/
+        01_chu-de.md
+        02_chu-de-khac.md
+```
+
+- Đánh số `01_`, `02_`... **reset theo từng ngày** (thư mục
+  `YYYY-MM-DD/`), không phải số toàn cục.
+- Đổi tên file (chèn/xoá) dùng `git mv` để giữ lịch sử, và cập nhật lại
+  mọi cross-reference trỏ tới file bị đổi tên.
+- Xem ví dụ đã áp dụng: [2026-07/2026-W29/2026-07-18/](2026-07/2026-W29/2026-07-18/).
+
+Các thảo luận trước đó (Requirement Domain Model, 5+2 vòng) vẫn nằm
+nguyên trong `documents/milestone_1/` — không di chuyển ngược lại.

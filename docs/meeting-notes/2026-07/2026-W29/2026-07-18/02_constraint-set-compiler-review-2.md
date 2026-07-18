@@ -7,7 +7,7 @@
 > - Đối tượng đọc chính: ChatGPT, Founder.
 > - Trạng thái: Reference lịch sử — không phải quyết định.
 > - Tài liệu liên quan:
->   [2026-07-18-constraint-set-compiler-review-1.md](2026-07-18-constraint-set-compiler-review-1.md),
+>   [01_constraint-set-compiler-review-1.md](01_constraint-set-compiler-review-1.md),
 >   `docs/features/concept-design/constraint/constraint-domain-model.md`.
 
 Phản hồi cho `Constraint Set Compiler — Architecture Review #2`.
