@@ -3,9 +3,15 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { Select } from "antd";
+import { Modal, Select } from "antd";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AlertTriangle, ArrowLeft, Download, RefreshCw, Save } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowLeft,
+  Download,
+  RefreshCw,
+  Save,
+} from "lucide-react";
 import { projectService } from "@/services/project.service";
 import { estimateService } from "@/services/estimate.service";
 import { pricebookService } from "@/services/pricebook.service";
@@ -31,7 +37,11 @@ export default function EstimatePage() {
     queryFn: pricebookService.list,
   });
 
-  const { data: project, isLoading, isError } = useQuery({
+  const {
+    data: project,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["project", id],
     queryFn: () => projectService.get(id),
     enabled: !!id,
@@ -102,10 +112,18 @@ export default function EstimatePage() {
   }
 
   function generateFresh() {
-    if (draft && !window.confirm("Tạo dự toán mới sẽ thay thế bản đang xem (nếu chưa lưu sẽ mất). Tiếp tục?")) {
+    if (!draft) {
+      generateMutation.mutate();
       return;
     }
-    generateMutation.mutate();
+    Modal.confirm({
+      title: "Tạo dự toán mới?",
+      content:
+        "Tạo dự toán mới sẽ thay thế bản đang xem (nếu chưa lưu sẽ mất). Tiếp tục?",
+      okText: "Tiếp tục",
+      cancelText: "Huỷ",
+      onOk: () => generateMutation.mutate(),
+    });
   }
 
   function updateLine(
@@ -134,7 +152,9 @@ export default function EstimatePage() {
                 // Milestone M3-004: chỉ sửa quantity mới đánh dấu user_confirmed,
                 // sửa unitPrice/note không đổi quantitySource.
                 quantitySource:
-                  patch.quantity !== undefined ? "user_confirmed" : line.quantitySource,
+                  patch.quantity !== undefined
+                    ? "user_confirmed"
+                    : line.quantitySource,
               };
             }),
           };
@@ -175,7 +195,10 @@ export default function EstimatePage() {
               title="Bảng giá dùng khi tạo dự toán"
               options={[
                 { value: "", label: "Bảng giá demo (mặc định)" },
-                ...priceBooksQuery.data.map((pb) => ({ value: pb.id, label: pb.name })),
+                ...priceBooksQuery.data.map((pb) => ({
+                  value: pb.id,
+                  label: pb.name,
+                })),
               ]}
             />
           )}
@@ -192,7 +215,6 @@ export default function EstimatePage() {
             />
           )}
           <Button
-            size="sm"
             variant="outline"
             onClick={generateFresh}
             disabled={generateMutation.isPending}
@@ -201,14 +223,12 @@ export default function EstimatePage() {
             {draft ? "Tạo lại dự toán" : "Tạo dự toán"}
           </Button>
           <Button
-            size="sm"
             onClick={() => saveMutation.mutate()}
             disabled={!draft || saveMutation.isPending}
           >
             <Save className="h-4 w-4" /> Lưu
           </Button>
           <Button
-            size="sm"
             variant="outline"
             onClick={() => exportMutation.mutate()}
             disabled={!draft || exportMutation.isPending}
