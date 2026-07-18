@@ -10,6 +10,7 @@
     "test:regression": "node scripts/regression.mjs",
     "poc:proposal": "node -r ./scripts/register.cjs scripts/proposal-poc.ts",
     "poc:drawing": "node -r ./scripts/register.cjs scripts/drawing-poc.ts",
+    "drawing:artifacts": "node -r ./scripts/register.cjs scripts/generate-drawing-artifacts.ts",
     "db:generate": "dotenv -e ../../.env -- prisma generate",
     "db:push": "dotenv -e ../../.env -- prisma db push",
     "db:studio": "dotenv -e ../../.env -- prisma studio",

@@ -1,0 +1,424 @@
+{
+  "sheets": [
+    {
+      "floorPlan": {
+        "level": 0,
+        "rooms": [
+          {
+            "id": "living",
+            "type": "living",
+            "label": "Phòng khách",
+            "areaM2": 17.14285714285714,
+            "polygon": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 6,
+                "y": 0
+              },
+              {
+                "x": 6,
+                "y": 2.8571428571428568
+              },
+              {
+                "x": 0,
+                "y": 2.8571428571428568
+              }
+            ]
+          },
+          {
+            "id": "kitchen",
+            "type": "kitchen",
+            "label": "Bếp",
+            "areaM2": 12.244897959183671,
+            "polygon": [
+              {
+                "x": 0,
+                "y": 2.8571428571428568
+              },
+              {
+                "x": 6,
+                "y": 2.8571428571428568
+              },
+              {
+                "x": 6,
+                "y": 4.897959183673469
+              },
+              {
+                "x": 0,
+                "y": 4.897959183673469
+              }
+            ]
+          },
+          {
+            "id": "bedroom-1",
+            "type": "bedroom",
+            "label": "Phòng ngủ",
+            "areaM2": 12.244897959183676,
+            "polygon": [
+              {
+                "x": 0,
+                "y": 4.897959183673469
+              },
+              {
+                "x": 2.4000000000000004,
+                "y": 4.897959183673469
+              },
+              {
+                "x": 2.4000000000000004,
+                "y": 10
+              },
+              {
+                "x": 0,
+                "y": 10
+              }
+            ]
+          },
+          {
+            "id": "bedroom-2",
+            "type": "bedroom",
+            "label": "Phòng ngủ 2",
+            "areaM2": 12.244897959183676,
+            "polygon": [
+              {
+                "x": 2.4000000000000004,
+                "y": 4.897959183673469
+              },
+              {
+                "x": 4.800000000000001,
+                "y": 4.897959183673469
+              },
+              {
+                "x": 4.800000000000001,
+                "y": 10
+              },
+              {
+                "x": 2.4000000000000004,
+                "y": 10
+              }
+            ]
+          },
+          {
+            "id": "wc-1",
+            "type": "wc",
+            "label": "WC",
+            "areaM2": 6.122448979591838,
+            "polygon": [
+              {
+                "x": 4.800000000000001,
+                "y": 4.897959183673469
+              },
+              {
+                "x": 6.000000000000001,
+                "y": 4.897959183673469
+              },
+              {
+                "x": 6.000000000000001,
+                "y": 10
+              },
+              {
+                "x": 4.800000000000001,
+                "y": 10
+              }
+            ]
+          }
+        ],
+        "walls": [
+          {
+            "id": "wall-0-kitchen-living",
+            "start": {
+              "x": 0,
+              "y": 2.8571428571428568
+            },
+            "end": {
+              "x": 6,
+              "y": 2.8571428571428568
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "living",
+              "kitchen"
+            ]
+          },
+          {
+            "id": "wall-0-bedroom-1-kitchen",
+            "start": {
+              "x": 0,
+              "y": 4.897959183673469
+            },
+            "end": {
+              "x": 2.4000000000000004,
+              "y": 4.897959183673469
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "kitchen",
+              "bedroom-1"
+            ]
+          },
+          {
+            "id": "wall-0-bedroom-2-kitchen",
+            "start": {
+              "x": 2.4000000000000004,
+              "y": 4.897959183673469
+            },
+            "end": {
+              "x": 4.800000000000001,
+              "y": 4.897959183673469
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "kitchen",
+              "bedroom-2"
+            ]
+          },
+          {
+            "id": "wall-0-kitchen-wc-1",
+            "start": {
+              "x": 4.800000000000001,
+              "y": 4.897959183673469
+            },
+            "end": {
+              "x": 6,
+              "y": 4.897959183673469
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "kitchen",
+              "wc-1"
+            ]
+          },
+          {
+            "id": "wall-0-bedroom-1-bedroom-2",
+            "start": {
+              "x": 2.4000000000000004,
+              "y": 4.897959183673469
+            },
+            "end": {
+              "x": 2.4000000000000004,
+              "y": 10
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "bedroom-1",
+              "bedroom-2"
+            ]
+          },
+          {
+            "id": "wall-0-bedroom-2-wc-1",
+            "start": {
+              "x": 4.800000000000001,
+              "y": 4.897959183673469
+            },
+            "end": {
+              "x": 4.800000000000001,
+              "y": 10
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "bedroom-2",
+              "wc-1"
+            ]
+          },
+          {
+            "id": "wall-0-ext-top",
+            "start": {
+              "x": 0,
+              "y": 0
+            },
+            "end": {
+              "x": 6.000000000000001,
+              "y": 0
+            },
+            "type": "exterior"
+          },
+          {
+            "id": "wall-0-ext-right",
+            "start": {
+              "x": 6.000000000000001,
+              "y": 0
+            },
+            "end": {
+              "x": 6.000000000000001,
+              "y": 10
+            },
+            "type": "exterior"
+          },
+          {
+            "id": "wall-0-ext-bottom",
+            "start": {
+              "x": 6.000000000000001,
+              "y": 10
+            },
+            "end": {
+              "x": 0,
+              "y": 10
+            },
+            "type": "exterior"
+          },
+          {
+            "id": "wall-0-ext-left",
+            "start": {
+              "x": 0,
+              "y": 10
+            },
+            "end": {
+              "x": 0,
+              "y": 0
+            },
+            "type": "exterior"
+          }
+        ],
+        "doors": [
+          {
+            "id": "door-0",
+            "wallId": "wall-0-ext-top",
+            "connects": [
+              "living",
+              "exterior"
+            ],
+            "offset": 3.0000000000000004,
+            "width": 0.9
+          },
+          {
+            "id": "door-1",
+            "wallId": "wall-0-kitchen-living",
+            "connects": [
+              "living",
+              "kitchen"
+            ],
+            "offset": 3,
+            "width": 0.9
+          },
+          {
+            "id": "door-2",
+            "wallId": "wall-0-bedroom-1-kitchen",
+            "connects": [
+              "kitchen",
+              "bedroom-1"
+            ],
+            "offset": 1.2000000000000002,
+            "width": 0.9
+          },
+          {
+            "id": "door-3",
+            "wallId": "wall-0-bedroom-2-kitchen",
+            "connects": [
+              "kitchen",
+              "bedroom-2"
+            ],
+            "offset": 1.2000000000000002,
+            "width": 0.9
+          },
+          {
+            "id": "door-4",
+            "wallId": "wall-0-kitchen-wc-1",
+            "connects": [
+              "kitchen",
+              "wc-1"
+            ],
+            "offset": 0.5999999999999996,
+            "width": 0.9
+          }
+        ],
+        "dimensions": [
+          {
+            "from": {
+              "x": 0,
+              "y": 0
+            },
+            "to": {
+              "x": 6,
+              "y": 0
+            },
+            "label": "6 m"
+          },
+          {
+            "from": {
+              "x": 0,
+              "y": 0
+            },
+            "to": {
+              "x": 0,
+              "y": 10
+            },
+            "label": "10 m"
+          },
+          {
+            "from": {
+              "x": 0,
+              "y": 0
+            },
+            "to": {
+              "x": 6,
+              "y": 0
+            },
+            "label": "6.0 m"
+          },
+          {
+            "from": {
+              "x": 0,
+              "y": 2.8571428571428568
+            },
+            "to": {
+              "x": 6,
+              "y": 2.8571428571428568
+            },
+            "label": "6.0 m"
+          },
+          {
+            "from": {
+              "x": 0,
+              "y": 4.897959183673469
+            },
+            "to": {
+              "x": 2.4000000000000004,
+              "y": 4.897959183673469
+            },
+            "label": "2.4 m"
+          },
+          {
+            "from": {
+              "x": 2.4000000000000004,
+              "y": 4.897959183673469
+            },
+            "to": {
+              "x": 4.800000000000001,
+              "y": 4.897959183673469
+            },
+            "label": "2.4 m"
+          },
+          {
+            "from": {
+              "x": 4.800000000000001,
+              "y": 4.897959183673469
+            },
+            "to": {
+              "x": 6.000000000000001,
+              "y": 4.897959183673469
+            },
+            "label": "1.2 m"
+          }
+        ],
+        "envelope": {
+          "frontage": 6,
+          "depth": 10
+        }
+      },
+      "titleBlock": {
+        "projectName": "Simple House Demo",
+        "scale": "NOT TO SCALE",
+        "disclaimer": "Bản vẽ khái niệm sơ bộ — dựa trên thông tin và giả định đã cung cấp, cần kiến trúc sư/kỹ sư kiểm tra lại, KHÔNG dùng để thi công trực tiếp.",
+        "generatedAt": "2026-07-18T16:50:37.238Z"
+      },
+      "warnings": [],
+      "assumptions": [
+        "Vị trí cầu thang/hành lang chưa áp dụng ở Stage 1 (nhà 1 tầng).",
+        "Tỷ lệ diện tích từng phòng theo công thức mặc định, chưa qua kiến trúc sư duyệt.",
+        "Vị trí cửa lấy tâm mỗi wall, chưa tối ưu theo lối đi thực tế."
+      ]
+    }
+  ]
+}

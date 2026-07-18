@@ -1,0 +1,77 @@
+{
+  "envelope": {
+    "frontage": 6,
+    "depth": 10
+  },
+  "nodes": [
+    {
+      "id": "entrance",
+      "type": "entrance",
+      "floor": 0,
+      "priority": 0,
+      "areaWeight": 0
+    },
+    {
+      "id": "living",
+      "type": "living",
+      "floor": 0,
+      "priority": 1,
+      "areaWeight": 1.4
+    },
+    {
+      "id": "kitchen",
+      "type": "kitchen",
+      "floor": 0,
+      "priority": 2,
+      "areaWeight": 1
+    },
+    {
+      "id": "bedroom-1",
+      "type": "bedroom",
+      "floor": 0,
+      "priority": 3,
+      "areaWeight": 1
+    },
+    {
+      "id": "bedroom-2",
+      "type": "bedroom",
+      "floor": 0,
+      "priority": 3,
+      "areaWeight": 1
+    },
+    {
+      "id": "wc-1",
+      "type": "wc",
+      "floor": 0,
+      "priority": 3,
+      "areaWeight": 0.5
+    }
+  ],
+  "edges": [
+    {
+      "type": "door",
+      "from": "entrance",
+      "to": "living"
+    },
+    {
+      "type": "door",
+      "from": "living",
+      "to": "kitchen"
+    },
+    {
+      "type": "door",
+      "from": "kitchen",
+      "to": "bedroom-1"
+    },
+    {
+      "type": "door",
+      "from": "kitchen",
+      "to": "bedroom-2"
+    },
+    {
+      "type": "door",
+      "from": "kitchen",
+      "to": "wc-1"
+    }
+  ]
+}

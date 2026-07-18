@@ -1,5 +1,6 @@
 import type { Geometry, GeometrySpace, Point } from "./geometry";
 import type { Wall } from "./wall";
+import type { Door } from "./door";
 
 /**
  * Drawing Document Model — dữ liệu thuần, KHÔNG biết gì về SVG/PDF
@@ -49,6 +50,7 @@ export interface FloorPlanView {
   level: number;
   rooms: FloorPlanRoom[];
   walls: Wall[];
+  doors: Door[];
   dimensions: Dimension[];
   envelope: { frontage: number; depth: number };
 }
@@ -77,6 +79,7 @@ const DISCLAIMER =
 function buildFloorPlan(
   geometryFloor: Geometry["floors"][number],
   wallsOnFloor: Wall[],
+  doorsOnFloor: Door[],
   envelope: { frontage: number; depth: number },
 ): FloorPlanView {
   const typeCounter = new Map<string, number>();
@@ -97,29 +100,36 @@ function buildFloorPlan(
     }),
   ];
 
-  return { level: geometryFloor.level, rooms, walls: wallsOnFloor, dimensions, envelope };
+  return { level: geometryFloor.level, rooms, walls: wallsOnFloor, doors: doorsOnFloor, dimensions, envelope };
 }
 
 export function buildDrawingPackage(
   geometry: Geometry,
   walls: Wall[],
+  doors: Door[],
   projectName: string,
   warnings: string[],
   envelope: { frontage: number; depth: number },
 ): DrawingPackage {
   const generatedAt = new Date().toISOString();
-  const sheets: DrawingSheet[] = geometry.floors.map((floor) => ({
-    floorPlan: buildFloorPlan(
-      floor,
-      walls.filter((w) => w.id.startsWith(`wall-${floor.level}-`)),
-      envelope,
-    ),
-    titleBlock: { projectName, scale: "NOT TO SCALE", disclaimer: DISCLAIMER, generatedAt },
-    warnings,
-    assumptions: [
-      "Vị trí cầu thang/hành lang chưa áp dụng ở Stage 1 (nhà 1 tầng).",
-      "Tỷ lệ diện tích từng phòng theo công thức mặc định, chưa qua kiến trúc sư duyệt.",
-    ],
-  }));
+  const sheets: DrawingSheet[] = geometry.floors.map((floor) => {
+    const wallsOnFloor = walls.filter((w) => w.id.startsWith(`wall-${floor.level}-`));
+    const wallIdsOnFloor = new Set(wallsOnFloor.map((w) => w.id));
+    return {
+      floorPlan: buildFloorPlan(
+        floor,
+        wallsOnFloor,
+        doors.filter((d) => wallIdsOnFloor.has(d.wallId)),
+        envelope,
+      ),
+      titleBlock: { projectName, scale: "NOT TO SCALE", disclaimer: DISCLAIMER, generatedAt },
+      warnings,
+      assumptions: [
+        "Vị trí cầu thang/hành lang chưa áp dụng ở Stage 1 (nhà 1 tầng).",
+        "Tỷ lệ diện tích từng phòng theo công thức mặc định, chưa qua kiến trúc sư duyệt.",
+        "Vị trí cửa lấy tâm mỗi wall, chưa tối ưu theo lối đi thực tế.",
+      ],
+    };
+  });
   return { sheets };
 }

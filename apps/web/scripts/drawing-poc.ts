@@ -77,8 +77,22 @@ try {
   check("có ít nhất 1 wall exterior", sheet.floorPlan.walls.some((w) => w.type === "exterior"));
   check("có ít nhất 1 wall interior", sheet.floorPlan.walls.some((w) => w.type === "interior"));
 
+  // Stage 1.5, Task 4 — Door phải là dữ liệu tường minh, mọi cửa phải
+  // tham chiếu wall có thật và width dương.
+  check("có Door được đặt (không chỉ cạnh ngữ nghĩa)", sheet.floorPlan.doors.length > 0);
+  const wallIds = new Set(sheet.floorPlan.walls.map((w) => w.id));
+  check(
+    "mọi Door tham chiếu wall có thật",
+    sheet.floorPlan.doors.every((d) => wallIds.has(d.wallId)),
+  );
+  check(
+    "mọi Door có width dương",
+    sheet.floorPlan.doors.every((d) => d.width > 0),
+  );
+
   const svg = renderFloorPlanToSvg(sheet);
   check("SVG sinh được, không rỗng", svg.includes("<svg") && svg.length > 200);
+  check("SVG có vẽ cửa (không chỉ tường liền mạch)", svg.includes("stroke-dasharray"));
 
   // Cùng input -> cùng hình học (Deterministic — bất biến bắt buộc).
   const second = generateConceptDrawing(constraintSet, "Simple House Demo");

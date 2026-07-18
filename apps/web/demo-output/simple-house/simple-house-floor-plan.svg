@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="540" viewBox="0 0 300 540">
+    <rect x="0" y="0" width="300" height="540" fill="#ffffff" />
+    
+        <line x1="60" y1="46" x2="240" y2="46" stroke="#999" stroke-width="0.5" />
+        <text x="150" y="42" text-anchor="middle" font-size="9" fill="#999">6 m</text>
+      
+        <line x1="60" y1="46" x2="60" y2="346" stroke="#999" stroke-width="0.5" />
+        <text x="60" y="192" text-anchor="middle" font-size="9" fill="#999">10 m</text>
+      
+        <line x1="60" y1="46" x2="240" y2="46" stroke="#999" stroke-width="0.5" />
+        <text x="150" y="42" text-anchor="middle" font-size="9" fill="#999">6.0 m</text>
+      
+        <line x1="60" y1="131.71428571428572" x2="240" y2="131.71428571428572" stroke="#999" stroke-width="0.5" />
+        <text x="150" y="127.71428571428572" text-anchor="middle" font-size="9" fill="#999">6.0 m</text>
+      
+        <line x1="60" y1="192.93877551020407" x2="132" y2="192.93877551020407" stroke="#999" stroke-width="0.5" />
+        <text x="96" y="188.93877551020407" text-anchor="middle" font-size="9" fill="#999">2.4 m</text>
+      
+        <line x1="132" y1="192.93877551020407" x2="204.00000000000003" y2="192.93877551020407" stroke="#999" stroke-width="0.5" />
+        <text x="168" y="188.93877551020407" text-anchor="middle" font-size="9" fill="#999">2.4 m</text>
+      
+        <line x1="204.00000000000003" y1="192.93877551020407" x2="240.00000000000003" y2="192.93877551020407" stroke="#999" stroke-width="0.5" />
+        <text x="222.00000000000003" y="188.93877551020407" text-anchor="middle" font-size="9" fill="#999">1.2 m</text>
+      
+    
+        <rect x="60" y="60" width="180" height="85.71428571428572" fill="#fafafa" stroke="none" />
+        <text x="150" y="96.85714285714286" text-anchor="middle" font-size="12" font-weight="600">Phòng khách</text>
+        <text x="150" y="112.85714285714286" text-anchor="middle" font-size="10" fill="#666">17.1 m²</text>
+      
+        <rect x="60" y="145.71428571428572" width="180" height="61.224489795918345" fill="#fafafa" stroke="none" />
+        <text x="150" y="170.32653061224488" text-anchor="middle" font-size="12" font-weight="600">Bếp</text>
+        <text x="150" y="186.32653061224488" text-anchor="middle" font-size="10" fill="#666">12.2 m²</text>
+      
+        <rect x="60" y="206.93877551020407" width="72" height="153.06122448979593" fill="#fafafa" stroke="none" />
+        <text x="96" y="277.46938775510205" text-anchor="middle" font-size="12" font-weight="600">Phòng ngủ</text>
+        <text x="96" y="293.46938775510205" text-anchor="middle" font-size="10" fill="#666">12.2 m²</text>
+      
+        <rect x="132" y="206.93877551020407" width="72.00000000000003" height="153.06122448979593" fill="#fafafa" stroke="none" />
+        <text x="168" y="277.46938775510205" text-anchor="middle" font-size="12" font-weight="600">Phòng ngủ 2</text>
+        <text x="168" y="293.46938775510205" text-anchor="middle" font-size="10" fill="#666">12.2 m²</text>
+      
+        <rect x="204.00000000000003" y="206.93877551020407" width="36" height="153.06122448979593" fill="#fafafa" stroke="none" />
+        <text x="222.00000000000003" y="277.46938775510205" text-anchor="middle" font-size="12" font-weight="600">WC</text>
+        <text x="222.00000000000003" y="293.46938775510205" text-anchor="middle" font-size="10" fill="#666">6.1 m²</text>
+      
+    <line x1="60" y1="145.71428571428572" x2="240" y2="145.71428571428572" stroke="#6b7280" stroke-width="1.5" /><line x1="60" y1="206.93877551020407" x2="132" y2="206.93877551020407" stroke="#6b7280" stroke-width="1.5" /><line x1="132" y1="206.93877551020407" x2="204.00000000000003" y2="206.93877551020407" stroke="#6b7280" stroke-width="1.5" /><line x1="204.00000000000003" y1="206.93877551020407" x2="240" y2="206.93877551020407" stroke="#6b7280" stroke-width="1.5" /><line x1="132" y1="206.93877551020407" x2="132" y2="360" stroke="#6b7280" stroke-width="1.5" /><line x1="204.00000000000003" y1="206.93877551020407" x2="204.00000000000003" y2="360" stroke="#6b7280" stroke-width="1.5" /><line x1="60" y1="60" x2="240.00000000000003" y2="60" stroke="#111827" stroke-width="3" /><line x1="240.00000000000003" y1="60" x2="240.00000000000003" y2="360" stroke="#111827" stroke-width="3" /><line x1="240.00000000000003" y1="360" x2="60" y2="360" stroke="#111827" stroke-width="3" /><line x1="60" y1="360" x2="60" y2="60" stroke="#111827" stroke-width="3" />
+    
+    <line x1="136.5" y1="60" x2="163.5" y2="60" stroke="#ffffff" stroke-width="5" />
+    <line x1="136.5" y1="60" x2="163.5" y2="60" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="3,2" />
+  
+    <line x1="136.5" y1="145.71428571428572" x2="163.5" y2="145.71428571428572" stroke="#ffffff" stroke-width="5" />
+    <line x1="136.5" y1="145.71428571428572" x2="163.5" y2="145.71428571428572" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="3,2" />
+  
+    <line x1="82.5" y1="206.93877551020407" x2="109.5" y2="206.93877551020407" stroke="#ffffff" stroke-width="5" />
+    <line x1="82.5" y1="206.93877551020407" x2="109.5" y2="206.93877551020407" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="3,2" />
+  
+    <line x1="154.5" y1="206.93877551020407" x2="181.50000000000003" y2="206.93877551020407" stroke="#ffffff" stroke-width="5" />
+    <line x1="154.5" y1="206.93877551020407" x2="181.50000000000003" y2="206.93877551020407" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="3,2" />
+  
+    <line x1="208.5" y1="206.93877551020407" x2="235.50000000000003" y2="206.93877551020407" stroke="#ffffff" stroke-width="5" />
+    <line x1="208.5" y1="206.93877551020407" x2="235.50000000000003" y2="206.93877551020407" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="3,2" />
+  
+    
+    <text x="60" y="500" font-size="11" font-weight="600">Simple House Demo — Mặt bằng tầng (Concept)</text>
+    <text x="60" y="516" font-size="9" fill="#666">NOT TO SCALE — Lập ngày 18/7/2026</text>
+    <text x="60" y="532" font-size="9" fill="#b91c1c">Bản vẽ khái niệm sơ bộ — dựa trên thông tin và giả định đã cung cấp, cần kiến trúc sư/kỹ sư kiểm tra lại, KHÔNG dùng để thi công trực tiếp.</text>
+  </svg>

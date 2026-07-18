@@ -15,6 +15,30 @@ import type { LayoutGraph, LayoutNode } from "./layoutGraph";
  * cùng hình dạng tuyến tính.
  */
 
+/**
+ * COORDINATE & UNIT CONTRACT (Tech Lead Review — Stage 1.5, Task 2)
+ * — bắt buộc mọi module trong `lib/drawing/` tuân theo, không được lẫn
+ * lộn với đơn vị pixel của SVG:
+ *
+ * - Đơn vị domain: MÉT (m). Mọi `Point`, `Geometry`, `Wall`, `Door` đều
+ *   ở đơn vị mét — KHÔNG module nào ngoài `svgRenderer.ts` được biết
+ *   tới pixel.
+ * - Gốc toạ độ (0,0) = góc trái-mặt tiền của envelope (góc nhìn từ
+ *   đường vào công trình).
+ * - Trục X tăng dọc theo mặt tiền (frontage), từ trái sang phải khi
+ *   đứng ngoài nhìn vào.
+ * - Trục Y tăng theo chiều sâu đất (depth), từ mặt tiền vào phía sau.
+ * - Sai số dung sai (tolerance) cho so sánh hình học: `GEOMETRY_EPS`
+ *   (1e-6 m) — dùng thống nhất ở `wall.ts`/`geometryValidator.ts`.
+ * - Diện tích luôn tính từ toạ độ domain CHƯA làm tròn.
+ * - Làm tròn CHỈ áp dụng khi hiển thị (dimension label `.toFixed(1)`,
+ *   xem `drawingDocument.ts`) — không làm tròn trước khi tính toán.
+ * - Quy đổi sang pixel (`SCALE`, `MARGIN`) chỉ xảy ra trong
+ *   `svgRenderer.ts`, là bước cuối cùng, một chiều (domain -> pixel),
+ *   không có module nào đọc ngược pixel về domain.
+ */
+export const GEOMETRY_EPS = 1e-6;
+
 export interface Point {
   x: number;
   y: number;

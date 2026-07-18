@@ -1,7 +1,8 @@
 import type { ConstraintSet } from "@acc/shared-types";
-import type { Geometry, GeometrySpace } from "./geometry";
+import { GEOMETRY_EPS, type Geometry, type GeometrySpace } from "./geometry";
 import type { LayoutGraph } from "./layoutGraph";
 import type { Wall } from "./wall";
+import type { Door } from "./door";
 
 /**
  * Geometry Validation — tái dùng quy tắc đã spec ở Golden Contract #6/#7
@@ -14,7 +15,11 @@ export interface GeometryValidationResult {
   errors: string[];
 }
 
-const AREA_EPS = 0.01; // m² — sai số làm tròn, Stage 1 là phép tính chính xác nên KHÔNG cần ngưỡng 10%/1% của Phase A.
+// Cố ý KHÁC GEOMETRY_EPS (1e-6, dùng cho so sánh toạ độ bằng nhau tuyệt
+// đối — xem geometry.ts): AREA_EPS là ngưỡng "chồng lấn/lệch có ý nghĩa
+// vật lý" (1cm), rộng hơn nhiều để không báo lỗi vì sai số làm tròn khi
+// cộng dồn nhiều phép chia theo areaWeight.
+const AREA_EPS = 0.01; // m²
 
 function bboxArea(space: GeometrySpace): number {
   const xs = space.polygon.map((p) => p.x);
@@ -40,6 +45,7 @@ export function validateGeometry(
   geometry: Geometry,
   layoutGraph: LayoutGraph,
   walls: Wall[],
+  doors: Door[],
   constraintSet: ConstraintSet,
 ): GeometryValidationResult {
   const errors: string[] = [];
@@ -83,7 +89,7 @@ export function validateGeometry(
       if (edge.from === "entrance" || edge.to === "entrance") {
         const roomId = edge.from === "entrance" ? edge.to : edge.from;
         const room = spaces.find((s) => s.id === roomId);
-        const touchesFacade = room ? Math.min(...room.polygon.map((p) => p.y)) < AREA_EPS : false;
+        const touchesFacade = room ? Math.min(...room.polygon.map((p) => p.y)) < GEOMETRY_EPS : false;
         if (!touchesFacade) {
           errors.push(`Phòng "${roomId}" được nối với lối vào (entrance) nhưng không chạm mặt tiền.`);
         }
@@ -110,6 +116,48 @@ export function validateGeometry(
       errors.push(
         `Tổng diện tích hình học (${totalArea.toFixed(2)}m²) không khớp buildingFootprint (${expected}m²).`,
       );
+    }
+  }
+
+  // 4b. Door validation (Stage 1.5, Task 4) — cửa phải tham chiếu wall
+  //     có thật, offset/width nằm gọn trong wall, và mọi cạnh "door"
+  //     của LayoutGraph phải có đúng 1 Door tương ứng (No Silent Drop —
+  //     không được có cạnh "door" mà không có cửa vẽ được).
+  const wallById = new Map(walls.map((w) => [w.id, w]));
+  for (const door of doors) {
+    const wall = wallById.get(door.wallId);
+    if (!wall) {
+      errors.push(`Cửa "${door.id}" tham chiếu wall "${door.wallId}" không tồn tại.`);
+      continue;
+    }
+    const length = Math.hypot(wall.end.x - wall.start.x, wall.end.y - wall.start.y);
+    if (door.width <= 0) {
+      errors.push(`Cửa "${door.id}" có width không dương (${door.width}).`);
+    }
+    if (door.offset < 0 || door.offset > length + AREA_EPS) {
+      errors.push(`Cửa "${door.id}" có offset (${door.offset}) nằm ngoài wall "${wall.id}" (dài ${length.toFixed(2)}m).`);
+    }
+    if (door.offset - door.width / 2 < -AREA_EPS || door.offset + door.width / 2 > length + AREA_EPS) {
+      errors.push(`Cửa "${door.id}" vượt quá 2 đầu wall "${wall.id}".`);
+    }
+    if (wall.type === "interior" && wall.betweenRoomIds) {
+      const matchesConnection =
+        wall.betweenRoomIds.includes(door.connects[0]) && wall.betweenRoomIds.includes(door.connects[1]);
+      if (!matchesConnection) {
+        errors.push(`Cửa "${door.id}" đặt trên wall không đúng cặp phòng dự kiến (${door.connects.join(" <-> ")}).`);
+      }
+    }
+  }
+  const requiredDoorEdges = layoutGraph.edges.filter((e) => e.type === "door");
+  for (const edge of requiredDoorEdges) {
+    const hasDoor = doors.some(
+      (d) =>
+        (d.connects.includes(edge.from) && d.connects.includes(edge.to)) ||
+        (edge.from === "entrance" && d.connects.includes(edge.to) && d.connects.includes("exterior")) ||
+        (edge.to === "entrance" && d.connects.includes(edge.from) && d.connects.includes("exterior")),
+    );
+    if (!hasDoor) {
+      errors.push(`Cạnh "door" giữa "${edge.from}" và "${edge.to}" trong LayoutGraph không có Door tương ứng nào được vẽ.`);
     }
   }
 
