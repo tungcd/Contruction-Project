@@ -6,10 +6,10 @@
   },
   "site": {
     "landArea": { "value": 60, "constraintType": "exact" },
-    "buildingFootprint": null,
-    "totalFloorArea": null,
-    "frontage": null,
-    "depth": null,
+    "buildingFootprint": { "value": 60, "constraintType": "exact" },
+    "totalFloorArea": { "value": 60, "constraintType": "exact" },
+    "frontage": { "value": 6, "constraintType": "exact" },
+    "depth": { "value": 10, "constraintType": "exact" },
     "roadWidth": null
   },
   "building": {

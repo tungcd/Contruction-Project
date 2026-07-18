@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Input } from "antd";
-import { ArrowLeft, Calculator, FileText, Pencil, Check, Send, X } from "lucide-react";
+import { ArrowLeft, Calculator, FileText, Pencil, Check, PenTool, Send, X } from "lucide-react";
 import type { ProjectDetail } from "@acc/shared-types";
 import { Button } from "@/components/ui/button";
 import {
@@ -94,6 +94,11 @@ export function WorkspaceHeader({ project, onRename, isRenaming }: Props) {
             />
           </div>
         </div>
+        <Link href={`/projects/${project.id}/design`}>
+          <Button variant="outline">
+            <PenTool className="h-4 w-4" /> Bản vẽ khái niệm
+          </Button>
+        </Link>
         <Link href={`/projects/${project.id}/estimate`}>
           <Button variant="outline">
             <Calculator className="h-4 w-4" /> Dự toán

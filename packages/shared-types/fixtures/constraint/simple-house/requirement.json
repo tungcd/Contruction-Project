@@ -6,7 +6,11 @@
     "buildingType": "level4"
   },
   "site": {
-    "landArea": 60
+    "landArea": 60,
+    "buildingFootprint": 60,
+    "totalFloorArea": 60,
+    "frontage": 6,
+    "depth": 10
   },
   "building": {
     "floors": 1

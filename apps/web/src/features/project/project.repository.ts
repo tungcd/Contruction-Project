@@ -118,6 +118,32 @@ export async function updateProject(
   return getProjectDetail(id);
 }
 
+/**
+ * Concept Drawing Stage 1 — Constraint Set Compiler yêu cầu
+ * `Requirement.status === "confirmed"` (Explicit Precondition), nhưng
+ * chưa từng có action nào trong app đặt field này (chỉ mới thêm vào
+ * schema khi build Constraint Set Compiler, dùng qua fixture/script,
+ * chưa nối vào UI thật). Đây là phần plumbing bắt buộc để trang
+ * `/projects/[id]/design` chạy được trên project thật — không phải mở
+ * rộng phạm vi hình học Stage 1.
+ */
+export async function confirmRequirement(projectId: string): Promise<Requirement> {
+  await ensureProjectExists(projectId);
+  const row = await prisma.requirement.findUnique({ where: { projectId } });
+  const current = parseRequirement(row);
+  const confirmed: Requirement = {
+    ...current,
+    status: "confirmed",
+    confirmedAt: new Date().toISOString(),
+  };
+  await prisma.requirement.upsert({
+    where: { projectId },
+    create: { projectId, data: confirmed as unknown as Prisma.InputJsonValue },
+    update: { data: confirmed as unknown as Prisma.InputJsonValue },
+  });
+  return confirmed;
+}
+
 export async function deleteProject(id: string): Promise<{ id: string }> {
   await ensureProjectExists(id);
   await prisma.project.delete({ where: { id } });
