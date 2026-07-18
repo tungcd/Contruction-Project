@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Input } from "antd";
 import { ArrowLeft, Calculator, FileText, Pencil, Check, X } from "lucide-react";
 import type { ProjectDetail } from "@acc/shared-types";
 import { Button } from "@/components/ui/button";
@@ -42,9 +43,9 @@ export function WorkspaceHeader({ project, onRename, isRenaming }: Props) {
         <div>
           {editing ? (
             <div className="flex items-center gap-1">
-              <input
+              <Input
                 autoFocus
-                className="rounded-md border px-2 py-1 text-sm"
+                size="small"
                 value={nameDraft}
                 onChange={(e) => setNameDraft(e.target.value)}
                 onKeyDown={(e) => {

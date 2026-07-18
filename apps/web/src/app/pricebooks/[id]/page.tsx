@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Input, Select, Table, type TableColumnsType } from "antd";
 import { ArrowLeft, Plus, Save, Trash2 } from "lucide-react";
 import { pricebookService, type PriceBookEntryInput } from "@/services/pricebook.service";
 import { Button } from "@/components/ui/button";
@@ -25,9 +26,16 @@ const MATERIAL_TIER_LABEL: Record<PriceBookEntryInput["materialTier"], string> =
   all: "Không phân biệt",
 };
 
+const MATERIAL_TIER_OPTIONS = MATERIAL_TIERS.map((t) => ({
+  value: t,
+  label: MATERIAL_TIER_LABEL[t],
+}));
+
 function emptyEntry(): PriceBookEntryInput {
   return { itemCode: "", itemName: "", unit: "", materialTier: "all", unitPrice: 0 };
 }
+
+type Row = PriceBookEntryInput & { rowIndex: number };
 
 /** Milestone Estimate MVP — Feature 5: sửa PriceBook (thông tin chung + toàn bộ entries). */
 export default function PriceBookDetailPage() {
@@ -112,6 +120,97 @@ export default function PriceBookDetailPage() {
       </div>
     );
 
+  const dataSource: Row[] = entries.map((entry, rowIndex) => ({ ...entry, rowIndex }));
+
+  const columns: TableColumnsType<Row> = [
+    {
+      title: "Mã",
+      key: "itemCode",
+      width: 190,
+      render: (_, row) => {
+        const invalid = validationError !== null && !row.itemCode.trim();
+        return (
+          <Input.TextArea
+            autoSize={{ minRows: 1, maxRows: 3 }}
+            status={invalid ? "error" : undefined}
+            className="font-mono text-xs"
+            value={row.itemCode}
+            onChange={(e) => updateEntry(row.rowIndex, { itemCode: e.target.value })}
+          />
+        );
+      },
+    },
+    {
+      title: "Tên hạng mục",
+      key: "itemName",
+      width: 240,
+      render: (_, row) => {
+        const invalid = validationError !== null && !row.itemName.trim();
+        return (
+          <Input.TextArea
+            autoSize={{ minRows: 1, maxRows: 3 }}
+            status={invalid ? "error" : undefined}
+            value={row.itemName}
+            onChange={(e) => updateEntry(row.rowIndex, { itemName: e.target.value })}
+          />
+        );
+      },
+    },
+    {
+      title: "ĐVT",
+      key: "unit",
+      width: 80,
+      render: (_, row) => {
+        const invalid = validationError !== null && !row.unit.trim();
+        return (
+          <Input
+            status={invalid ? "error" : undefined}
+            value={row.unit}
+            onChange={(e) => updateEntry(row.rowIndex, { unit: e.target.value })}
+          />
+        );
+      },
+    },
+    {
+      title: "Phân khúc",
+      key: "materialTier",
+      width: 130,
+      render: (_, row) => (
+        <Select
+          className="w-full"
+          value={row.materialTier}
+          options={MATERIAL_TIER_OPTIONS}
+          onChange={(value) => updateEntry(row.rowIndex, { materialTier: value })}
+        />
+      ),
+    },
+    {
+      title: "Đơn giá",
+      key: "unitPrice",
+      width: 130,
+      align: "right",
+      render: (_, row) => (
+        <Input
+          inputMode="numeric"
+          value={formatThousandsInput(row.unitPrice)}
+          onChange={(e) =>
+            updateEntry(row.rowIndex, { unitPrice: parseThousandsInput(e.target.value) ?? 0 })
+          }
+        />
+      ),
+    },
+    {
+      title: "",
+      key: "actions",
+      width: 48,
+      render: (_, row) => (
+        <Button size="icon" variant="ghost" onClick={() => removeEntry(row.rowIndex)}>
+          <Trash2 className="h-4 w-4 text-destructive" />
+        </Button>
+      ),
+    },
+  ];
+
   return (
     <main className="mx-auto max-w-5xl px-4 py-8">
       <div className="mb-4 flex items-center justify-between">
@@ -151,14 +250,12 @@ export default function PriceBookDetailPage() {
           <CardTitle className="text-sm">Thông tin chung</CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 gap-3 pt-4 sm:grid-cols-2">
-          <input
-            className="rounded-md border px-3 py-2 text-sm"
+          <Input
             placeholder="Tên bảng giá"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
-          <input
-            className="rounded-md border px-3 py-2 text-sm"
+          <Input
             placeholder="Vùng giá"
             value={pricingRegion}
             onChange={(e) => setPricingRegion(e.target.value)}
@@ -178,87 +275,14 @@ export default function PriceBookDetailPage() {
             <Plus className="h-4 w-4" /> Thêm dòng
           </Button>
         </CardHeader>
-        <CardContent className="overflow-x-auto p-0">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b bg-muted/50 text-left text-xs uppercase text-muted-foreground">
-                <th className="p-2">Mã</th>
-                <th className="p-2">Tên hạng mục</th>
-                <th className="p-2">ĐVT</th>
-                <th className="p-2">Phân khúc</th>
-                <th className="p-2 text-right">Đơn giá</th>
-                <th className="p-2"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {entries.map((entry, index) => {
-                const invalid = validationError !== null && invalidEntryReason(entry) !== null;
-                const fieldClass = (filled: boolean) =>
-                  `rounded border px-2 py-1 ${invalid && !filled ? "border-destructive" : ""}`;
-                return (
-                <tr key={index} className="border-b last:border-0">
-                  <td className="p-2">
-                    <textarea
-                      rows={2}
-                      className={`w-44 resize-y font-mono text-xs leading-snug ${fieldClass(!!entry.itemCode.trim())}`}
-                      value={entry.itemCode}
-                      onChange={(e) => updateEntry(index, { itemCode: e.target.value })}
-                    />
-                  </td>
-                  <td className="p-2">
-                    <textarea
-                      rows={2}
-                      className={`w-56 resize-y leading-snug ${fieldClass(!!entry.itemName.trim())}`}
-                      value={entry.itemName}
-                      onChange={(e) => updateEntry(index, { itemName: e.target.value })}
-                    />
-                  </td>
-                  <td className="p-2">
-                    <input
-                      className={`w-16 ${fieldClass(!!entry.unit.trim())}`}
-                      value={entry.unit}
-                      onChange={(e) => updateEntry(index, { unit: e.target.value })}
-                    />
-                  </td>
-                  <td className="p-2">
-                    <select
-                      className="rounded border px-2 py-1"
-                      value={entry.materialTier}
-                      onChange={(e) =>
-                        updateEntry(index, {
-                          materialTier: e.target.value as PriceBookEntryInput["materialTier"],
-                        })
-                      }
-                    >
-                      {MATERIAL_TIERS.map((t) => (
-                        <option key={t} value={t}>
-                          {MATERIAL_TIER_LABEL[t]}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td className="p-2 text-right">
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      className="w-28 rounded border px-2 py-1 text-right"
-                      value={formatThousandsInput(entry.unitPrice)}
-                      onChange={(e) =>
-                        updateEntry(index, { unitPrice: parseThousandsInput(e.target.value) ?? 0 })
-                      }
-                    />
-                  </td>
-                  <td className="p-2">
-                    <Button size="icon" variant="ghost" onClick={() => removeEntry(index)}>
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  </td>
-                </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </CardContent>
+        <Table<Row>
+          rowKey="rowIndex"
+          columns={columns}
+          dataSource={dataSource}
+          pagination={false}
+          size="small"
+          scroll={{ x: true }}
+        />
       </Card>
     </main>
   );

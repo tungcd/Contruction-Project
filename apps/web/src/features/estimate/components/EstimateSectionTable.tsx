@@ -1,9 +1,10 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input, Table, type TableColumnsType } from "antd";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatThousandsInput, parseThousandsInput } from "@/lib/utils";
-import type { BOQSection } from "@/lib/estimate/types";
+import type { BOQDraftLine, BOQSection } from "@/lib/estimate/types";
 import {
   confidenceBadgeClass,
   confidenceLabel,
@@ -25,7 +26,103 @@ interface Props {
   ) => void;
 }
 
+type Row = BOQDraftLine & { rowIndex: number };
+
 export function EstimateSectionTable({ section, onChangeLine }: Props) {
+  const columns: TableColumnsType<Row> = [
+    { title: "Hạng mục", dataIndex: "itemName", key: "itemName" },
+    { title: "ĐVT", dataIndex: "unit", key: "unit", width: 64 },
+    {
+      title: "Khối lượng",
+      key: "quantity",
+      width: 110,
+      align: "right",
+      render: (_, row) => (
+        <Input
+          type="number"
+          step="any"
+          value={row.quantity ?? ""}
+          onChange={(e) => {
+            const raw = e.target.value;
+            if (raw === "") {
+              onChangeLine(row.rowIndex, { quantity: null });
+              return;
+            }
+            const parsed = Number(raw);
+            if (Number.isNaN(parsed)) return;
+            onChangeLine(row.rowIndex, { quantity: parsed });
+          }}
+        />
+      ),
+    },
+    {
+      title: "Đơn giá",
+      key: "unitPrice",
+      width: 130,
+      align: "right",
+      render: (_, row) => (
+        <Input
+          inputMode="numeric"
+          value={formatThousandsInput(row.unitPrice)}
+          onChange={(e) =>
+            onChangeLine(row.rowIndex, {
+              unitPrice: parseThousandsInput(e.target.value),
+            })
+          }
+        />
+      ),
+    },
+    {
+      title: "Thành tiền",
+      key: "amount",
+      width: 130,
+      align: "right",
+      render: (_, row) => <span className="font-medium">{formatVnd(row.amount)}</span>,
+    },
+    {
+      title: "Nguồn số liệu",
+      key: "quantitySource",
+      width: 150,
+      render: (_, row) => (
+        <Badge className={quantitySourceBadgeClass[row.quantitySource]}>
+          {quantitySourceLabel[row.quantitySource]}
+        </Badge>
+      ),
+    },
+    {
+      title: "Độ tin cậy",
+      key: "confidence",
+      width: 110,
+      render: (_, row) => (
+        <Badge className={confidenceBadgeClass[row.confidence]}>
+          {confidenceLabel[row.confidence]}
+        </Badge>
+      ),
+    },
+    {
+      title: "Ghi chú",
+      key: "note",
+      width: 220,
+      render: (_, row) => (
+        <Input.TextArea
+          autoSize={{ minRows: 1, maxRows: 4 }}
+          className="text-xs text-muted-foreground"
+          value={row.note ?? ""}
+          onChange={(e) =>
+            onChangeLine(row.rowIndex, {
+              note: e.target.value === "" ? null : e.target.value,
+            })
+          }
+        />
+      ),
+    },
+  ];
+
+  const dataSource: Row[] = section.lines.map((line, rowIndex) => ({
+    ...line,
+    rowIndex,
+  }));
+
   return (
     <Card>
       <CardHeader className="flex-row items-center justify-between border-b">
@@ -34,84 +131,14 @@ export function EstimateSectionTable({ section, onChangeLine }: Props) {
           Tạm tính: {formatVnd(sectionSubtotal(section))}
         </span>
       </CardHeader>
-      <CardContent className="overflow-x-auto p-0">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b bg-muted/50 text-left text-xs uppercase text-muted-foreground">
-              <th className="p-2">Hạng mục</th>
-              <th className="p-2">ĐVT</th>
-              <th className="p-2 text-right">Khối lượng</th>
-              <th className="p-2 text-right">Đơn giá</th>
-              <th className="p-2 text-right">Thành tiền</th>
-              <th className="p-2">Nguồn số liệu</th>
-              <th className="p-2">Độ tin cậy</th>
-              <th className="p-2">Ghi chú</th>
-            </tr>
-          </thead>
-          <tbody>
-            {section.lines.map((line, lineIndex) => (
-              <tr key={line.code} className="border-b align-top last:border-0">
-                <td className="p-2">{line.itemName}</td>
-                <td className="p-2">{line.unit}</td>
-                <td className="p-2 text-right">
-                  <input
-                    type="number"
-                    step="any"
-                    className="w-24 rounded border px-2 py-1 text-right"
-                    value={line.quantity ?? ""}
-                    onChange={(e) => {
-                      const raw = e.target.value;
-                      if (raw === "") {
-                        onChangeLine(lineIndex, { quantity: null });
-                        return;
-                      }
-                      const parsed = Number(raw);
-                      if (Number.isNaN(parsed)) return;
-                      onChangeLine(lineIndex, { quantity: parsed });
-                    }}
-                  />
-                </td>
-                <td className="p-2 text-right">
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    className="w-28 rounded border px-2 py-1 text-right"
-                    value={formatThousandsInput(line.unitPrice)}
-                    onChange={(e) =>
-                      onChangeLine(lineIndex, {
-                        unitPrice: parseThousandsInput(e.target.value),
-                      })
-                    }
-                  />
-                </td>
-                <td className="p-2 text-right font-medium">{formatVnd(line.amount)}</td>
-                <td className="p-2">
-                  <Badge className={quantitySourceBadgeClass[line.quantitySource]}>
-                    {quantitySourceLabel[line.quantitySource]}
-                  </Badge>
-                </td>
-                <td className="p-2">
-                  <Badge className={confidenceBadgeClass[line.confidence]}>
-                    {confidenceLabel[line.confidence]}
-                  </Badge>
-                </td>
-                <td className="p-2">
-                  <textarea
-                    rows={2}
-                    className="w-48 rounded border px-2 py-1 text-xs text-muted-foreground"
-                    value={line.note ?? ""}
-                    onChange={(e) =>
-                      onChangeLine(lineIndex, {
-                        note: e.target.value === "" ? null : e.target.value,
-                      })
-                    }
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </CardContent>
+      <Table<Row>
+        rowKey={(row) => row.code}
+        columns={columns}
+        dataSource={dataSource}
+        pagination={false}
+        size="small"
+        scroll={{ x: true }}
+      />
     </Card>
   );
 }

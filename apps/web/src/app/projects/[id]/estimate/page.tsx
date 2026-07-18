@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { Select } from "antd";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AlertTriangle, ArrowLeft, Download, RefreshCw, Save } from "lucide-react";
 import { projectService } from "@/services/project.service";
@@ -167,36 +168,28 @@ export default function EstimatePage() {
 
         <div className="flex flex-wrap items-center gap-2">
           {priceBooksQuery.data && priceBooksQuery.data.length > 0 && (
-            <select
-              className="rounded-md border px-2 py-1.5 text-sm"
+            <Select
+              className="w-48"
               value={selectedPriceBookId}
-              onChange={(e) => setSelectedPriceBookId(e.target.value)}
+              onChange={(value) => setSelectedPriceBookId(value)}
               title="Bảng giá dùng khi tạo dự toán"
-            >
-              <option value="">Bảng giá demo (mặc định)</option>
-              {priceBooksQuery.data.map((pb) => (
-                <option key={pb.id} value={pb.id}>
-                  {pb.name}
-                </option>
-              ))}
-            </select>
+              options={[
+                { value: "", label: "Bảng giá demo (mặc định)" },
+                ...priceBooksQuery.data.map((pb) => ({ value: pb.id, label: pb.name })),
+              ]}
+            />
           )}
           {history.length > 0 && (
-            <select
-              className="rounded-md border px-2 py-1.5 text-sm"
-              value={selectedVersion}
-              onChange={(e) => loadVersion(e.target.value)}
-            >
-              <option value="" disabled>
-                Lịch sử dự toán ({history.length} bản)
-              </option>
-              {history.map((h) => (
-                <option key={h.id} value={h.id}>
-                  v{h.version} — {new Date(h.updatedAt).toLocaleString("vi-VN")}
-                  {h.editedBy ? ` — ${h.editedBy}` : ""}
-                </option>
-              ))}
-            </select>
+            <Select
+              className="w-64"
+              value={selectedVersion || undefined}
+              placeholder={`Lịch sử dự toán (${history.length} bản)`}
+              onChange={(value) => loadVersion(value)}
+              options={history.map((h) => ({
+                value: h.id,
+                label: `v${h.version} — ${new Date(h.updatedAt).toLocaleString("vi-VN")}${h.editedBy ? ` — ${h.editedBy}` : ""}`,
+              }))}
+            />
           )}
           <Button
             size="sm"

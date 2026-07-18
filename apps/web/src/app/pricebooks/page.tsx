@@ -4,22 +4,26 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Form, DatePicker, Input } from "antd";
+import dayjs from "dayjs";
 import { ArrowLeft, Copy, Plus } from "lucide-react";
 import { pricebookService } from "@/services/pricebook.service";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 
+interface CreateFormValues {
+  name: string;
+  pricingRegion: string;
+  effectiveFrom: dayjs.Dayjs;
+}
+
 /** Milestone Estimate MVP — Feature 5: danh sách + tạo mới PriceBook. */
 export default function PriceBooksPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const [form] = Form.useForm<CreateFormValues>();
   const [showForm, setShowForm] = useState(false);
-  const [name, setName] = useState("");
-  const [pricingRegion, setPricingRegion] = useState("");
-  const [effectiveFrom, setEffectiveFrom] = useState(
-    new Date().toISOString().slice(0, 10),
-  );
 
   const { data: priceBooks, isLoading } = useQuery({
     queryKey: ["pricebooks"],
@@ -27,11 +31,11 @@ export default function PriceBooksPage() {
   });
 
   const createMutation = useMutation({
-    mutationFn: () =>
+    mutationFn: (values: CreateFormValues) =>
       pricebookService.create({
-        name,
-        pricingRegion,
-        effectiveFrom: new Date(effectiveFrom).toISOString(),
+        name: values.name,
+        pricingRegion: values.pricingRegion,
+        effectiveFrom: values.effectiveFrom.toISOString(),
         entries: [],
       }),
     onSuccess: (created) => {
@@ -65,42 +69,45 @@ export default function PriceBooksPage() {
 
       {showForm && (
         <Card className="mb-4">
-          <CardContent className="space-y-3 pt-4">
-            <input
-              className="w-full rounded-md border px-3 py-2 text-sm"
-              placeholder="Tên bảng giá (vd: Bảng giá 2026 - Hà Nội)"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <input
-              className="w-full rounded-md border px-3 py-2 text-sm"
-              placeholder="Vùng giá (vd: Hà Nội)"
-              value={pricingRegion}
-              onChange={(e) => setPricingRegion(e.target.value)}
-            />
-            <input
-              type="date"
-              className="w-full rounded-md border px-3 py-2 text-sm"
-              value={effectiveFrom}
-              onChange={(e) => setEffectiveFrom(e.target.value)}
-            />
-            {createMutation.isError && (
-              <p className="text-sm text-destructive">
-                {(createMutation.error as Error).message}
-              </p>
-            )}
-            <div className="flex gap-2">
-              <Button
-                size="sm"
-                onClick={() => createMutation.mutate()}
-                disabled={!name || !pricingRegion || createMutation.isPending}
+          <CardContent className="pt-4">
+            <Form<CreateFormValues>
+              form={form}
+              layout="vertical"
+              initialValues={{ effectiveFrom: dayjs() }}
+              onFinish={(values) => createMutation.mutate(values)}
+              disabled={createMutation.isPending}
+            >
+              <Form.Item
+                name="name"
+                rules={[{ required: true, whitespace: true, message: "Tên bảng giá không được rỗng" }]}
               >
-                Tạo
-              </Button>
-              <Button size="sm" variant="ghost" onClick={() => setShowForm(false)}>
-                Huỷ
-              </Button>
-            </div>
+                <Input placeholder="Tên bảng giá (vd: Bảng giá 2026 - Hà Nội)" />
+              </Form.Item>
+              <Form.Item
+                name="pricingRegion"
+                rules={[{ required: true, whitespace: true, message: "Vùng giá không được rỗng" }]}
+              >
+                <Input placeholder="Vùng giá (vd: Hà Nội)" />
+              </Form.Item>
+              <Form.Item name="effectiveFrom" rules={[{ required: true }]}>
+                <DatePicker className="w-full" format="DD/MM/YYYY" />
+              </Form.Item>
+              {createMutation.isError && (
+                <p className="mb-3 text-sm text-destructive">
+                  {(createMutation.error as Error).message}
+                </p>
+              )}
+              <Form.Item className="mb-0">
+                <div className="flex gap-2">
+                  <Button size="sm" htmlType="submit" disabled={createMutation.isPending}>
+                    Tạo
+                  </Button>
+                  <Button size="sm" variant="ghost" htmlType="button" onClick={() => setShowForm(false)}>
+                    Huỷ
+                  </Button>
+                </div>
+              </Form.Item>
+            </Form>
           </CardContent>
         </Card>
       )}
