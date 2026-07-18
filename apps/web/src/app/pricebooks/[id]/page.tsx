@@ -198,15 +198,17 @@ export default function PriceBookDetailPage() {
                 return (
                 <tr key={index} className="border-b last:border-0">
                   <td className="p-2">
-                    <input
-                      className={`w-32 ${fieldClass(!!entry.itemCode.trim())}`}
+                    <textarea
+                      rows={2}
+                      className={`w-44 resize-y font-mono text-xs leading-snug ${fieldClass(!!entry.itemCode.trim())}`}
                       value={entry.itemCode}
                       onChange={(e) => updateEntry(index, { itemCode: e.target.value })}
                     />
                   </td>
                   <td className="p-2">
-                    <input
-                      className={`w-56 ${fieldClass(!!entry.itemName.trim())}`}
+                    <textarea
+                      rows={2}
+                      className={`w-56 resize-y leading-snug ${fieldClass(!!entry.itemName.trim())}`}
                       value={entry.itemName}
                       onChange={(e) => updateEntry(index, { itemName: e.target.value })}
                     />
