@@ -4,9 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Form, DatePicker, Input } from "antd";
+import { Form, DatePicker, Input, Popconfirm } from "antd";
 import dayjs from "dayjs";
-import { ArrowLeft, Copy, Plus } from "lucide-react";
+import { ArrowLeft, Copy, Plus, Trash2 } from "lucide-react";
 import { pricebookService } from "@/services/pricebook.service";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -49,6 +49,13 @@ export default function PriceBooksPage() {
     onSuccess: (created) => {
       queryClient.invalidateQueries({ queryKey: ["pricebooks"] });
       router.push(`/pricebooks/${created.id}`);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => pricebookService.remove(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pricebooks"] });
     },
   });
 
@@ -132,18 +139,37 @@ export default function PriceBooksPage() {
                   {new Date(pb.updatedAt).toLocaleString("vi-VN")}
                 </p>
               </Link>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => duplicateMutation.mutate(pb.id)}
-                disabled={duplicateMutation.isPending}
-              >
-                <Copy className="h-4 w-4" /> Nhân bản
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => duplicateMutation.mutate(pb.id)}
+                  disabled={duplicateMutation.isPending}
+                >
+                  <Copy className="h-4 w-4" /> Nhân bản
+                </Button>
+                <Popconfirm
+                  title="Xoá bảng giá này?"
+                  description={`"${pb.name}" sẽ mất vĩnh viễn, không khôi phục được.`}
+                  okText="Xoá"
+                  cancelText="Huỷ"
+                  okButtonProps={{ danger: true }}
+                  onConfirm={() => deleteMutation.mutate(pb.id)}
+                >
+                  <Button size="sm" variant="outline" disabled={deleteMutation.isPending}>
+                    <Trash2 className="h-4 w-4 text-destructive" />
+                  </Button>
+                </Popconfirm>
+              </div>
             </CardContent>
           </Card>
         ))}
       </div>
+      {deleteMutation.isError && (
+        <p className="mt-2 text-sm text-destructive">
+          {(deleteMutation.error as Error).message}
+        </p>
+      )}
     </main>
   );
 }

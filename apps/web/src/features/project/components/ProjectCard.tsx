@@ -1,8 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Popconfirm } from "antd";
+import { Trash2 } from "lucide-react";
 import type { ProjectSummary } from "@acc/shared-types";
+import { projectService } from "@/services/project.service";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
   projectStatusLabel,
   scoreBarClass,
@@ -10,6 +15,13 @@ import {
 } from "@/features/requirement/requirement-view";
 
 export function ProjectCard({ project }: { project: ProjectSummary }) {
+  const queryClient = useQueryClient();
+
+  const deleteMutation = useMutation({
+    mutationFn: () => projectService.remove(project.id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["projects"] }),
+  });
+
   return (
     <Link href={`/projects/${project.id}`}>
       <Card className="transition-colors hover:border-primary/50">
@@ -33,6 +45,26 @@ export function ProjectCard({ project }: { project: ProjectSummary }) {
             >
               {project.score}%
             </span>
+            <Popconfirm
+              title="Xoá dự án này?"
+              description={`"${project.name}" và toàn bộ dữ liệu liên quan (hội thoại, requirement, dự toán) sẽ mất vĩnh viễn.`}
+              okText="Xoá"
+              cancelText="Huỷ"
+              okButtonProps={{ danger: true }}
+              onConfirm={() => deleteMutation.mutate()}
+            >
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+                disabled={deleteMutation.isPending}
+              >
+                <Trash2 className="h-4 w-4 text-destructive" />
+              </Button>
+            </Popconfirm>
           </div>
         </CardContent>
       </Card>

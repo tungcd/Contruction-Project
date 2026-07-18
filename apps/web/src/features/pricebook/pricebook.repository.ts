@@ -164,6 +164,13 @@ export async function duplicatePriceBook(
   });
 }
 
+/** Xoá PriceBook — cascade xoá luôn entries (Prisma onDelete: Cascade). */
+export async function deletePriceBook(id: string): Promise<{ id: string }> {
+  await ensurePriceBookExists(id);
+  await prisma.priceBook.delete({ where: { id } });
+  return { id };
+}
+
 async function ensurePriceBookExists(id: string): Promise<void> {
   const count = await prisma.priceBook.count({ where: { id } });
   if (count === 0) throw notFound("Không tìm thấy bảng giá");

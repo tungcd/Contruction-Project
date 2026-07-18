@@ -49,4 +49,7 @@ export const pricebookService = {
       method: "POST",
       body: JSON.stringify({ name }),
     }),
+
+  remove: (id: string) =>
+    request<{ id: string }>(`/pricebooks/${id}`, { method: "DELETE" }),
 };

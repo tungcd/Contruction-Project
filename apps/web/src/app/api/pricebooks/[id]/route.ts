@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server";
 import { assertUuid, handle, ok } from "@/lib/http";
 import { UpdatePriceBookSchema } from "@/features/pricebook/pricebook.schema";
 import {
+  deletePriceBook,
   getPriceBook,
   updatePriceBook,
 } from "@/features/pricebook/pricebook.repository";
@@ -24,5 +25,13 @@ export async function PATCH(req: NextRequest, { params }: Ctx) {
     const { id } = await params;
     const body = UpdatePriceBookSchema.parse(await req.json());
     return ok(await updatePriceBook(assertUuid(id), body));
+  });
+}
+
+/** Xoá PriceBook (kèm confirm popup phía UI). */
+export async function DELETE(_req: NextRequest, { params }: Ctx) {
+  return handle(async () => {
+    const { id } = await params;
+    return ok(await deletePriceBook(assertUuid(id)));
   });
 }
