@@ -65,6 +65,20 @@ export const FoundationType = z.enum([
 ]);
 export type FoundationType = z.infer<typeof FoundationType>;
 
+/**
+ * Vòng đời xác nhận Requirement (REQ-D7, xem
+ * docs/features/concept-design/requirement/requirement-domain-model.md
+ * §4). Constraint Set Compiler chỉ compile khi status = "confirmed"
+ * (Explicit Precondition).
+ */
+export const RequirementStatus = z.enum([
+  "draft",
+  "needs_clarification",
+  "ready",
+  "confirmed",
+]);
+export type RequirementStatus = z.infer<typeof RequirementStatus>;
+
 // --- Nhóm thông tin (xem 03-Data-Model mục 5.3) ---
 
 export const ProjectInfoSchema = z.object({
@@ -100,6 +114,7 @@ export const HouseholdInfoSchema = z.object({
   children: z.number().int().nonnegative().nullable().default(null),
   hasElderly: z.boolean().nullable().default(null), // có người già ở cùng
   cars: z.number().int().nonnegative().nullable().default(null),
+  accessibilityNeeds: z.boolean().nullable().default(null), // nhu cầu tiếp cận (người khuyết tật...)
 });
 
 export const FunctionalNeedsSchema = z.object({
@@ -112,7 +127,8 @@ export const FunctionalNeedsSchema = z.object({
   garage: z.boolean().nullable().default(null), // gara / sân ô tô
   garden: z.boolean().nullable().default(null), // sân vườn
   balcony: z.boolean().nullable().default(null), // ban công
-  otherRooms: z.array(z.string()).default([]), // phòng ngoài danh sách
+  otherRooms: z.array(z.string()).default([]), // phòng ngoài danh sách, KHÁCH MUỐN có
+  excludedRooms: z.array(z.string()).default([]), // phòng ngoài danh sách, KHÁCH TỪ CHỐI (REQ-D3)
 });
 
 export const BudgetInfoSchema = z.object({
@@ -130,6 +146,8 @@ export const TimelineInfoSchema = z.object({
 
 // --- Requirement tổng ---
 export const RequirementSchema = z.object({
+  status: RequirementStatus.default("draft"),
+  confirmedAt: z.string().nullable().default(null), // ISO timestamp — chỉ set khi status = "confirmed"
   project: ProjectInfoSchema.default({}),
   site: SiteInfoSchema.default({}),
   building: BuildingInfoSchema.default({}),

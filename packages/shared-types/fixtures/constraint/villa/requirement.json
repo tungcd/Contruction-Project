@@ -1,0 +1,48 @@
+{
+  "status": "confirmed",
+  "confirmedAt": "2026-07-18T10:00:00.000Z",
+  "project": {
+    "projectType": "new_build",
+    "buildingType": "villa",
+    "province": "Đồng Nai"
+  },
+  "site": {
+    "landArea": 300,
+    "buildingFootprint": 150,
+    "totalFloorArea": 400,
+    "frontage": 15,
+    "depth": 20
+  },
+  "building": {
+    "floors": 2,
+    "basementLevels": 0,
+    "roofType": "thai",
+    "roofTypeNote": "Khách thích mái Thái nhưng vẫn cân nhắc thêm mái Nhật",
+    "architecturalStyle": "indochine",
+    "architecturalStyleNote": "Thích tông màu vàng đất, không chắc gọi đúng tên phong cách gì",
+    "foundationType": "raft"
+  },
+  "household": {
+    "adults": 6,
+    "children": 2,
+    "hasElderly": true,
+    "accessibilityNeeds": true
+  },
+  "functional": {
+    "bedrooms": 5,
+    "bathrooms": 5,
+    "livingRoom": true,
+    "kitchen": true,
+    "worshipRoom": true,
+    "storage": true,
+    "garage": true,
+    "garden": true,
+    "balcony": true
+  },
+  "budget": {
+    "budgetMin": 6000000000,
+    "budgetMax": 8000000000,
+    "constructionScope": "turnkey"
+  },
+  "notes": "Ông bà muốn phòng ngủ ở tầng trệt, gần lối ra vào chính"
+}

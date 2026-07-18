@@ -1,0 +1,56 @@
+{
+  "metadata": {
+    "compilerVersion": "0.1.0",
+    "compiledAt": "IGNORED",
+    "sourceRequirementConfirmedAt": "2026-07-18T09:30:00.000Z"
+  },
+  "site": {
+    "landArea": { "value": 80, "constraintType": "exact" },
+    "buildingFootprint": null,
+    "totalFloorArea": null,
+    "frontage": { "value": 5, "constraintType": "exact" },
+    "depth": { "value": 16, "constraintType": "exact" },
+    "roadWidth": { "value": 6, "constraintType": "exact" }
+  },
+  "building": {
+    "buildingType": { "value": "townhouse", "constraintType": "exact" },
+    "floors": { "value": 3, "constraintType": "exact" },
+    "basementLevels": null,
+    "constructionScope": { "value": "turnkey_with_interior", "constraintType": "exact" }
+  },
+  "household": {
+    "hasElderly": null,
+    "children": null,
+    "accessibilityNeeds": null
+  },
+  "spaces": {
+    "bedrooms": { "value": 4, "constraintType": "exact" },
+    "bathrooms": { "value": 3, "constraintType": "exact" },
+    "livingRoom": { "value": true, "constraintType": "required" },
+    "kitchen": { "value": true, "constraintType": "required" },
+    "worshipRoom": null,
+    "storage": null,
+    "garage": { "value": false, "constraintType": "forbidden" },
+    "garden": null,
+    "balcony": { "value": true, "constraintType": "required" },
+    "otherRooms": { "value": ["phòng thờ ông bà"], "constraintType": "required" },
+    "excludedRooms": { "value": ["phòng đọc sách"], "constraintType": "forbidden" }
+  },
+  "structure": {
+    "foundationType": null,
+    "roofType": { "value": "flat", "constraintType": "exact" }
+  },
+  "style": {
+    "architecturalStyle": { "value": "modern", "constraintType": "preferred" }
+  },
+  "budget": {
+    "budget": { "value": { "min": 1800000000, "max": 2200000000 }, "constraintType": "required" }
+  },
+  "unresolved": [
+    {
+      "sourceField": "budget.budgetNote",
+      "rawValue": "Khách nói có thể co giãn thêm 10% nếu vật liệu tốt hơn",
+      "reason": "ghi chú tự do, chưa có cơ chế biên dịch thành constraint có cấu trúc"
+    }
+  ]
+}

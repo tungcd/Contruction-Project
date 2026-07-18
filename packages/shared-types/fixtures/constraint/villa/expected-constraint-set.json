@@ -1,0 +1,66 @@
+{
+  "metadata": {
+    "compilerVersion": "0.1.0",
+    "compiledAt": "IGNORED",
+    "sourceRequirementConfirmedAt": "2026-07-18T10:00:00.000Z"
+  },
+  "site": {
+    "landArea": { "value": 300, "constraintType": "exact" },
+    "buildingFootprint": { "value": 150, "constraintType": "exact" },
+    "totalFloorArea": { "value": 400, "constraintType": "exact" },
+    "frontage": { "value": 15, "constraintType": "exact" },
+    "depth": { "value": 20, "constraintType": "exact" },
+    "roadWidth": null
+  },
+  "building": {
+    "buildingType": { "value": "villa", "constraintType": "exact" },
+    "floors": { "value": 2, "constraintType": "exact" },
+    "basementLevels": { "value": 0, "constraintType": "exact" },
+    "constructionScope": { "value": "turnkey", "constraintType": "exact" }
+  },
+  "household": {
+    "hasElderly": { "value": true, "constraintType": "required" },
+    "children": { "value": 2, "constraintType": "exact" },
+    "accessibilityNeeds": { "value": true, "constraintType": "required" }
+  },
+  "spaces": {
+    "bedrooms": { "value": 5, "constraintType": "exact" },
+    "bathrooms": { "value": 5, "constraintType": "exact" },
+    "livingRoom": { "value": true, "constraintType": "required" },
+    "kitchen": { "value": true, "constraintType": "required" },
+    "worshipRoom": { "value": true, "constraintType": "required" },
+    "storage": { "value": true, "constraintType": "required" },
+    "garage": { "value": true, "constraintType": "required" },
+    "garden": { "value": true, "constraintType": "required" },
+    "balcony": { "value": true, "constraintType": "required" },
+    "otherRooms": null,
+    "excludedRooms": null
+  },
+  "structure": {
+    "foundationType": { "value": "raft", "constraintType": "exact" },
+    "roofType": { "value": "thai", "constraintType": "exact" }
+  },
+  "style": {
+    "architecturalStyle": { "value": "indochine", "constraintType": "preferred" }
+  },
+  "budget": {
+    "budget": { "value": { "min": 6000000000, "max": 8000000000 }, "constraintType": "required" }
+  },
+  "unresolved": [
+    {
+      "sourceField": "building.roofTypeNote",
+      "rawValue": "Khách thích mái Thái nhưng vẫn cân nhắc thêm mái Nhật",
+      "reason": "ghi chú tự do, chưa có cơ chế biên dịch thành constraint có cấu trúc"
+    },
+    {
+      "sourceField": "building.architecturalStyleNote",
+      "rawValue": "Thích tông màu vàng đất, không chắc gọi đúng tên phong cách gì",
+      "reason": "ghi chú tự do, chưa có cơ chế biên dịch thành constraint có cấu trúc"
+    },
+    {
+      "sourceField": "notes",
+      "rawValue": "Ông bà muốn phòng ngủ ở tầng trệt, gần lối ra vào chính",
+      "reason": "ghi chú tự do, chưa có cơ chế biên dịch thành constraint có cấu trúc"
+    }
+  ]
+}

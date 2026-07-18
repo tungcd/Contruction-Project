@@ -1,0 +1,37 @@
+{
+  "status": "confirmed",
+  "confirmedAt": "2026-07-18T09:30:00.000Z",
+  "project": {
+    "projectType": "new_build",
+    "buildingType": "townhouse",
+    "province": "TP.HCM",
+    "district": "Quận 12"
+  },
+  "site": {
+    "landArea": 80,
+    "frontage": 5,
+    "depth": 16,
+    "roadWidth": 6
+  },
+  "building": {
+    "floors": 3,
+    "roofType": "flat",
+    "architecturalStyle": "modern"
+  },
+  "functional": {
+    "bedrooms": 4,
+    "bathrooms": 3,
+    "livingRoom": true,
+    "kitchen": true,
+    "garage": false,
+    "balcony": true,
+    "otherRooms": ["phòng thờ ông bà"],
+    "excludedRooms": ["phòng đọc sách"]
+  },
+  "budget": {
+    "budgetMin": 1800000000,
+    "budgetMax": 2200000000,
+    "budgetNote": "Khách nói có thể co giãn thêm 10% nếu vật liệu tốt hơn",
+    "constructionScope": "turnkey_with_interior"
+  }
+}

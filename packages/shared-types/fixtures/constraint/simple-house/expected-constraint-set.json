@@ -1,0 +1,50 @@
+{
+  "metadata": {
+    "compilerVersion": "0.1.0",
+    "compiledAt": "IGNORED",
+    "sourceRequirementConfirmedAt": "2026-07-18T09:00:00.000Z"
+  },
+  "site": {
+    "landArea": { "value": 60, "constraintType": "exact" },
+    "buildingFootprint": null,
+    "totalFloorArea": null,
+    "frontage": null,
+    "depth": null,
+    "roadWidth": null
+  },
+  "building": {
+    "buildingType": { "value": "level4", "constraintType": "exact" },
+    "floors": { "value": 1, "constraintType": "exact" },
+    "basementLevels": null,
+    "constructionScope": null
+  },
+  "household": {
+    "hasElderly": null,
+    "children": null,
+    "accessibilityNeeds": null
+  },
+  "spaces": {
+    "bedrooms": { "value": 2, "constraintType": "exact" },
+    "bathrooms": { "value": 1, "constraintType": "exact" },
+    "livingRoom": { "value": true, "constraintType": "required" },
+    "kitchen": { "value": true, "constraintType": "required" },
+    "worshipRoom": null,
+    "storage": null,
+    "garage": null,
+    "garden": null,
+    "balcony": null,
+    "otherRooms": null,
+    "excludedRooms": null
+  },
+  "structure": {
+    "foundationType": null,
+    "roofType": null
+  },
+  "style": {
+    "architecturalStyle": null
+  },
+  "budget": {
+    "budget": { "value": { "min": 500000000, "max": 700000000 }, "constraintType": "required" }
+  },
+  "unresolved": []
+}
