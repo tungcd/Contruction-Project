@@ -105,3 +105,24 @@ export async function saveDraft(
   });
   return toRecord(created);
 }
+
+/**
+ * Demo Polish — Task 1: đánh dấu 1 version đã "Xác nhận". Không tự động
+ * bỏ xác nhận version khác — mỗi version giữ trạng thái độc lập, Proposal
+ * luôn dùng version confirmed MỚI NHẤT (xem estimate.service.ts).
+ */
+export async function confirmDraft(
+  projectId: string,
+  draftId: string,
+): Promise<EstimateDraftRecord> {
+  const row = await prisma.estimateDraft.findFirst({
+    where: { id: draftId, projectId },
+  });
+  if (!row) throw notFound("Không tìm thấy bản dự toán");
+
+  const updated = await prisma.estimateDraft.update({
+    where: { id: draftId },
+    data: { status: "confirmed" },
+  });
+  return toRecord(updated);
+}

@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Building2, Wallet } from "lucide-react";
+import { Plus, Building2, Wallet, Settings } from "lucide-react";
 import type { CreateProjectInput } from "@acc/shared-types";
 import { projectService } from "@/services/project.service";
 import { Button } from "@/components/ui/button";
@@ -41,6 +41,11 @@ export default function DashboardPage() {
           <Link href="/pricebooks">
             <Button variant="outline">
               <Wallet className="h-4 w-4" /> Bảng giá
+            </Button>
+          </Link>
+          <Link href="/settings/contractor">
+            <Button variant="outline">
+              <Settings className="h-4 w-4" /> Hồ sơ nhà thầu
             </Button>
           </Link>
           <Button onClick={() => setShowForm((s) => !s)}>

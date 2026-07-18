@@ -33,3 +33,22 @@
     @apply bg-background text-foreground;
   }
 }
+
+/**
+ * Demo Polish — Task 3: Proposal PDF. In/Xuất PDF dùng window.print(),
+ * scope riêng vào .proposal-print-area để không ảnh hưởng in trang khác.
+ */
+@media print {
+  .proposal-print-area {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+  .proposal-print-area .ant-card {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+    break-inside: avoid;
+  }
+  @page {
+    margin: 16mm;
+  }
+}

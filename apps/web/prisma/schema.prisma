@@ -104,22 +104,22 @@ model History {
 /// Nhiều bản/project, KHÔNG ghi đè như Requirement (câu hỏi 4, M3-002 mục 9
 /// — chọn "giữ lịch sử" vì Milestone Estimate MVP yêu cầu Estimate History).
 model EstimateDraft {
-  id        String              @id @default(uuid())
-  projectId String
-  project   Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  version   Int
-  status    EstimateDraftStatus @default(draft)
+  id                              String              @id @default(uuid())
+  projectId                       String
+  project                         Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  version                         Int
+  status                          EstimateDraftStatus @default(draft)
   /// Không có auth ở MVP — text tự do, server luôn ghi "Founder" (Feature 2).
-  editedBy  String?
+  editedBy                        String?
   /// Snapshot Requirement.updatedAt lúc lưu Draft — cảnh báo "Requirement đã
   /// đổi từ lúc tạo Draft này" (Design M3-002 mục 2.3). Đọc từ DB phía
   /// server, KHÔNG nhận từ client.
   generatedFromRequirementVersion DateTime
   /// Toàn bộ EstimateDraft JSON (priceBookId, priceBookIsDemo, sections[]...)
   /// — đúng contract apps/web/src/lib/estimate/types.ts, không parse lại ở DB.
-  data      Json
-  createdAt DateTime            @default(now())
-  updatedAt DateTime            @updatedAt
+  data                            Json
+  createdAt                       DateTime            @default(now())
+  updatedAt                       DateTime            @updatedAt
 
   @@unique([projectId, version])
   @@index([projectId])
@@ -157,4 +157,23 @@ model PriceBookEntry {
   updatedAt    DateTime     @updatedAt
 
   @@index([priceBookId])
+}
+
+/// Demo Polish — Task 2. Singleton — 1 dòng duy nhất (id cố định
+/// "singleton" ở tầng repository), KHÔNG per-user/per-org (MVP không có
+/// auth/tổ chức). Dùng chung cho mọi Proposal.
+model ContractorProfile {
+  id                          String   @id @default(uuid())
+  companyName                 String
+  logoUrl                     String?
+  address                     String?
+  phone                       String?
+  email                       String?
+  website                     String?
+  warrantyNote                String?
+  defaultProposalValidityDays Int      @default(30)
+  /// PaymentMilestone[] (lib/proposal/types.ts) — không parse lại ở DB,
+  /// cùng quy ước với EstimateDraft.data.
+  defaultPaymentPlan          Json     @default("[]")
+  updatedAt                   DateTime @updatedAt
 }

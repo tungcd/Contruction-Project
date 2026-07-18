@@ -20,6 +20,7 @@ import { buildEstimateDraft } from "@/lib/estimate/engine";
 import { DEFAULT_ESTIMATE_SETTINGS } from "@/lib/estimate/sample-data/settings.sample";
 import { DEMO_PRICE_BOOK } from "@/lib/estimate/sample-data/price-book.demo";
 import { buildProposal, ProposalNotReadyError } from "@/lib/proposal/builder";
+import type { ContractorProfile } from "@/lib/proposal/types";
 
 const fixturesDir = path.join(
   __dirname,
@@ -32,12 +33,20 @@ const fixturesDir = path.join(
   "constraint",
 );
 
-const CONTRACTOR = {
+const CONTRACTOR: ContractorProfile = {
   companyName: "[DEMO] Công ty Xây dựng ABC",
-  phone: "0900 000 000",
+  logoUrl: null,
   address: null,
+  phone: "0900 000 000",
+  email: null,
+  website: null,
+  warrantyNote: "Bảo hành kết cấu 10 năm, hoàn thiện 2 năm.",
+  defaultProposalValidityDays: 30,
+  defaultPaymentPlan: [
+    { label: "Đặt cọc", percent: 30 },
+    { label: "Bàn giao", percent: 70 },
+  ],
 };
-const SETTINGS = { validityDays: 30 };
 
 const cases = readdirSync(fixturesDir, { withFileTypes: true })
   .filter((d) => d.isDirectory())
@@ -65,7 +74,6 @@ for (const name of cases) {
       "confirmed",
       { name: "Anh " + name, phone: "090xxxxxxx" },
       CONTRACTOR,
-      SETTINGS,
     );
 
     // exclusions phải khớp CHÍNH XÁC requirement.functional.excludedRooms — không được biến đổi.
@@ -79,13 +87,13 @@ for (const name of cases) {
     const expectAssumption = proposal.estimateSummary.needsSurveyOrMeasurementCount > 0;
     assert.equal(proposal.assumptions.length > 0, expectAssumption);
 
-    // validity = generatedAt + 30 ngày, sai lệch phải bằng 0 (tính bằng ms).
+    // validity = generatedAt + defaultProposalValidityDays, sai lệch phải bằng 0 (tính bằng ms).
     const diffMs =
       new Date(proposal.validity.validUntil).getTime() - new Date(proposal.generatedAt).getTime();
-    assert.equal(diffMs, SETTINGS.validityDays * 24 * 60 * 60 * 1000);
+    assert.equal(diffMs, CONTRACTOR.defaultProposalValidityDays * 24 * 60 * 60 * 1000);
 
-    // paymentPlan mặc định rỗng (MVP không suy đoán).
-    assert.deepStrictEqual(proposal.paymentPlan, []);
+    // paymentPlan lấy từ contractorInfo.defaultPaymentPlan.
+    assert.deepStrictEqual(proposal.paymentPlan, CONTRACTOR.defaultPaymentPlan);
 
     // projectSummary/proposedScope không rỗng vô lý (Requirement đã confirmed phải có ít nhất vài field).
     assert.ok(proposal.projectSummary.length > 0, "projectSummary rỗng bất thường");
@@ -112,7 +120,6 @@ try {
     "confirmed",
     { name: null, phone: null },
     CONTRACTOR,
-    SETTINGS,
   );
   console.log("  FAIL  precondition — lẽ ra phải throw ProposalNotReadyError");
 } catch (err) {

@@ -38,6 +38,13 @@ export const estimateService = {
       body: JSON.stringify({ data: draft }),
     }),
 
+  /** Demo Polish — Task 1: Draft -> Confirmed. Proposal chỉ đọc bản confirmed. */
+  confirmDraft: (projectId: string, draftId: string) =>
+    request<EstimateDraftRecord>(
+      `/projects/${projectId}/estimate-drafts/${draftId}`,
+      { method: "PATCH", body: JSON.stringify({ status: "confirmed" }) },
+    ),
+
   /**
    * Feature 6 — response thành công là file nhị phân (xlsx), không phải
    * `{ success, data, message }` như `request()` giả định, nên gọi fetch

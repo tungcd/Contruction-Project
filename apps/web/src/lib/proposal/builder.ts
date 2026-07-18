@@ -2,7 +2,7 @@ import type { Requirement } from "@acc/shared-types";
 import type { EstimateDraft } from "@/lib/estimate/types";
 import { buildCoreSections, buildScopeSection } from "@/features/requirement/brief-view";
 import { buildEstimateSummary } from "@/features/estimate/estimate-view";
-import type { ContractorProfile, Proposal, ProposalSettings } from "./types";
+import type { ContractorProfile, Proposal } from "./types";
 
 /**
  * Proposal Builder — Pure Function, Deterministic, No AI (v1). Ghép
@@ -31,7 +31,6 @@ export function buildProposal(
   estimateStatus: "draft" | "confirmed",
   customer: { name: string | null; phone: string | null },
   contractorInfo: ContractorProfile,
-  settings: ProposalSettings,
 ): Proposal {
   if (requirement.status !== "confirmed") {
     throw new ProposalNotReadyError(
@@ -66,8 +65,11 @@ export function buildProposal(
       expectedStart: requirement.timeline.expectedStart,
       expectedFinish: requirement.timeline.expectedFinish,
     },
-    paymentPlan: [],
-    validity: { validUntil: addDays(generatedAt, settings.validityDays) },
+    paymentPlan: contractorInfo.defaultPaymentPlan,
+    validity: {
+      validUntil: addDays(generatedAt, contractorInfo.defaultProposalValidityDays),
+    },
+    warrantyNote: contractorInfo.warrantyNote,
     contractorInfo,
   };
 }

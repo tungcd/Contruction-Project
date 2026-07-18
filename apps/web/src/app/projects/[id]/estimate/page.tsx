@@ -8,6 +8,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertTriangle,
   ArrowLeft,
+  CheckCircle2,
   Download,
   RefreshCw,
   Save,
@@ -29,6 +30,11 @@ export default function EstimatePage() {
   const [selectedVersion, setSelectedVersion] = useState<string>("");
   const [selectedPriceBookId, setSelectedPriceBookId] = useState<string>("");
   const [savedAt, setSavedAt] = useState<string | null>(null);
+  // Demo Polish — Task 4: phát hiện qua rà soát code — nếu sửa dòng rồi bấm
+  // "Xác nhận" mà chưa "Lưu", server sẽ xác nhận bản CŨ (selectedVersion vẫn
+  // trỏ version đã lưu trước đó), thay đổi vừa sửa bị bỏ qua âm thầm. Khoá
+  // nút Xác nhận khi có thay đổi chưa lưu để tránh đúng lỗi này.
+  const [isDirty, setIsDirty] = useState(false);
   const autoLoaded = useRef(false);
   const autoSelectedPriceBook = useRef(false);
 
@@ -76,6 +82,7 @@ export default function EstimatePage() {
     setSelectedVersion(latest.id);
     estimateService.getDraftVersion(id, latest.id).then((record) => {
       setDraft(record.data);
+      setIsDirty(false);
     });
   }, [historyQuery.data, id]);
 
@@ -90,6 +97,7 @@ export default function EstimatePage() {
       setDraft(result);
       setSelectedVersion("");
       setSavedAt(null);
+      setIsDirty(false);
     },
   });
 
@@ -98,6 +106,14 @@ export default function EstimatePage() {
     onSuccess: (record) => {
       setSavedAt(record.updatedAt);
       setSelectedVersion(record.id);
+      setIsDirty(false);
+      queryClient.invalidateQueries({ queryKey: ["estimate-drafts", id] });
+    },
+  });
+
+  const confirmMutation = useMutation({
+    mutationFn: () => estimateService.confirmDraft(id, selectedVersion),
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["estimate-drafts", id] });
     },
   });
@@ -120,6 +136,7 @@ export default function EstimatePage() {
     estimateService.getDraftVersion(id, draftId).then((record) => {
       setDraft(record.data);
       setSavedAt(record.updatedAt);
+      setIsDirty(false);
     });
   }
 
@@ -147,6 +164,7 @@ export default function EstimatePage() {
       note?: string | null;
     },
   ) {
+    setIsDirty(true);
     setDraft((prev) => {
       if (!prev) return prev;
       return {
@@ -188,6 +206,8 @@ export default function EstimatePage() {
     );
 
   const history = historyQuery.data ?? [];
+  const selectedHistoryEntry = history.find((h) => h.id === selectedVersion);
+  const isConfirmed = selectedHistoryEntry?.status === "confirmed";
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-8">
@@ -240,6 +260,26 @@ export default function EstimatePage() {
           >
             <Save className="h-4 w-4" /> Lưu
           </Button>
+          {isConfirmed ? (
+            <span className="flex items-center gap-1 rounded-md border border-green-200 bg-green-50 px-3 py-1.5 text-sm text-green-700">
+              <CheckCircle2 className="h-4 w-4" /> Đã xác nhận
+            </span>
+          ) : (
+            <Button
+              variant="outline"
+              onClick={() => confirmMutation.mutate()}
+              disabled={!selectedVersion || isDirty || confirmMutation.isPending}
+              title={
+                !selectedVersion
+                  ? "Cần Lưu dự toán trước khi xác nhận"
+                  : isDirty
+                    ? "Có thay đổi chưa lưu — bấm Lưu trước khi xác nhận"
+                    : "Đánh dấu bản này đã chốt — Báo giá đề xuất sẽ dùng bản này"
+              }
+            >
+              <CheckCircle2 className="h-4 w-4" /> Xác nhận
+            </Button>
+          )}
           <Button
             variant="outline"
             onClick={() => exportMutation.mutate()}
@@ -260,12 +300,23 @@ export default function EstimatePage() {
           {(saveMutation.error as Error).message}
         </p>
       )}
+      {confirmMutation.isError && (
+        <p className="mb-4 text-sm text-destructive">
+          {(confirmMutation.error as Error).message}
+        </p>
+      )}
       {exportMutation.isError && (
         <p className="mb-4 text-sm text-destructive">
           {(exportMutation.error as Error).message}
         </p>
       )}
-      {savedAt && !saveMutation.isPending && (
+      {isDirty && (
+        <p className="mb-4 text-xs text-amber-600">
+          Có thay đổi chưa lưu — bấm &quot;Lưu&quot; trước khi Xác nhận, nếu không thay
+          đổi sẽ không được đưa vào bản Báo giá đề xuất.
+        </p>
+      )}
+      {!isDirty && savedAt && !saveMutation.isPending && (
         <p className="mb-4 text-xs text-muted-foreground">
           Đã lưu lúc {new Date(savedAt).toLocaleString("vi-VN")}
         </p>

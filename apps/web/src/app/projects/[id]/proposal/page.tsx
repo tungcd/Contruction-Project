@@ -7,25 +7,18 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Printer } from "lucide-react";
 import { projectService } from "@/services/project.service";
 import { estimateService } from "@/services/estimate.service";
+import { contractorProfileService } from "@/services/contractorProfile.service";
 import { Button } from "@/components/ui/button";
 import { buildProposal, ProposalNotReadyError } from "@/lib/proposal/builder";
-import type { ContractorProfile } from "@/lib/proposal/types";
 import { ProposalView } from "@/features/proposal/components/ProposalView";
 
 /**
  * Proposal MVP — Web Preview + In/Xuất PDF (`window.print()`, không cần
  * thư viện PDF riêng — xem 16_Architecture-Proposal-MVP.md mục 5).
  *
- * DEMO — ContractorProfile hiện hardcode (chưa có màn hình cài đặt hồ sơ
- * nhà thầu, MVP single-user). Đổi tại đây cho tới khi có Settings riêng.
+ * Demo Polish Task 2: ContractorProfile giờ đọc từ
+ * `/settings/contractor` (singleton), không còn hardcode.
  */
-const DEMO_CONTRACTOR: ContractorProfile = {
-  companyName: "[DEMO] Công ty Xây dựng ABC",
-  phone: "0900 000 000",
-  address: null,
-};
-const PROPOSAL_SETTINGS = { validityDays: 30 };
-
 export default function ProposalPage() {
   const { id } = useParams<{ id: string }>();
 
@@ -33,6 +26,11 @@ export default function ProposalPage() {
     queryKey: ["project", id],
     queryFn: () => projectService.get(id),
     enabled: !!id,
+  });
+
+  const { data: contractorProfile, isLoading: loadingContractor } = useQuery({
+    queryKey: ["contractor-profile"],
+    queryFn: contractorProfileService.get,
   });
 
   const { data: draftHistory, isLoading: loadingHistory } = useQuery({
@@ -53,7 +51,7 @@ export default function ProposalPage() {
   });
 
   const proposalResult = useMemo(() => {
-    if (!project || !confirmedDraft) return null;
+    if (!project || !confirmedDraft || !contractorProfile) return null;
     try {
       return {
         proposal: buildProposal(
@@ -61,8 +59,7 @@ export default function ProposalPage() {
           confirmedDraft.data,
           confirmedDraft.status,
           { name: project.customerName, phone: project.customerPhone },
-          DEMO_CONTRACTOR,
-          PROPOSAL_SETTINGS,
+          contractorProfile,
         ),
         error: null,
       };
@@ -72,12 +69,12 @@ export default function ProposalPage() {
         error: err instanceof ProposalNotReadyError ? err.message : "Lỗi không xác định",
       };
     }
-  }, [project, confirmedDraft]);
+  }, [project, confirmedDraft, contractorProfile]);
 
-  const isLoading = loadingProject || loadingHistory || loadingDraft;
+  const isLoading = loadingProject || loadingHistory || loadingDraft || loadingContractor;
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-8">
+    <main className="proposal-print-area mx-auto max-w-3xl px-4 py-8">
       <div className="mb-4 flex items-center justify-between print:hidden">
         <Link href={`/projects/${id}`}>
           <Button variant="ghost" size="sm">

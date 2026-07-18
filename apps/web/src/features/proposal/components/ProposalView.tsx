@@ -41,18 +41,28 @@ function SectionCard({ section }: { section: BriefSection }) {
 export function ProposalView({ projectName, proposal }: Props) {
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-xl font-bold">Báo giá đề xuất: {projectName}</h1>
-        {proposal.customerSummary.name && (
-          <p className="text-sm text-muted-foreground">
-            Khách hàng: {proposal.customerSummary.name}
-            {proposal.customerSummary.phone ? ` — ${proposal.customerSummary.phone}` : ""}
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-xl font-bold">Báo giá đề xuất: {projectName}</h1>
+          {proposal.customerSummary.name && (
+            <p className="text-sm text-muted-foreground">
+              Khách hàng: {proposal.customerSummary.name}
+              {proposal.customerSummary.phone ? ` — ${proposal.customerSummary.phone}` : ""}
+            </p>
+          )}
+          <p className="text-xs text-muted-foreground">
+            Lập ngày {new Date(proposal.generatedAt).toLocaleDateString("vi-VN")} — có hiệu lực đến{" "}
+            {new Date(proposal.validity.validUntil).toLocaleDateString("vi-VN")}
           </p>
+        </div>
+        {proposal.contractorInfo.logoUrl && (
+          // eslint-disable-next-line @next/next/no-img-element -- URL bất kỳ do Founder nhập, không qua next/image domain whitelist
+          <img
+            src={proposal.contractorInfo.logoUrl}
+            alt={proposal.contractorInfo.companyName}
+            className="h-12 w-auto object-contain"
+          />
         )}
-        <p className="text-xs text-muted-foreground">
-          Lập ngày {new Date(proposal.generatedAt).toLocaleDateString("vi-VN")} — có hiệu lực đến{" "}
-          {new Date(proposal.validity.validUntil).toLocaleDateString("vi-VN")}
-        </p>
       </div>
 
       {proposal.projectSummary.map((section) => (
@@ -148,13 +158,30 @@ export function ProposalView({ projectName, proposal }: Props) {
         </CardContent>
       </Card>
 
+      {proposal.warrantyNote && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Bảo hành</CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm">{proposal.warrantyNote}</CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Đơn vị thi công</CardTitle>
         </CardHeader>
         <CardContent className="text-sm">
           <div className="font-medium">{proposal.contractorInfo.companyName}</div>
-          <div className="text-muted-foreground">{proposal.contractorInfo.phone}</div>
+          {proposal.contractorInfo.phone && (
+            <div className="text-muted-foreground">{proposal.contractorInfo.phone}</div>
+          )}
+          {proposal.contractorInfo.email && (
+            <div className="text-muted-foreground">{proposal.contractorInfo.email}</div>
+          )}
+          {proposal.contractorInfo.website && (
+            <div className="text-muted-foreground">{proposal.contractorInfo.website}</div>
+          )}
           {proposal.contractorInfo.address && (
             <div className="text-muted-foreground">{proposal.contractorInfo.address}</div>
           )}
