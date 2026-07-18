@@ -30,6 +30,7 @@ export default function EstimatePage() {
   const [selectedPriceBookId, setSelectedPriceBookId] = useState<string>("");
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const autoLoaded = useRef(false);
+  const autoSelectedPriceBook = useRef(false);
 
   // Milestone Estimate MVP — Feature 5: chọn PriceBook khi tạo dự toán
   // (mặc định "" = server tự dùng DEMO_PRICE_BOOK, giữ đúng hành vi M3-003/004).
@@ -37,6 +38,16 @@ export default function EstimatePage() {
     queryKey: ["pricebooks"],
     queryFn: pricebookService.list,
   });
+
+  // Bảng giá đặt "Mặc định" (trang /pricebooks) tự chọn khi mở trang lần
+  // đầu — chỉ auto-chọn 1 lần, không ghi đè nếu Founder đã tự đổi lựa chọn.
+  useEffect(() => {
+    if (autoSelectedPriceBook.current) return;
+    const defaultPriceBook = priceBooksQuery.data?.find((pb) => pb.isDefault);
+    if (!defaultPriceBook) return;
+    autoSelectedPriceBook.current = true;
+    setSelectedPriceBookId(defaultPriceBook.id);
+  }, [priceBooksQuery.data]);
 
   const {
     data: project,

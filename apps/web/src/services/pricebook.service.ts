@@ -7,6 +7,7 @@ export interface PriceBookSummary {
   pricingRegion: string;
   effectiveFrom: string;
   isDemo: boolean;
+  isDefault: boolean;
   entryCount: number;
   updatedAt: string;
 }
@@ -52,4 +53,7 @@ export const pricebookService = {
 
   remove: (id: string) =>
     request<{ id: string }>(`/pricebooks/${id}`, { method: "DELETE" }),
+
+  setDefault: (id: string) =>
+    request<{ id: string }>(`/pricebooks/${id}/default`, { method: "POST" }),
 };

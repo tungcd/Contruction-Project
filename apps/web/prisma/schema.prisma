@@ -135,6 +135,10 @@ model PriceBook {
   /// true = bảng giá demo dựng sẵn để review Rule Engine (M3-003 Founder
   /// Decision) — KHÔNG phải giá thật, không dùng báo giá khách.
   isDemo        Boolean          @default(false)
+  /// Bảng giá được chọn làm mặc định khi mở trang Estimate — chỉ 1 bảng
+  /// được true tại 1 thời điểm (ép ở tầng repository, không phải DB
+  /// constraint). Founder Decision 2026-07-18.
+  isDefault     Boolean          @default(false)
   entries       PriceBookEntry[]
 
   createdAt DateTime @default(now())

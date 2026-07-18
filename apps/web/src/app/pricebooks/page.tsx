@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Form, DatePicker, Input, Popconfirm } from "antd";
 import dayjs from "dayjs";
-import { ArrowLeft, Copy, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Copy, Plus, Star, Trash2 } from "lucide-react";
 import { pricebookService } from "@/services/pricebook.service";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -54,6 +54,13 @@ export default function PriceBooksPage() {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => pricebookService.remove(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pricebooks"] });
+    },
+  });
+
+  const setDefaultMutation = useMutation({
+    mutationFn: (id: string) => pricebookService.setDefault(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pricebooks"] });
     },
@@ -128,6 +135,11 @@ export default function PriceBooksPage() {
               <Link href={`/pricebooks/${pb.id}`} className="flex-1">
                 <p className="font-medium">
                   {pb.name}{" "}
+                  {pb.isDefault && (
+                    <Badge className="border-blue-200 bg-blue-50 text-blue-700">
+                      Mặc định
+                    </Badge>
+                  )}{" "}
                   {pb.isDemo && (
                     <Badge className="border-red-200 bg-red-50 text-red-700">
                       Demo
@@ -140,6 +152,17 @@ export default function PriceBooksPage() {
                 </p>
               </Link>
               <div className="flex gap-2">
+                {!pb.isDefault && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setDefaultMutation.mutate(pb.id)}
+                    disabled={setDefaultMutation.isPending}
+                    title="Đặt làm bảng giá mặc định khi mở Estimate"
+                  >
+                    <Star className="h-4 w-4" /> Đặt mặc định
+                  </Button>
+                )}
                 <Button
                   size="sm"
                   variant="outline"
@@ -169,6 +192,11 @@ export default function PriceBooksPage() {
       {deleteMutation.isError && (
         <p className="mt-2 text-sm text-destructive">
           {(deleteMutation.error as Error).message}
+        </p>
+      )}
+      {setDefaultMutation.isError && (
+        <p className="mt-2 text-sm text-destructive">
+          {(setDefaultMutation.error as Error).message}
         </p>
       )}
     </main>

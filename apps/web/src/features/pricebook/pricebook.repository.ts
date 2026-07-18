@@ -18,6 +18,7 @@ export interface PriceBookSummary {
   pricingRegion: string;
   effectiveFrom: string;
   isDemo: boolean;
+  isDefault: boolean;
   entryCount: number;
   updatedAt: string;
 }
@@ -51,6 +52,7 @@ export async function listPriceBooks(): Promise<PriceBookSummary[]> {
     pricingRegion: r.pricingRegion,
     effectiveFrom: r.effectiveFrom.toISOString(),
     isDemo: r.isDemo,
+    isDefault: r.isDefault,
     entryCount: r._count.entries,
     updatedAt: r.updatedAt.toISOString(),
   }));
@@ -162,6 +164,25 @@ export async function duplicatePriceBook(
       unitPrice: e.unitPrice,
     })),
   });
+}
+
+/**
+ * Đặt 1 PriceBook làm mặc định — bỏ mặc định ở mọi bảng khác trong cùng 1
+ * transaction (chỉ 1 bảng `isDefault=true` tại 1 thời điểm). Trang Estimate
+ * tự chọn bảng này khi mở lần đầu, thay vì luôn khởi động ở bảng giá demo.
+ */
+export async function setDefaultPriceBook(id: string): Promise<void> {
+  await ensurePriceBookExists(id);
+  await prisma.$transaction([
+    prisma.priceBook.updateMany({
+      where: { isDefault: true },
+      data: { isDefault: false },
+    }),
+    prisma.priceBook.update({
+      where: { id },
+      data: { isDefault: true },
+    }),
+  ]);
 }
 
 /** Xoá PriceBook — cascade xoá luôn entries (Prisma onDelete: Cascade). */
