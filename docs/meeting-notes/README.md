@@ -37,3 +37,24 @@ meeting-notes/
 
 Các thảo luận trước đó (Requirement Domain Model, 5+2 vòng) vẫn nằm
 nguyên trong `documents/milestone_1/` — không di chuyển ngược lại.
+
+## Quy ước đặt tên (title, không phải tên file)
+
+Tiêu đề file đặt theo **artifact đang được review/freeze**, không phải
+số thứ tự tuỳ ý:
+
+```text
+<Module> <Artifact> Review[ — Round N]
+```
+
+- `Artifact` ∈ {Architecture, Schema, Prototype, Implementation} —
+  artifact là thứ được freeze, không phải vòng review.
+- `Round N` chỉ thêm khi artifact đó thực sự cần **hơn 1 vòng** để hội
+  tụ (ví dụ Constraint Architecture Review mất 2 vòng) — không mặc định
+  gắn "Round 1" cho stage chỉ mất đúng 1 vòng.
+- Số thứ tự file (`01_/02_/03_`) vẫn giữ nguyên — phản ánh **vị trí thời
+  gian trong ngày**, độc lập với số Round trong tiêu đề.
+- Không đổi tên hồi tố các file cũ theo quy ước này (Simplicity before
+  Generality / Prototype-Driven Refinement — xem
+  [../architecture/principles.md](../architecture/principles.md) A5) —
+  chỉ áp dụng cho file mới từ nay.
