@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { Modal, Select } from "antd";
+import { App, Select } from "antd";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertTriangle,
@@ -24,6 +24,7 @@ import type { EstimateDraft } from "@/lib/estimate/types";
 export default function EstimatePage() {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
+  const { modal } = App.useApp();
   const [draft, setDraft] = useState<EstimateDraft | null>(null);
   const [selectedVersion, setSelectedVersion] = useState<string>("");
   const [selectedPriceBookId, setSelectedPriceBookId] = useState<string>("");
@@ -116,7 +117,7 @@ export default function EstimatePage() {
       generateMutation.mutate();
       return;
     }
-    Modal.confirm({
+    modal.confirm({
       title: "Tạo dự toán mới?",
       content:
         "Tạo dự toán mới sẽ thay thế bản đang xem (nếu chưa lưu sẽ mất). Tiếp tục?",

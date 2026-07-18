@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ConfigProvider } from "antd";
+import { App, ConfigProvider } from "antd";
 import viVN from "antd/locale/vi_VN";
 
 /**
@@ -35,7 +35,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
         },
       }}
     >
-      <QueryClientProvider client={client}>{children}</QueryClientProvider>
+      <QueryClientProvider client={client}>
+        {/* antd App: cho phép Modal.confirm/message/notification đọc đúng
+            theme của ConfigProvider — dùng App.useApp() ở nơi cần, thay vì
+            gọi thẳng Modal.confirm() tĩnh (mất theme, xem cảnh báo antd). */}
+        <App>{children}</App>
+      </QueryClientProvider>
     </ConfigProvider>
   );
 }
