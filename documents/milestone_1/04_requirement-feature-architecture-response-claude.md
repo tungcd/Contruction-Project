@@ -1,7 +1,7 @@
 # Requirement Feature — Architecture Response (Claude)
 
 **Language note:** Per the convention established in
-`claude-context-requirement-feature-v2.md` §4, this response is written in
+`03_claude-context-requirement-feature-v2.md` §4, this response is written in
 English (AI-to-AI). Proposed field labels and Decision Log entries are in
 Vietnamese as required.
 
@@ -397,7 +397,7 @@ theo, không cho phép chỉ upload ảnh trơn.
 
 ## 6. Changes Recommended for Requirement Template v2
 
-Precise change list against v1 (`requirement-template-v1.md`), not a
+Precise change list against v1 (`01_requirement-template-v1.md`), not a
 rewrite:
 
 1. **Add** a "Phạm vi thi công" field to §4 (Mục tiêu xây dựng) —
