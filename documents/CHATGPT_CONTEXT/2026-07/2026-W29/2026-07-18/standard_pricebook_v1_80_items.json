@@ -1,0 +1,808 @@
+{
+  "name": "Bảng giá tiêu chuẩn Hà Nội 2026 - MVP",
+  "region": "Hà Nội",
+  "isDemo": true,
+  "effectiveDate": "2026-07-18",
+  "entries": [
+    {
+      "itemCode": "PREP_001",
+      "category": "Chuẩn bị",
+      "itemName": "Dọn dẹp, phá dỡ nhẹ hiện trạng",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 85000,
+      "pricingNote": "Tham khảo BOQ thực tế; dùng cho cải tạo nhẹ",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "PREP_002",
+      "category": "Chuẩn bị",
+      "itemName": "Vận chuyển phế thải trong phạm vi công trình",
+      "unit": "m3",
+      "tier": "standard",
+      "unitPrice": 420000,
+      "pricingNote": "Giá demo Hà Nội",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "PREP_004",
+      "category": "Chuẩn bị",
+      "itemName": "Lán trại, điện nước tạm và an toàn công trường",
+      "unit": "gói",
+      "tier": "standard",
+      "unitPrice": 18000000,
+      "pricingNote": "Tạm tính theo gói nhà dân dụng",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "FND_001",
+      "category": "Móng",
+      "itemName": "Cọc BTCT 200x200 cung cấp tại công trình",
+      "unit": "m",
+      "tier": "standard",
+      "unitPrice": 205000,
+      "pricingNote": "Neo theo BOQ nhà ở gia đình user cung cấp",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "FND_002",
+      "category": "Móng",
+      "itemName": "Ép cọc BTCT 200x200",
+      "unit": "m",
+      "tier": "standard",
+      "unitPrice": 105000,
+      "pricingNote": "Quy đổi từ đơn giá ép cọc/100m",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "FND_003",
+      "category": "Móng",
+      "itemName": "Nối cọc BTCT 200x200",
+      "unit": "mối",
+      "tier": "standard",
+      "unitPrice": 35000,
+      "pricingNote": "Neo theo BOQ thực tế",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "FND_004",
+      "category": "Móng",
+      "itemName": "Đập đầu cọc BTCT",
+      "unit": "cái",
+      "tier": "standard",
+      "unitPrice": 120000,
+      "pricingNote": "Giá demo",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "FND_005",
+      "category": "Móng",
+      "itemName": "Đào đất móng bằng máy",
+      "unit": "m3",
+      "tier": "standard",
+      "unitPrice": 95000,
+      "pricingNote": "Giá tổng hợp máy + nhân công",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "FND_006",
+      "category": "Móng",
+      "itemName": "Vận chuyển đất thừa ra khỏi công trình",
+      "unit": "m3",
+      "tier": "standard",
+      "unitPrice": 220000,
+      "pricingNote": "Giá demo",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "FND_007",
+      "category": "Móng",
+      "itemName": "Bê tông lót móng M100",
+      "unit": "m3",
+      "tier": "standard",
+      "unitPrice": 1620000,
+      "pricingNote": "Neo theo BOQ thực tế",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "FND_008",
+      "category": "Móng",
+      "itemName": "Bê tông móng thương phẩm M250",
+      "unit": "m3",
+      "tier": "standard",
+      "unitPrice": 1720000,
+      "pricingNote": "Neo theo BOQ thực tế",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "FND_009",
+      "category": "Móng",
+      "itemName": "Cốt thép móng gia công lắp dựng",
+      "unit": "kg",
+      "tier": "standard",
+      "unitPrice": 20000,
+      "pricingNote": "Quy đổi khoảng 20 triệu/tấn",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "FND_010",
+      "category": "Móng",
+      "itemName": "Ván khuôn móng ván phủ phim",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 175000,
+      "pricingNote": "Quy đổi từ BOQ",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "STR_001",
+      "category": "Kết cấu",
+      "itemName": "Bê tông cột M250",
+      "unit": "m3",
+      "tier": "standard",
+      "unitPrice": 1850000,
+      "pricingNote": "Bao gồm bơm, hao hụt cơ bản",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "STR_002",
+      "category": "Kết cấu",
+      "itemName": "Bê tông dầm M250",
+      "unit": "m3",
+      "tier": "standard",
+      "unitPrice": 1850000,
+      "pricingNote": "Bao gồm bơm, hao hụt cơ bản",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "STR_003",
+      "category": "Kết cấu",
+      "itemName": "Bê tông sàn M250",
+      "unit": "m3",
+      "tier": "standard",
+      "unitPrice": 1800000,
+      "pricingNote": "Bao gồm bơm, hao hụt cơ bản",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "STR_004",
+      "category": "Kết cấu",
+      "itemName": "Bê tông cầu thang M250",
+      "unit": "m3",
+      "tier": "standard",
+      "unitPrice": 1950000,
+      "pricingNote": "Thi công phức tạp hơn sàn",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "STR_005",
+      "category": "Kết cấu",
+      "itemName": "Cốt thép cột gia công lắp dựng",
+      "unit": "kg",
+      "tier": "standard",
+      "unitPrice": 20500,
+      "pricingNote": "Giá tổng hợp vật tư + gia công",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "STR_006",
+      "category": "Kết cấu",
+      "itemName": "Cốt thép dầm gia công lắp dựng",
+      "unit": "kg",
+      "tier": "standard",
+      "unitPrice": 20500,
+      "pricingNote": "Giá tổng hợp vật tư + gia công",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "STR_007",
+      "category": "Kết cấu",
+      "itemName": "Cốt thép sàn gia công lắp dựng",
+      "unit": "kg",
+      "tier": "standard",
+      "unitPrice": 20200,
+      "pricingNote": "Giá tổng hợp vật tư + gia công",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "STR_009",
+      "category": "Kết cấu",
+      "itemName": "Ván khuôn cột",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 230000,
+      "pricingNote": "Giá demo",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "STR_010",
+      "category": "Kết cấu",
+      "itemName": "Ván khuôn dầm",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 240000,
+      "pricingNote": "Giá demo",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "STR_011",
+      "category": "Kết cấu",
+      "itemName": "Ván khuôn sàn",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 190000,
+      "pricingNote": "Giá demo",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "MAS_001",
+      "category": "Xây trát",
+      "itemName": "Xây tường gạch 110, vữa XM M75",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 285000,
+      "pricingNote": "Vật tư + nhân công",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "MAS_002",
+      "category": "Xây trát",
+      "itemName": "Xây tường gạch 220, vữa XM M75",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 465000,
+      "pricingNote": "Vật tư + nhân công",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "MAS_003",
+      "category": "Xây trát",
+      "itemName": "Xây tường rào gạch 110",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 305000,
+      "pricingNote": "Ngoài trời",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "MAS_004",
+      "category": "Xây trát",
+      "itemName": "Trát tường trong nhà dày 15mm",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 125000,
+      "pricingNote": "Vật tư + nhân công",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "MAS_005",
+      "category": "Xây trát",
+      "itemName": "Trát tường ngoài nhà dày 15mm",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 145000,
+      "pricingNote": "Có phụ phí ngoài trời",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "MAS_006",
+      "category": "Xây trát",
+      "itemName": "Trát trần bê tông",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 155000,
+      "pricingNote": "Giá demo",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "MAS_007",
+      "category": "Xây trát",
+      "itemName": "Cán nền vữa xi măng dày 20–30mm",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 115000,
+      "pricingNote": "Vật tư + nhân công",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "WPF_001",
+      "category": "Chống thấm",
+      "itemName": "Chống thấm sàn WC 2 lớp",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 235000,
+      "pricingNote": "Vật tư phổ thông + nhân công",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "WPF_002",
+      "category": "Chống thấm",
+      "itemName": "Chống thấm ban công/logia",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 220000,
+      "pricingNote": "Giá demo",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "WPF_003",
+      "category": "Chống thấm",
+      "itemName": "Chống thấm mái bê tông",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 245000,
+      "pricingNote": "Giá demo",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "WPF_004",
+      "category": "Chống thấm",
+      "itemName": "Chống thấm bể nước/bể phốt",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 285000,
+      "pricingNote": "Môi trường ẩm thường xuyên",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "WPF_005",
+      "category": "Chống thấm",
+      "itemName": "Thử nước và xử lý cổ ống",
+      "unit": "điểm",
+      "tier": "standard",
+      "unitPrice": 350000,
+      "pricingNote": "Theo điểm",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "FIN_001",
+      "category": "Hoàn thiện",
+      "itemName": "Bả matit tường trong nhà 2 lớp",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 55000,
+      "pricingNote": "Vật tư + nhân công",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "FIN_002",
+      "category": "Hoàn thiện",
+      "itemName": "Sơn nội thất hoàn thiện 1 lót 2 phủ",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 95000,
+      "pricingNote": "Phân khúc tiêu chuẩn",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "FIN_003",
+      "category": "Hoàn thiện",
+      "itemName": "Sơn ngoại thất hoàn thiện 1 lót 2 phủ",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 135000,
+      "pricingNote": "Phân khúc tiêu chuẩn",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "FIN_004",
+      "category": "Hoàn thiện",
+      "itemName": "Lát nền gạch 600x600 hoàn thiện",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 420000,
+      "pricingNote": "Gồm gạch mức 220–260k/m2 + thi công",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "FIN_005",
+      "category": "Hoàn thiện",
+      "itemName": "Lát nền gạch 800x800 hoàn thiện",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 520000,
+      "pricingNote": "Gồm gạch mức trung bình + thi công",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "FIN_006",
+      "category": "Hoàn thiện",
+      "itemName": "Ốp tường WC gạch 300x600",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 460000,
+      "pricingNote": "Gồm gạch + keo/vữa + nhân công",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "FIN_007",
+      "category": "Hoàn thiện",
+      "itemName": "Lát sàn WC chống trơn",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 470000,
+      "pricingNote": "Gồm gạch + thi công",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "FIN_008",
+      "category": "Hoàn thiện",
+      "itemName": "Ốp đá cầu thang granite",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 1250000,
+      "pricingNote": "Đá tiêu chuẩn + lắp đặt",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "DOR_001",
+      "category": "Cửa",
+      "itemName": "Cửa chính gỗ tự nhiên 4 cánh, phụ kiện đồng bộ",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 3300000,
+      "pricingNote": "Neo theo BOQ thực tế",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "DOR_002",
+      "category": "Cửa",
+      "itemName": "Cửa phòng composite 1 cánh, phụ kiện đồng bộ",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 2530000,
+      "pricingNote": "Neo theo BOQ thực tế",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "DOR_003",
+      "category": "Cửa",
+      "itemName": "Cửa WC composite chống nước",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 1980000,
+      "pricingNote": "Neo theo BOQ thực tế",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "DOR_004",
+      "category": "Cửa",
+      "itemName": "Cửa đi nhôm kính 1 cánh mở quay",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 2450000,
+      "pricingNote": "PMA/Xingfa VN phân khúc trung bình",
+      "sourceUrl": "https://cuanhomkinhhn.com/cua-nhom-xingfa-viet-nam/"
+    },
+    {
+      "itemCode": "DOR_005",
+      "category": "Cửa",
+      "itemName": "Cửa đi nhôm kính 2–4 cánh mở trượt",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 2350000,
+      "pricingNote": "Neo theo BOQ thực tế",
+      "sourceUrl": "https://cuanhomkinhhn.com/cua-nhom-xingfa-viet-nam/"
+    },
+    {
+      "itemCode": "DOR_006",
+      "category": "Cửa",
+      "itemName": "Cửa sổ nhôm kính mở quay/mở hất",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 1850000,
+      "pricingNote": "Mức tham khảo thị trường 2026",
+      "sourceUrl": "https://cuanhomkinhhn.com/cua-nhom-xingfa-viet-nam/"
+    },
+    {
+      "itemCode": "DOR_007",
+      "category": "Cửa",
+      "itemName": "Vách kính khung nhôm",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 1900000,
+      "pricingNote": "Neo theo BOQ thực tế",
+      "sourceUrl": "https://cuanhomkinhhn.com/cua-nhom-xingfa-viet-nam/"
+    },
+    {
+      "itemCode": "DOR_008",
+      "category": "Cửa",
+      "itemName": "Cửa cuốn khe thoáng kèm motor",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 2150000,
+      "pricingNote": "Giá demo phân khúc tiêu chuẩn",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "CEI_001",
+      "category": "Trần",
+      "itemName": "Trần thạch cao phẳng khung chìm",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 235000,
+      "pricingNote": "Vật tư + nhân công",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "CEI_002",
+      "category": "Trần",
+      "itemName": "Trần thạch cao giật cấp đơn giản",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 315000,
+      "pricingNote": "Vật tư + nhân công",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "CEI_003",
+      "category": "Trần",
+      "itemName": "Trần thạch cao chống ẩm khu WC",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 285000,
+      "pricingNote": "Tấm chống ẩm",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "CEI_004",
+      "category": "Trần",
+      "itemName": "Sơn hoàn thiện trần thạch cao",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 85000,
+      "pricingNote": "1 lót 2 phủ",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "ELE_001",
+      "category": "Điện",
+      "itemName": "Đi dây điện âm tường cho ổ cắm",
+      "unit": "điểm",
+      "tier": "standard",
+      "unitPrice": 520000,
+      "pricingNote": "Dây, ống, hộp âm, nhân công; chưa gồm mặt thiết bị",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "ELE_002",
+      "category": "Điện",
+      "itemName": "Đi dây điện âm tường cho công tắc/đèn",
+      "unit": "điểm",
+      "tier": "standard",
+      "unitPrice": 420000,
+      "pricingNote": "Chưa gồm đèn",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "ELE_003",
+      "category": "Điện",
+      "itemName": "Ổ cắm đôi hoàn thiện",
+      "unit": "bộ",
+      "tier": "standard",
+      "unitPrice": 280000,
+      "pricingNote": "Thiết bị phân khúc tiêu chuẩn",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "ELE_004",
+      "category": "Điện",
+      "itemName": "Công tắc đơn/đôi hoàn thiện",
+      "unit": "bộ",
+      "tier": "standard",
+      "unitPrice": 220000,
+      "pricingNote": "Thiết bị phân khúc tiêu chuẩn",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "ELE_005",
+      "category": "Điện",
+      "itemName": "Đèn LED âm trần 7–9W hoàn thiện",
+      "unit": "bộ",
+      "tier": "standard",
+      "unitPrice": 240000,
+      "pricingNote": "Thiết bị + lắp đặt",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "ELE_006",
+      "category": "Điện",
+      "itemName": "Tủ điện tổng gia đình",
+      "unit": "tủ",
+      "tier": "standard",
+      "unitPrice": 6500000,
+      "pricingNote": "CB và phụ kiện mức tiêu chuẩn",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "ELE_007",
+      "category": "Điện",
+      "itemName": "Dây mạng LAN âm tường",
+      "unit": "điểm",
+      "tier": "standard",
+      "unitPrice": 650000,
+      "pricingNote": "Cáp + ổ + nhân công",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "PLB_001",
+      "category": "Cấp thoát nước",
+      "itemName": "Điểm cấp nước lạnh PPR",
+      "unit": "điểm",
+      "tier": "standard",
+      "unitPrice": 850000,
+      "pricingNote": "Ống, phụ kiện, nhân công",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "PLB_002",
+      "category": "Cấp thoát nước",
+      "itemName": "Điểm cấp nước nóng PPR",
+      "unit": "điểm",
+      "tier": "standard",
+      "unitPrice": 950000,
+      "pricingNote": "Ống, phụ kiện, nhân công",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "PLB_003",
+      "category": "Cấp thoát nước",
+      "itemName": "Điểm thoát nước PVC D60–90",
+      "unit": "điểm",
+      "tier": "standard",
+      "unitPrice": 980000,
+      "pricingNote": "Ống, phụ kiện, nhân công",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "PLB_004",
+      "category": "Cấp thoát nước",
+      "itemName": "Ống cấp nước trục đứng PPR",
+      "unit": "m",
+      "tier": "standard",
+      "unitPrice": 320000,
+      "pricingNote": "Giá tổng hợp",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "PLB_005",
+      "category": "Cấp thoát nước",
+      "itemName": "Ống thoát trục đứng PVC D90–110",
+      "unit": "m",
+      "tier": "standard",
+      "unitPrice": 420000,
+      "pricingNote": "Giá tổng hợp",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "PLB_006",
+      "category": "Cấp thoát nước",
+      "itemName": "Bể phốt BTCT hoàn thiện",
+      "unit": "m3",
+      "tier": "standard",
+      "unitPrice": 4200000,
+      "pricingNote": "Tạm tính theo thể tích",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "PLB_007",
+      "category": "Cấp thoát nước",
+      "itemName": "Bể nước ngầm BTCT hoàn thiện",
+      "unit": "m3",
+      "tier": "standard",
+      "unitPrice": 4800000,
+      "pricingNote": "Tạm tính theo thể tích",
+      "sourceUrl": "https://thuvienphapluat.vn/chinh-sach-phap-luat-moi/vn/ho-tro-phap-luat/chinh-sach-moi/116706/bang-gia-nhan-cong-xay-dung-tai-ha-noi-tu-01-7-2026-cong-van-14502-sxd-ktxd"
+    },
+    {
+      "itemCode": "SAN_001",
+      "category": "Thiết bị vệ sinh",
+      "itemName": "Bồn cầu 2 khối tiêu chuẩn",
+      "unit": "bộ",
+      "tier": "standard",
+      "unitPrice": 4200000,
+      "pricingNote": "INAX/Viglacera hoặc tương đương",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "SAN_002",
+      "category": "Thiết bị vệ sinh",
+      "itemName": "Lavabo treo bàn/treo tường tiêu chuẩn",
+      "unit": "bộ",
+      "tier": "standard",
+      "unitPrice": 1800000,
+      "pricingNote": "Chưa gồm tủ",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "SAN_003",
+      "category": "Thiết bị vệ sinh",
+      "itemName": "Vòi lavabo nóng lạnh",
+      "unit": "bộ",
+      "tier": "standard",
+      "unitPrice": 1450000,
+      "pricingNote": "Phân khúc tiêu chuẩn",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "SAN_004",
+      "category": "Thiết bị vệ sinh",
+      "itemName": "Sen tắm nóng lạnh",
+      "unit": "bộ",
+      "tier": "standard",
+      "unitPrice": 2600000,
+      "pricingNote": "Phân khúc tiêu chuẩn",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "SAN_005",
+      "category": "Thiết bị vệ sinh",
+      "itemName": "Vòi xịt vệ sinh",
+      "unit": "bộ",
+      "tier": "standard",
+      "unitPrice": 450000,
+      "pricingNote": "Thiết bị + lắp",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "SAN_006",
+      "category": "Thiết bị vệ sinh",
+      "itemName": "Bộ phụ kiện WC cơ bản",
+      "unit": "bộ",
+      "tier": "standard",
+      "unitPrice": 1200000,
+      "pricingNote": "Gương, lô giấy, móc, thanh khăn",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "ROF_001",
+      "category": "Mái & ngoài nhà",
+      "itemName": "Mái tôn chống nóng khung thép hộp",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 780000,
+      "pricingNote": "Tôn + khung + lắp dựng",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "ROF_002",
+      "category": "Mái & ngoài nhà",
+      "itemName": "Mái ngói trên hệ khung thép",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 1450000,
+      "pricingNote": "Ngói + khung + phụ kiện",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "ROF_003",
+      "category": "Mái & ngoài nhà",
+      "itemName": "Lát sân gạch chống trơn",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 390000,
+      "pricingNote": "Gạch + nền + nhân công",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "ROF_004",
+      "category": "Mái & ngoài nhà",
+      "itemName": "Cổng sắt hộp sơn tĩnh điện",
+      "unit": "m2",
+      "tier": "standard",
+      "unitPrice": 1850000,
+      "pricingNote": "Giá demo",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    },
+    {
+      "itemCode": "ROF_006",
+      "category": "Mái & ngoài nhà",
+      "itemName": "Thoát nước mái, máng và ống đứng",
+      "unit": "m",
+      "tier": "standard",
+      "unitPrice": 320000,
+      "pricingNote": "Tôn/inox/PVC tùy vị trí",
+      "sourceUrl": "https://hanoi.gov.vn/chi-dao-cua-ubnd-thanh-pho-ha-noi/ban-hanh-quy-che-phoi-hop-va-thuc-hien-cong-bo-gia-vat-lieu-xay-dung-4260615143725967.htm"
+    }
+  ]
+}
