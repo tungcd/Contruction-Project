@@ -38,6 +38,7 @@ export default function PriceBookDetailPage() {
   const [pricingRegion, setPricingRegion] = useState("");
   const [entries, setEntries] = useState<PriceBookEntryInput[]>([]);
   const [savedAt, setSavedAt] = useState<string | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   const { data: priceBook, isLoading, isError } = useQuery({
     queryKey: ["pricebook", id],
@@ -78,6 +79,28 @@ export default function PriceBookDetailPage() {
     setEntries((prev) => prev.filter((_, i) => i !== index));
   }
 
+  /** Dòng thiếu Mã/Tên hạng mục/ĐVT (vd dòng mới bấm "Thêm dòng" nhưng chưa điền) — chặn trước khi gửi lên server. */
+  function invalidEntryReason(entry: PriceBookEntryInput): string | null {
+    const missing: string[] = [];
+    if (!entry.itemCode.trim()) missing.push("Mã");
+    if (!entry.itemName.trim()) missing.push("Tên hạng mục");
+    if (!entry.unit.trim()) missing.push("ĐVT");
+    return missing.length > 0 ? missing.join(", ") : null;
+  }
+
+  function save() {
+    const invalidIndex = entries.findIndex((e) => invalidEntryReason(e) !== null);
+    if (invalidIndex !== -1) {
+      const reason = invalidEntryReason(entries[invalidIndex]);
+      setValidationError(
+        `Dòng ${invalidIndex + 1} còn thiếu ${reason} — điền đầy đủ hoặc xoá dòng trước khi lưu.`,
+      );
+      return;
+    }
+    setValidationError(null);
+    saveMutation.mutate();
+  }
+
   if (isLoading)
     return <p className="p-8 text-sm text-muted-foreground">Đang tải...</p>;
   if (isError || !priceBook)
@@ -97,7 +120,7 @@ export default function PriceBookDetailPage() {
             <ArrowLeft className="h-4 w-4" /> Về danh sách bảng giá
           </Button>
         </Link>
-        <Button size="sm" onClick={() => saveMutation.mutate()} disabled={saveMutation.isPending}>
+        <Button size="sm" onClick={save} disabled={saveMutation.isPending}>
           <Save className="h-4 w-4" /> Lưu
         </Button>
       </div>
@@ -109,6 +132,9 @@ export default function PriceBookDetailPage() {
         </div>
       )}
 
+      {validationError && (
+        <p className="mb-4 text-sm text-destructive">{validationError}</p>
+      )}
       {saveMutation.isError && (
         <p className="mb-4 text-sm text-destructive">
           {(saveMutation.error as Error).message}
@@ -165,25 +191,29 @@ export default function PriceBookDetailPage() {
               </tr>
             </thead>
             <tbody>
-              {entries.map((entry, index) => (
+              {entries.map((entry, index) => {
+                const invalid = validationError !== null && invalidEntryReason(entry) !== null;
+                const fieldClass = (filled: boolean) =>
+                  `rounded border px-2 py-1 ${invalid && !filled ? "border-destructive" : ""}`;
+                return (
                 <tr key={index} className="border-b last:border-0">
                   <td className="p-2">
                     <input
-                      className="w-32 rounded border px-2 py-1"
+                      className={`w-32 ${fieldClass(!!entry.itemCode.trim())}`}
                       value={entry.itemCode}
                       onChange={(e) => updateEntry(index, { itemCode: e.target.value })}
                     />
                   </td>
                   <td className="p-2">
                     <input
-                      className="w-56 rounded border px-2 py-1"
+                      className={`w-56 ${fieldClass(!!entry.itemName.trim())}`}
                       value={entry.itemName}
                       onChange={(e) => updateEntry(index, { itemName: e.target.value })}
                     />
                   </td>
                   <td className="p-2">
                     <input
-                      className="w-16 rounded border px-2 py-1"
+                      className={`w-16 ${fieldClass(!!entry.unit.trim())}`}
                       value={entry.unit}
                       onChange={(e) => updateEntry(index, { unit: e.target.value })}
                     />
@@ -222,7 +252,8 @@ export default function PriceBookDetailPage() {
                     </Button>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </CardContent>
