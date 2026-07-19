@@ -1,16 +1,19 @@
-# Simple House — Concept Drawing Artifacts (Stage 1.7)
+# Simple House Demo — Concept Drawing Artifacts
 
-Sinh bởi `npm run drawing:artifacts`. Template: `townhouse-single-floor-v1`.
+Sinh bởi `npm run drawing:artifacts`. Template: `townhouse-multi-floor-v1`.
+Số tầng / sheet: 1.
 Geometry validation: PASSED.
-Warnings (không chặn, vẫn PASS): Phòng "living" (living) tỷ lệ khung hình 2.10:1 — ngoài khoảng ưu tiên (tối đa 1.8:1), vẫn trong giới hạn chấp nhận được. | Phòng "bedroom-1" (bedroom) tỷ lệ khung hình 1.90:1 — ngoài khoảng ưu tiên (tối đa 1.5:1), vẫn trong giới hạn chấp nhận được.
+Warnings (không chặn, vẫn PASS): [Tầng 0] Phòng "living" (living) tỷ lệ khung hình 2.10:1 — ngoài khoảng ưu tiên (tối đa 1.8:1), vẫn trong giới hạn chấp nhận được. | [Tầng 0] Phòng "bedroom-1" (bedroom) tỷ lệ khung hình 1.90:1 — ngoài khoảng ưu tiên (tối đa 1.5:1), vẫn trong giới hạn chấp nhận được.
+Staircase: không áp dụng (nhà 1 tầng).
 
 ## Files
 
-- `simple-house-layout-graph.json` — LayoutGraph (tô-pô, nodes/edges).
-- `simple-house-geometry.json` — Geometry (toạ độ polygon, mét).
-- `simple-house-drawing-package.json` — Drawing Document đầy đủ (rooms/walls/doors/dimensions/titleBlock/warnings).
-- `simple-house-floor-plan.svg` — SVG thô, mở trực tiếp bằng trình duyệt hoặc image viewer bất kỳ để xem.
-- `simple-house-floor-plan-print.html` — mở bằng trình duyệt, dùng "In / Save as PDF" (Ctrl+P) để tự tạo file PDF/ảnh chụp màn hình.
+- `simple-house-layout-graphs.json` — LayoutGraph MỖI TẦNG (tô-pô, nodes/edges).
+- `simple-house-geometry.json` — Geometry mọi tầng (toạ độ polygon, mét).
+- `simple-house-drawing-package.json` — Drawing Document đầy đủ (rooms/walls/doors/windows/dimensions/titleBlock/warnings, 1 sheet/tầng).
+- `simple-house-staircase-core.json` — Staircase Core đã xác nhận thẳng hàng (null nếu 1 tầng).
+- `simple-house-floor-plan-{N}.svg` — SVG thô từng tầng (N = index sheet, 0 = tầng trệt), mở trực tiếp bằng trình duyệt hoặc image viewer.
+- `simple-house-floor-plan-print.html` — mở bằng trình duyệt, dùng "In / Save as PDF" (Ctrl+P) — mỗi tầng tự động sang 1 trang riêng.
 
 ## Vì sao không có sẵn file .png/.pdf
 

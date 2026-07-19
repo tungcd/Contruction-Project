@@ -53,7 +53,7 @@ try {
 
   const { drawingPackage, validation, templateId } = generateConceptDrawing(constraintSet, "Simple House Demo");
 
-  check("template được chọn", templateId === "townhouse-single-floor-v1", templateId);
+  check("template được chọn", templateId === "townhouse-multi-floor-v1", templateId);
   check("geometry validation passed (không lỗi)", validation.passed, validation.errors.join("; "));
   check("có đúng 1 sheet (Stage 1: 1 tầng)", drawingPackage.sheets.length === 1);
 
@@ -158,6 +158,12 @@ try {
   // PHẢI bị chặn ở validateLayoutGraphTopology() — không được để lọt tới
   // Geometry Solver. Đây chính là lỗi kiến trúc thật đã xảy ra ở Stage
   // 1.6 trước khi sửa.
+  const invalidRelationships: DesignIntentGraph["floors"][number]["relationships"] = [
+    { type: "connection", from: "entrance", to: "living" },
+    { type: "connection", from: "living", to: "kitchen" },
+    { type: "connection", from: "kitchen", to: "bedroom-2" },
+    { type: "connection", from: "bedroom-2", to: "wc" },
+  ];
   const invalidDig: DesignIntentGraph = {
     buildingContext: { frontage: 6, depth: 10, floors: 1, roofType: null, architecturalStyle: null },
     floors: [
@@ -170,19 +176,15 @@ try {
           { id: "bedroom-2", type: "bedroom", zone: "private", areaWeight: 1.0, facadeExposure: [] },
           { id: "wc", type: "wc", zone: "service", areaWeight: 0.5, facadeExposure: [] },
         ],
+        relationships: invalidRelationships,
       },
     ],
-    relationships: [
-      { type: "connection", from: "entrance", to: "living" },
-      { type: "connection", from: "living", to: "kitchen" },
-      { type: "connection", from: "kitchen", to: "bedroom-2" },
-      { type: "connection", from: "bedroom-2", to: "wc" },
-    ],
+    verticalConnections: [],
   };
   const invalidLayoutGraph: LayoutGraph = {
     envelope: { frontage: 6, depth: 10 },
     nodes: invalidDig.floors[0].spaces.map((s) => ({ id: s.id, type: s.type, floor: 0, priority: 0, areaWeight: s.areaWeight })),
-    edges: invalidDig.relationships.map((r) => ({ type: "door" as const, from: r.from, to: r.to })),
+    edges: invalidRelationships.map((r) => ({ type: "door" as const, from: r.from, to: r.to })),
   };
   const invalidResult = validateLayoutGraphTopology(invalidDig, invalidLayoutGraph);
   check(

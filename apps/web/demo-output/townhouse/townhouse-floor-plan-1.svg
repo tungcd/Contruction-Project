@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 595 842" preserveAspectRatio="xMidYMid meet">
+    <rect x="0" y="0" width="595" height="842" fill="#ffffff" />
+    
+    <text x="24" font-size="12" font-weight="700"><tspan x="24" y="36.32">Townhouse Demo — Tầng 1</tspan></text>
+    <text x="24" y="58" font-size="9" fill="#666">NOT TO SCALE — Mặt bằng tầng (Concept) — Lập ngày 20/7/2026</text>
+  
+    
+      <line x1="227.5625" y1="90" x2="227.5625" y2="98" stroke="#bbb" stroke-width="0.5" />
+      <line x1="409.4375" y1="90" x2="409.4375" y2="98" stroke="#bbb" stroke-width="0.5" />
+      <line x1="227.5625" y1="90" x2="409.4375" y2="90" stroke="#666" stroke-width="0.6" />
+      <text x="318.5" y="86" text-anchor="middle" font-size="9" fill="#333">5 m</text>
+    
+      <line x1="56" y1="98" x2="227.5625" y2="98" stroke="#bbb" stroke-width="0.5" />
+      <line x1="56" y1="680" x2="227.5625" y2="680" stroke="#bbb" stroke-width="0.5" />
+      <line x1="56" y1="98" x2="56" y2="680" stroke="#666" stroke-width="0.6" />
+      <text x="0" y="0" text-anchor="middle" font-size="9" fill="#333" transform="translate(51, 389) rotate(-90)">16 m</text>
+    
+    
+        <line x1="227.5625" y1="88" x2="373.0625" y2="88" stroke="#ccc" stroke-width="0.5" />
+        <text x="300.3125" y="85" text-anchor="middle" font-size="8" fill="#999">4.0 m</text>
+      
+        <line x1="227.5625" y1="277.15" x2="373.0625" y2="277.15" stroke="#ccc" stroke-width="0.5" />
+        <text x="300.3125" y="274.15" text-anchor="middle" font-size="8" fill="#999">4.0 m</text>
+      
+        <line x1="227.5625" y1="466.3" x2="373.0625" y2="466.3" stroke="#ccc" stroke-width="0.5" />
+        <text x="300.3125" y="463.3" text-anchor="middle" font-size="8" fill="#999">4.0 m</text>
+      
+        <line x1="373.0625" y1="88" x2="409.4375" y2="88" stroke="#ccc" stroke-width="0.5" />
+        <text x="391.25" y="85" text-anchor="middle" font-size="8" fill="#999">1.0 m</text>
+      
+        <line x1="227.5625" y1="560.875" x2="409.4375" y2="560.875" stroke="#ccc" stroke-width="0.5" />
+        <text x="318.5" y="557.875" text-anchor="middle" font-size="8" fill="#999">5.0 m</text>
+      
+    
+        <rect x="227.5625" y="98" width="145.5" height="189.14999999999998" fill="#fafafa" stroke="none" />
+        
+        <text x="300.3125" font-size="12" text-anchor="middle" font-weight="600"><tspan x="300.3125" y="174.19700000000003">Phòng ngủ</tspan></text>
+        <text x="300.3125" y="234.188" text-anchor="middle" font-size="9" fill="#666">20.8 m²</text>
+      
+        <rect x="227.5625" y="287.15" width="145.5" height="189.15000000000003" fill="#fafafa" stroke="none" />
+        
+        <text x="300.3125" font-size="12" text-anchor="middle" font-weight="600"><tspan x="300.3125" y="363.347">Phòng ngủ 2</tspan></text>
+        <text x="300.3125" y="423.33799999999997" text-anchor="middle" font-size="9" fill="#666">20.8 m²</text>
+      
+        <rect x="227.5625" y="476.3" width="145.5" height="94.57499999999999" fill="#fafafa" stroke="none" />
+        
+        <text x="300.3125" font-size="12" text-anchor="middle" font-weight="600"><tspan x="300.3125" y="516.5585000000001">WC</tspan></text>
+        <text x="300.3125" y="544.394" text-anchor="middle" font-size="9" fill="#666">10.4 m²</text>
+      
+        <rect x="373.0625" y="98" width="36.375" height="472.875" fill="#fafafa" stroke="none" />
+        
+        <text x="391.25" font-size="12" text-anchor="middle" font-weight="600"><tspan x="391.25" y="260.41249999999997">Sảnh</tspan><tspan x="391.25" y="274.81249999999994">/</tspan><tspan x="391.25" y="289.2125">Hành</tspan><tspan x="391.25" y="303.61249999999995">lang</tspan></text>
+        <text x="391.25" y="438.46999999999997" text-anchor="middle" font-size="9" fill="#666">13.0 m²</text>
+      
+        <rect x="227.5625" y="570.875" width="181.875" height="109.125" fill="#f0f0f0" stroke="none" />
+        <line x1="254.84375" y1="584.515625" x2="382.15625" y2="584.515625" stroke="#bbb" stroke-width="0.75" /><line x1="254.84375" y1="598.15625" x2="382.15625" y2="598.15625" stroke="#bbb" stroke-width="0.75" /><line x1="254.84375" y1="611.796875" x2="382.15625" y2="611.796875" stroke="#bbb" stroke-width="0.75" /><line x1="254.84375" y1="625.4375" x2="382.15625" y2="625.4375" stroke="#bbb" stroke-width="0.75" /><line x1="254.84375" y1="639.078125" x2="382.15625" y2="639.078125" stroke="#bbb" stroke-width="0.75" /><line x1="254.84375" y1="652.71875" x2="382.15625" y2="652.71875" stroke="#bbb" stroke-width="0.75" /><line x1="254.84375" y1="666.359375" x2="382.15625" y2="666.359375" stroke="#bbb" stroke-width="0.75" /><line x1="318.5" y1="587.24375" x2="318.5" y2="663.63125" stroke="#374151" stroke-width="1.2" /><path d="M 312.5 593.24375 L 318.5 587.24375 L 324.5 593.24375" fill="none" stroke="#374151" stroke-width="1.2" /><path d="M 312.5 657.63125 L 318.5 663.63125 L 324.5 657.63125" fill="none" stroke="#374151" stroke-width="1.2" />
+        <text x="318.5" font-size="12" text-anchor="middle" font-weight="600"><tspan x="318.5" y="616.6624999999999">Cầu thang</tspan></text>
+        <text x="318.5" y="649.4449999999999" text-anchor="middle" font-size="9" fill="#666">15.0 m²</text>
+      
+    <line x1="227.5625" y1="287.15" x2="373.0625" y2="287.15" stroke="#6b7280" stroke-width="1.5" /><line x1="373.0625" y1="98" x2="373.0625" y2="176.20625" stroke="#6b7280" stroke-width="1.5" /><line x1="373.0625" y1="208.94375000000002" x2="373.0625" y2="287.15" stroke="#6b7280" stroke-width="1.5" /><line x1="227.5625" y1="476.3" x2="373.0625" y2="476.3" stroke="#6b7280" stroke-width="1.5" /><line x1="373.0625" y1="287.15" x2="373.0625" y2="365.35625" stroke="#6b7280" stroke-width="1.5" /><line x1="373.0625" y1="398.09375" x2="373.0625" y2="476.3" stroke="#6b7280" stroke-width="1.5" /><line x1="373.0625" y1="476.3" x2="373.0625" y2="507.21875" stroke="#6b7280" stroke-width="1.5" /><line x1="373.0625" y1="539.95625" x2="373.0625" y2="570.875" stroke="#6b7280" stroke-width="1.5" /><line x1="227.5625" y1="570.875" x2="373.0625" y2="570.875" stroke="#6b7280" stroke-width="1.5" /><line x1="373.0625" y1="570.875" x2="374.88125" y2="570.875" stroke="#6b7280" stroke-width="1.5" /><line x1="407.61875" y1="570.875" x2="409.4375" y2="570.875" stroke="#6b7280" stroke-width="1.5" /><line x1="227.5625" y1="98" x2="278.4875" y2="98" stroke="#111827" stroke-width="3" /><line x1="322.1375" y1="98" x2="409.4375" y2="98" stroke="#111827" stroke-width="3" /><line x1="409.4375" y1="98" x2="409.4375" y2="680" stroke="#111827" stroke-width="3" /><line x1="409.4375" y1="680" x2="227.5625" y2="680" stroke="#111827" stroke-width="3" /><line x1="227.5625" y1="680" x2="227.5625" y2="403.55" stroke="#111827" stroke-width="3" /><line x1="227.5625" y1="359.90000000000003" x2="227.5625" y2="98" stroke="#111827" stroke-width="3" />
+    
+    <line x1="374.88125" y1="570.875" x2="374.88125" y2="603.6125" stroke="#374151" stroke-width="1.5" />
+    <path d="M 374.88125 603.6125 A 32.737500000000004 32.737500000000004 0 0 1 407.61875 570.875" fill="none" stroke="#9ca3af" stroke-width="1" stroke-dasharray="2,2" />
+  
+    <line x1="373.0625" y1="176.20625" x2="340.325" y2="176.20625" stroke="#374151" stroke-width="1.5" />
+    <path d="M 340.325 176.20625 A 32.737500000000004 32.737500000000004 0 0 1 373.0625 208.94375000000002" fill="none" stroke="#9ca3af" stroke-width="1" stroke-dasharray="2,2" />
+  
+    <line x1="373.0625" y1="365.35625" x2="340.325" y2="365.35625" stroke="#374151" stroke-width="1.5" />
+    <path d="M 340.325 365.35625 A 32.737500000000004 32.737500000000004 0 0 1 373.0625 398.09375" fill="none" stroke="#9ca3af" stroke-width="1" stroke-dasharray="2,2" />
+  
+    <line x1="373.0625" y1="507.21875" x2="340.325" y2="507.21875" stroke="#374151" stroke-width="1.5" />
+    <path d="M 340.325 507.21875 A 32.737500000000004 32.737500000000004 0 0 1 373.0625 539.95625" fill="none" stroke="#9ca3af" stroke-width="1" stroke-dasharray="2,2" />
+  
+    <line x1="278.4875" y1="98" x2="322.1375" y2="98" stroke="#2563eb" stroke-width="2.5" /><line x1="227.5625" y1="403.55" x2="227.5625" y2="359.90000000000003" stroke="#2563eb" stroke-width="2.5" />
+    <text x="24" y="696" font-size="9" fill="#b45309">⚠ Phân bổ phòng theo tầng dùng heuristic mặc định (Requirement không có chi tiết phòng theo từng tầng): tầng</text><text x="24" y="708" font-size="9" fill="#b45309">trệt = phòng khách/bếp/1 WC, các tầng còn lại chia đều phòng ngủ/WC còn lại.</text><text x="24" y="720" font-size="9" fill="#b45309">⚠ Yêu cầu có ban công (balcony) — Stage 2A chưa đặt hình học ban công (ngoài phạm vi task hiện tại), chỉ ghi</text><text x="24" y="732" font-size="9" fill="#b45309">nhận yêu cầu.</text><text x="24" y="744" font-size="9" fill="#b45309">⚠ Chưa hỗ trợ đặt vị trí cho phòng tự do: phòng thờ ông bà — chưa xuất hiện trong bản vẽ.</text><text x="24" y="756" font-size="9" fill="#b45309">⚠ Ghi nhận loại trừ (chưa cần xử lý hình học): phòng đọc sách.</text>
+    <text x="24" y="772" font-size="8" fill="#b91c1c">Bản vẽ khái niệm sơ bộ — dựa trên thông tin và giả định đã cung cấp, cần kiến trúc sư/kỹ sư kiểm tra lại, KHÔNG dùng để thi</text><text x="24" y="783" font-size="8" fill="#b91c1c">công trực tiếp.</text>
+  </svg>

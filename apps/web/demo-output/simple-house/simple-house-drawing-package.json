@@ -345,7 +345,7 @@
         ],
         "doors": [
           {
-            "id": "door-0",
+            "id": "f0-door-0",
             "wallId": "wall-0-ext-top",
             "connects": [
               "living",
@@ -355,7 +355,7 @@
             "width": 0.9
           },
           {
-            "id": "door-1",
+            "id": "f0-door-1",
             "wallId": "wall-0-circulation-living",
             "connects": [
               "living",
@@ -365,7 +365,7 @@
             "width": 0.9
           },
           {
-            "id": "door-2",
+            "id": "f0-door-2",
             "wallId": "wall-0-circulation-kitchen",
             "connects": [
               "circulation",
@@ -375,7 +375,7 @@
             "width": 0.9
           },
           {
-            "id": "door-3",
+            "id": "f0-door-3",
             "wallId": "wall-0-bedroom-1-circulation",
             "connects": [
               "circulation",
@@ -385,7 +385,7 @@
             "width": 0.9
           },
           {
-            "id": "door-4",
+            "id": "f0-door-4",
             "wallId": "wall-0-bedroom-2-circulation",
             "connects": [
               "circulation",
@@ -395,7 +395,7 @@
             "width": 0.9
           },
           {
-            "id": "door-5",
+            "id": "f0-door-5",
             "wallId": "wall-0-circulation-wc-1",
             "connects": [
               "circulation",
@@ -407,28 +407,28 @@
         ],
         "windows": [
           {
-            "id": "window-0",
+            "id": "window-0-0",
             "wallId": "wall-0-ext-top",
             "roomId": "living",
             "offset": 1.5,
             "width": 1.2
           },
           {
-            "id": "window-1",
+            "id": "window-0-1",
             "wallId": "wall-0-ext-left",
             "roomId": "kitchen",
             "offset": 5.357142857142858,
             "width": 1.2
           },
           {
-            "id": "window-2",
+            "id": "window-0-2",
             "wallId": "wall-0-ext-left",
             "roomId": "bedroom-2",
             "offset": 1.7857142857142856,
             "width": 1.2
           },
           {
-            "id": "window-3",
+            "id": "window-0-3",
             "wallId": "wall-0-ext-right",
             "roomId": "bedroom-1",
             "offset": 5.238095238095237,
@@ -517,20 +517,23 @@
         "envelope": {
           "frontage": 6,
           "depth": 10
-        }
+        },
+        "hasStairUp": false,
+        "hasStairDown": false
       },
       "titleBlock": {
         "projectName": "Simple House Demo",
         "scale": "NOT TO SCALE",
         "disclaimer": "Bản vẽ khái niệm sơ bộ — dựa trên thông tin và giả định đã cung cấp, cần kiến trúc sư/kỹ sư kiểm tra lại, KHÔNG dùng để thi công trực tiếp.",
-        "generatedAt": "2026-07-19T16:14:17.877Z"
+        "generatedAt": "2026-07-19T17:18:34.857Z",
+        "floorLabel": "Tầng trệt",
+        "floorLevel": 0
       },
       "warnings": [
-        "Phòng \"living\" (living) tỷ lệ khung hình 2.10:1 — ngoài khoảng ưu tiên (tối đa 1.8:1), vẫn trong giới hạn chấp nhận được.",
-        "Phòng \"bedroom-1\" (bedroom) tỷ lệ khung hình 1.90:1 — ngoài khoảng ưu tiên (tối đa 1.5:1), vẫn trong giới hạn chấp nhận được."
+        "[Tầng 0] Phòng \"living\" (living) tỷ lệ khung hình 2.10:1 — ngoài khoảng ưu tiên (tối đa 1.8:1), vẫn trong giới hạn chấp nhận được.",
+        "[Tầng 0] Phòng \"bedroom-1\" (bedroom) tỷ lệ khung hình 1.90:1 — ngoài khoảng ưu tiên (tối đa 1.5:1), vẫn trong giới hạn chấp nhận được."
       ],
       "assumptions": [
-        "Vị trí cầu thang chưa áp dụng ở Stage 1 (nhà 1 tầng).",
         "Tỷ lệ diện tích từng phòng theo công thức mặc định, chưa qua kiến trúc sư duyệt.",
         "Vị trí cửa lấy tâm mỗi wall, chưa tối ưu theo lối đi thực tế.",
         "Đã tự thêm 1 sảnh/hành lang (circulation) làm lối đi chung tới bếp/phòng ngủ/WC để đảm bảo không phải đi xuyên qua phòng ngủ nào — đây là giả định bố trí, không phải phòng khách hàng yêu cầu."

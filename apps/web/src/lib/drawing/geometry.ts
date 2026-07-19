@@ -194,19 +194,36 @@ function placeTierRowWithCirculation(
   if (rest.length === 0) {
     return [{ id: circulation.id, type: circulation.type, polygon: rect(0, y0, frontage, y0 + tierDepth) }];
   }
-  if (rest.length === 1) {
-    const roomsWidth = frontage - CIRCULATION_WIDTH;
-    return [
-      { id: rest[0].id, type: rest[0].type, polygon: rect(0, y0, roomsWidth, y0 + tierDepth) },
-      {
-        id: circulation.id,
-        type: circulation.type,
-        polygon: rect(roomsWidth, y0, frontage, y0 + tierDepth),
-      },
-    ];
+  const roomsAreaWidth = frontage - CIRCULATION_WIDTH;
+
+  // Stage 2A — bài học thật từ fixture `townhouse` (mặt tiền 5m, hẹp hơn
+  // NHIỀU so với `simple-house` 6m): round-robin 2 cột luôn (thiết kế
+  // gốc Stage 1.7) khiến 1 cột chỉ có ĐÚNG 1 phòng khi rest.length lẻ
+  // hoặc nhỏ (vd 2-3 phòng) — phòng đó "gánh" trọn chiều sâu dải trong
+  // 1 cột hẹp, ra tỷ lệ quá dẹt (đo được thật: WC 3.36:1, vượt hard
+  // 2.5:1). Với LÔ ĐẤT SÂU (townhouse depth=16m), xếp CHỒNG tất cả rest
+  // vào 1 CỘT DUY NHẤT (rộng = roomsAreaWidth, không chia đôi) cho tỷ lệ
+  // tốt hơn nhiều (mỗi phòng có bề rộng đủ, chiều sâu chia theo
+  // areaWeight như bình thường). Chỉ chia 2 cột khi rest.length >= 4 (đủ
+  // để mỗi cột có >=2 phòng, đã xác nhận đúng cho `simple-house`) —
+  // "small fixed candidate catalog", không phải solver tổng quát.
+  if (rest.length <= 3) {
+    const spaces: GeometrySpace[] = [];
+    const restWeight = rest.reduce((s, n) => s + n.areaWeight, 0);
+    let subY = y0;
+    for (const n of rest) {
+      const subDepth = restWeight > 0 ? (n.areaWeight / restWeight) * tierDepth : tierDepth / rest.length;
+      spaces.push({ id: n.id, type: n.type, polygon: rect(0, subY, roomsAreaWidth, subY + subDepth) });
+      subY += subDepth;
+    }
+    spaces.push({
+      id: circulation.id,
+      type: circulation.type,
+      polygon: rect(roomsAreaWidth, y0, frontage, y0 + tierDepth),
+    });
+    return spaces;
   }
 
-  const roomsAreaWidth = frontage - CIRCULATION_WIDTH;
   const colWidth = roomsAreaWidth / 2;
   const columns: LayoutNode[][] = [[], []];
   rest.forEach((n, i) => columns[i % 2].push(n));
@@ -236,14 +253,37 @@ function placeTierRowWithCirculation(
   return spaces;
 }
 
+/**
+ * Chiều sâu cố định của cầu thang (Stage 2A, Task 2) — dải TRỌN CHIỀU
+ * RỘNG mặt tiền, đặt ở cuối cùng (xa mặt tiền nhất) của MỌI tầng có cầu
+ * thang. Vị trí tính THUẦN theo `envelope` (không phụ thuộc phòng nào
+ * khác trên tầng đó) — đây chính là cách đảm bảo "Staircase footprint is
+ * aligned across connected floors" (yêu cầu bắt buộc của Task 2): cùng
+ * 1 envelope -> cùng 1 công thức -> cùng 1 polygon, không cần thuật toán
+ * căn chỉnh chéo tầng nào khác. Chiều rộng = trọn mặt tiền là đơn giản
+ * hoá có chủ đích (thực tế cầu thang thường hẹp hơn nhiều) — xem "Giới
+ * hạn còn lại" trong Completion Report.
+ */
+const STAIRCASE_DEPTH = 3.0; // m
+
 export function solveGeometry(layoutGraph: LayoutGraph, level = 0): Geometry {
   const { envelope } = layoutGraph;
+  const staircaseNode = layoutGraph.nodes.find((n) => n.type === "staircase");
+  const usableDepth = staircaseNode ? envelope.depth - STAIRCASE_DEPTH : envelope.depth;
+  if (usableDepth <= 0) {
+    throw new GeometrySolverError(
+      `Chiều sâu đất (${envelope.depth}m) không đủ chỗ cho cầu thang (${STAIRCASE_DEPTH}m) + các phòng còn lại.`,
+    );
+  }
+
   // entrance là node ảo, không chiếm diện tích thật — loại khỏi packing.
   // circulation CŨNG có areaWeight=0 (không suy ra từ nhu cầu diện tích,
   // xem CIRCULATION_WIDTH) nhưng VẪN cần 1 polygon thật (Stage 1.7) — lọc
   // theo type thay vì areaWeight > 0 để không loại nhầm circulation.
-  const placeable = layoutGraph.nodes.filter((n) => n.type !== "entrance");
-  if (placeable.length === 0) {
+  // staircase (nếu có) được đặt RIÊNG bên dưới, không qua thuật toán dải
+  // như các phòng khác (xem STAIRCASE_DEPTH).
+  const placeable = layoutGraph.nodes.filter((n) => n.type !== "entrance" && n.type !== "staircase");
+  if (placeable.length === 0 && !staircaseNode) {
     throw new GeometrySolverError("Không có phòng nào để đặt hình học (LayoutGraph rỗng).");
   }
 
@@ -255,12 +295,20 @@ export function solveGeometry(layoutGraph: LayoutGraph, level = 0): Geometry {
   tiers.forEach((tier, tierIndex) => {
     const isLastTier = tierIndex === tiers.length - 1;
     const tierWeight = tier.reduce((s, n) => s + n.areaWeight, 0);
-    const tierDepth = (tierWeight / totalWeight) * envelope.depth;
-    const yNext = isLastTier ? envelope.depth : yCursor + tierDepth;
+    const tierDepth = totalWeight > 0 ? (tierWeight / totalWeight) * usableDepth : 0;
+    const yNext = isLastTier ? usableDepth : yCursor + tierDepth;
 
     spaces.push(...placeTierRow(tier, envelope.frontage, yNext - yCursor, yCursor));
     yCursor = yNext;
   });
+
+  if (staircaseNode) {
+    spaces.push({
+      id: staircaseNode.id,
+      type: staircaseNode.type,
+      polygon: rect(0, usableDepth, envelope.frontage, envelope.depth),
+    });
+  }
 
   return { floors: [{ level, spaces }] };
 }

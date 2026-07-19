@@ -94,10 +94,15 @@ export function placeWindows(
   let windowIndex = 0;
 
   for (const floor of geometry.floors) {
+    // Stage 2A: `walls` có thể gộp NHIỀU tầng (id "wall-0-ext-top" và
+    // "wall-1-ext-top" cùng tồn tại) — PHẢI lọc đúng tầng này trước khi
+    // tìm theo suffix, nếu không `findExteriorTouch` sẽ luôn khớp tường
+    // của tầng ĐẦU TIÊN tìm thấy bất kể phòng đang xét ở tầng nào.
+    const wallsOnThisFloor = walls.filter((w) => w.id.startsWith(`wall-${floor.level}-`));
     for (const room of floor.spaces) {
       if (!WINDOW_ELIGIBLE_TYPES.includes(room.type)) continue;
 
-      const touch = findExteriorTouch(room, envelope, walls);
+      const touch = findExteriorTouch(room, envelope, wallsOnThisFloor);
       if (!touch) {
         warnings.push(`Phòng "${room.id}" không có cạnh nào chạm tường ngoài — không đặt được cửa sổ.`);
         continue;
@@ -118,7 +123,7 @@ export function placeWindows(
         continue;
       }
 
-      windows.push({ id: `window-${windowIndex++}`, wallId: wall.id, roomId: room.id, offset: center, width });
+      windows.push({ id: `window-${floor.level}-${windowIndex++}`, wallId: wall.id, roomId: room.id, offset: center, width });
     }
   }
 

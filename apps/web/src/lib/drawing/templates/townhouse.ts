@@ -1,6 +1,6 @@
 import type { ConstraintSet } from "@acc/shared-types";
 import { generateDesignIntentGraph, type DesignIntentGraph } from "../designIntentGraph";
-import { buildLayoutGraph, type LayoutGraph } from "../layoutGraph";
+import { buildLayoutGraphsPerFloor, type LayoutGraph } from "../layoutGraph";
 
 /**
  * Layout Template — Tech Lead Review mục 6: Layout Generator chỉ CHỌN
@@ -8,9 +8,12 @@ import { buildLayoutGraph, type LayoutGraph } from "../layoutGraph";
  * chỉ chịu trách nhiệm: có áp dụng được không (`appliesWhen`), và dựng
  * LayoutGraph (tô-pô) cho trường hợp của nó.
  *
- * Trả cả `dig` (không chỉ `layoutGraph`) — Stage 1.7, Task 3 cần biết
+ * Trả cả `dig` (không chỉ layoutGraphs) — Task 3 (Stage 1.7) cần biết
  * zone (private/service/...) của từng space để validate tô-pô circulation
  * TRƯỚC khi Geometry Solver chạy; LayoutNode không tự mang zone.
+ *
+ * Stage 2A: `layoutGraphs` (số nhiều) — 1 LayoutGraph MỖI TẦNG (Task 4),
+ * không còn gộp chung 1 đồ thị (xem designIntentGraph.ts/layoutGraph.ts).
  */
 export interface LayoutTemplate {
   id: string;
@@ -18,19 +21,22 @@ export interface LayoutTemplate {
   buildLayoutGraph: (
     constraintSet: ConstraintSet,
     warnings: string[],
-  ) => { dig: DesignIntentGraph; layoutGraph: LayoutGraph };
+  ) => { dig: DesignIntentGraph; layoutGraphs: LayoutGraph[] };
 }
 
 /**
- * Stage 1 — nhà 1 tầng, mặt tiền hẹp hơn chiều sâu (nhà ống/nhà cấp 4
- * đơn giản). Villa/nhiều tầng chưa implement (ngoài phạm vi Stage 1).
+ * Nhà ống/nhà cấp 4 — mặt tiền hẹp hơn chiều sâu, 1 tầng HOẶC nhiều
+ * tầng (Stage 2A mở rộng: bỏ ràng buộc `floors === 1` của Stage 1, tái
+ * dùng NGUYÊN template thay vì tạo template song song — cùng 1 hình
+ * dạng lô đất, chỉ khác số tầng). Villa chưa implement (ngoài phạm vi
+ * Stage 2A — xem Tech Lead Review "Do not implement villa yet").
  */
 export const TOWNHOUSE_TEMPLATE: LayoutTemplate = {
-  id: "townhouse-single-floor-v1",
-  appliesWhen: (ctx) => ctx.floors === 1 && ctx.frontage <= ctx.depth,
+  id: "townhouse-multi-floor-v1",
+  appliesWhen: (ctx) => ctx.frontage <= ctx.depth,
   buildLayoutGraph: (constraintSet, warnings) => {
     const dig = generateDesignIntentGraph(constraintSet, warnings);
-    return { dig, layoutGraph: buildLayoutGraph(dig) };
+    return { dig, layoutGraphs: buildLayoutGraphsPerFloor(dig) };
   },
 };
 

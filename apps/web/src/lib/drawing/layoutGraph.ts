@@ -61,23 +61,25 @@ function priorityOf(type: string): number {
 }
 
 /**
- * Stage 1: mỗi `relationship.type = "connection"` trong Design Intent
- * Graph trở thành 1 `door` edge (chưa có hành lang/cầu thang ở Stage
- * này — 2 loại `corridor`/`verticalConnection` giữ trong enum cho Stage
- * 2, chưa dùng).
+ * Mỗi `relationship.type = "connection"` trong Design Intent Graph trở
+ * thành 1 `door` edge. Stage 2A: 1 LayoutGraph riêng cho MỖI TẦNG (Task
+ * 4 — "Generate and validate one Layout Graph per floor") — id như
+ * "circulation"/"staircase" lặp lại ở mỗi tầng nên phải tách riêng biệt,
+ * không gộp chung 1 đồ thị (xem ghi chú ở designIntentGraph.ts).
  */
-export function buildLayoutGraph(dig: DesignIntentGraph): LayoutGraph {
-  const nodes: LayoutNode[] = dig.floors.flatMap((floor) =>
-    floor.spaces.map((s) => ({
-      id: s.id,
-      type: s.type,
-      floor: floor.level,
-      priority: priorityOf(s.type),
-      areaWeight: s.areaWeight,
-    })),
-  );
+export function buildLayoutGraphForFloor(dig: DesignIntentGraph, level: number): LayoutGraph {
+  const floor = dig.floors.find((f) => f.level === level);
+  if (!floor) throw new Error(`Design Intent Graph không có tầng ${level}.`);
 
-  const edges: LayoutEdge[] = dig.relationships
+  const nodes: LayoutNode[] = floor.spaces.map((s) => ({
+    id: s.id,
+    type: s.type,
+    floor: floor.level,
+    priority: priorityOf(s.type),
+    areaWeight: s.areaWeight,
+  }));
+
+  const edges: LayoutEdge[] = floor.relationships
     .filter((r) => r.type === "connection" || r.type === "adjacency")
     .map((r) => ({
       type: r.type === "connection" ? "door" : "adjacency",
@@ -90,4 +92,9 @@ export function buildLayoutGraph(dig: DesignIntentGraph): LayoutGraph {
     nodes,
     edges,
   };
+}
+
+/** Tiện ích: dựng LayoutGraph cho TẤT CẢ tầng, đúng thứ tự level tăng dần. */
+export function buildLayoutGraphsPerFloor(dig: DesignIntentGraph): LayoutGraph[] {
+  return [...dig.floors].sort((a, b) => a.level - b.level).map((f) => buildLayoutGraphForFloor(dig, f.level));
 }

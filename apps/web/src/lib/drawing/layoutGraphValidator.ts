@@ -55,22 +55,32 @@ function reachableFrom(startId: string, adj: Map<string, string[]>): Set<string>
 /**
  * @param dig Design Intent Graph — nguồn xác định zone (bedroom = zone
  *   "private") để biết phòng nào là "riêng tư", không tự đoán qua type.
+ *   Stage 2A: `dig` có thể chứa NHIỀU tầng, mỗi tầng có id lặp lại
+ *   ("circulation"/"staircase") — CHỈ lấy đúng không gian của tầng ứng
+ *   với `layoutGraph` này (lọc theo id có mặt trong `layoutGraph.nodes`,
+ *   không dùng `dig.floors.flatMap(...)` gộp hết mọi tầng, tránh nhiễu
+ *   chéo tầng khi id trùng nhau).
  */
 export function validateLayoutGraphTopology(
   dig: DesignIntentGraph,
   layoutGraph: LayoutGraph,
 ): LayoutGraphValidationResult {
   const errors: string[] = [];
-  const allSpaces = dig.floors.flatMap((f) => f.spaces);
+  const nodeIdsOnThisFloor = new Set(layoutGraph.nodes.map((n) => n.id));
+  const allSpaces = dig.floors.flatMap((f) => f.spaces).filter((s) => nodeIdsOnThisFloor.has(s.id));
   const bedroomIds = allSpaces.filter((s) => s.zone === "private").map((s) => s.id);
-  const nonBedroomIds = allSpaces.filter((s) => s.zone !== "private" && s.id !== "entrance").map((s) => s.id);
+  // Tầng có entrance (tầng trệt) lấy entrance làm gốc; tầng không có
+  // entrance (tầng trên) lấy staircase làm gốc — đây là điểm vào duy
+  // nhất của tầng đó (đi lên từ tầng dưới).
+  const rootId = allSpaces.some((s) => s.id === "entrance") ? "entrance" : "staircase";
+  const nonBedroomIds = allSpaces.filter((s) => s.zone !== "private" && s.id !== rootId).map((s) => s.id);
 
-  // 1. Mọi node (trừ entrance) phải reachable từ entrance, không loại trừ gì.
+  // 1. Mọi node (trừ gốc của tầng) phải reachable từ gốc, không loại trừ gì.
   const fullAdj = buildUndirectedAdjacency(layoutGraph.edges, []);
-  const allReachable = reachableFrom("entrance", fullAdj);
+  const allReachable = reachableFrom(rootId, fullAdj);
   for (const s of allSpaces) {
-    if (s.id !== "entrance" && !allReachable.has(s.id)) {
-      errors.push(`"${s.id}" không thể tới được từ entrance (đồ thị không liên thông).`);
+    if (s.id !== rootId && !allReachable.has(s.id)) {
+      errors.push(`"${s.id}" không thể tới được từ "${rootId}" (đồ thị không liên thông).`);
     }
   }
 
@@ -79,7 +89,7 @@ export function validateLayoutGraphTopology(
   //    nghĩa là đường đi gốc phụ thuộc đi xuyên qua bedroom này.
   for (const bedroomId of bedroomIds) {
     const adjWithout = buildUndirectedAdjacency(layoutGraph.edges, [bedroomId]);
-    const reachableWithout = reachableFrom("entrance", adjWithout);
+    const reachableWithout = reachableFrom(rootId, adjWithout);
     for (const otherId of nonBedroomIds) {
       if (!reachableWithout.has(otherId)) {
         errors.push(

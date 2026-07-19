@@ -159,6 +159,34 @@ function windowSymbol(win: Window, wall: Wall, toPx: (p: Point) => Point): strin
   return `<line x1="${p1px.x}" y1="${p1px.y}" x2="${p2px.x}" y2="${p2px.y}" stroke="#2563eb" stroke-width="2.5" />`;
 }
 
+/**
+ * Ký hiệu cầu thang khái niệm (Stage 2A, Task 3) — KHÔNG phải bản vẽ
+ * kết cấu thật: vài đường kẻ mô phỏng bậc thang (đều nhau, ngang qua
+ * chiều sâu phòng cầu thang) + 1 mũi tên chỉ hướng lên/xuống + nhãn nối
+ * tầng. Nếu tầng vừa nối lên vừa nối xuống, vẽ mũi tên 2 CHIỀU đơn giản
+ * (2 đầu mũi tên).
+ */
+function stairSymbol(x: number, y: number, w: number, h: number, hasUp: boolean, hasDown: boolean): string {
+  const STEP_COUNT = 8;
+  const stepLines: string[] = [];
+  for (let i = 1; i < STEP_COUNT; i++) {
+    const stepY = y + (h / STEP_COUNT) * i;
+    stepLines.push(`<line x1="${x + w * 0.15}" y1="${stepY}" x2="${x + w * 0.85}" y2="${stepY}" stroke="#bbb" stroke-width="0.75" />`);
+  }
+  const arrowX = x + w / 2;
+  const arrowTop = y + h * 0.15;
+  const arrowBottom = y + h * 0.85;
+  const arrowHeadSize = Math.min(6, w * 0.08, h * 0.08);
+  let arrow = `<line x1="${arrowX}" y1="${arrowTop}" x2="${arrowX}" y2="${arrowBottom}" stroke="#374151" stroke-width="1.2" />`;
+  if (hasUp) {
+    arrow += `<path d="M ${arrowX - arrowHeadSize} ${arrowTop + arrowHeadSize} L ${arrowX} ${arrowTop} L ${arrowX + arrowHeadSize} ${arrowTop + arrowHeadSize}" fill="none" stroke="#374151" stroke-width="1.2" />`;
+  }
+  if (hasDown) {
+    arrow += `<path d="M ${arrowX - arrowHeadSize} ${arrowBottom - arrowHeadSize} L ${arrowX} ${arrowBottom} L ${arrowX + arrowHeadSize} ${arrowBottom - arrowHeadSize}" fill="none" stroke="#374151" stroke-width="1.2" />`;
+  }
+  return `${stepLines.join("")}${arrow}`;
+}
+
 const OVERALL_EPS = 1e-6;
 
 function isOverallWidth(d: Dimension, envelope: { frontage: number; depth: number }): boolean {
@@ -227,8 +255,11 @@ export function renderFloorPlanToSvg(sheet: DrawingSheet): string {
       const areaCy = y + h * 0.72;
       const { fontSize, lines } = fitLabel(r.label, w, h);
       const labelBlock = tspanBlock(cx, labelCy, lines, fontSize, `text-anchor="middle" font-weight="600"`);
+      const fill = r.type === "staircase" ? "#f0f0f0" : "#fafafa";
+      const stairLines = r.type === "staircase" ? stairSymbol(x, y, w, h, floorPlan.hasStairUp, floorPlan.hasStairDown) : "";
       return `
-        <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#fafafa" stroke="none" />
+        <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="none" />
+        ${stairLines}
         ${labelBlock}
         <text x="${cx}" y="${areaCy}" text-anchor="middle" font-size="9" fill="#666">${r.areaM2.toFixed(1)} m²</text>
       `;
@@ -307,7 +338,7 @@ export function renderFloorPlanToSvg(sheet: DrawingSheet): string {
     .join("");
 
   // Header — tên dự án + scale/ngày, bọc dòng nếu tên dự án dài (Task 7).
-  const titleLines = wrapText(titleBlock.projectName, contentWidth, 12);
+  const titleLines = wrapText(`${titleBlock.projectName} — ${titleBlock.floorLabel}`, contentWidth, 12);
   const titleBlockSvg = `
     ${tspanBlock(PAGE_MARGIN, PAGE_MARGIN + 8, titleLines, 12, `font-weight="700"`)}
     <text x="${PAGE_MARGIN}" y="${PAGE_MARGIN + 8 + titleLines.length * 14 + 12}" font-size="9" fill="#666">${esc(titleBlock.scale)} — Mặt bằng tầng (Concept) — Lập ngày ${new Date(titleBlock.generatedAt).toLocaleDateString("vi-VN")}</text>

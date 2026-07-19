@@ -16,7 +16,15 @@ const ROOM_LABEL: Record<string, string> = {
   wc: "WC",
   entrance: "Lối vào",
   circulation: "Sảnh / Hành lang",
+  staircase: "Cầu thang",
 };
+
+/** Stage 2A, Task 5 — tên tầng hiển thị trên title block/selector. */
+function floorLabel(level: number, floorCount: number): string {
+  if (level === 0) return "Tầng trệt";
+  if (level === floorCount - 1 && floorCount > 1) return `Tầng ${level} (Tầng trên cùng)`;
+  return `Tầng ${level}`;
+}
 
 function labelFor(space: GeometrySpace, indexInType: number): string {
   const base = ROOM_LABEL[space.type] ?? space.type;
@@ -56,6 +64,9 @@ export interface FloorPlanView {
   windows: Window[];
   dimensions: Dimension[];
   envelope: { frontage: number; depth: number };
+  /** Stage 2A, Task 3 — hướng mũi tên cho ký hiệu cầu thang: tầng này có nối lên/xuống hay không. */
+  hasStairUp: boolean;
+  hasStairDown: boolean;
 }
 
 export interface TitleBlock {
@@ -63,6 +74,8 @@ export interface TitleBlock {
   scale: "NOT TO SCALE";
   disclaimer: string;
   generatedAt: string;
+  floorLabel: string;
+  floorLevel: number;
 }
 
 export interface DrawingSheet {
@@ -85,6 +98,7 @@ function buildFloorPlan(
   doorsOnFloor: Door[],
   windowsOnFloor: Window[],
   envelope: { frontage: number; depth: number },
+  floorCount: number,
 ): FloorPlanView {
   const typeCounter = new Map<string, number>();
   const rooms: FloorPlanRoom[] = geometryFloor.spaces
@@ -113,7 +127,17 @@ function buildFloorPlan(
       .map((b) => ({ from: { x: b.x0, y: b.y0 }, to: { x: b.x1, y: b.y0 }, label: `${(b.x1 - b.x0).toFixed(1)} m` })),
   ];
 
-  return { level: geometryFloor.level, rooms, walls: wallsOnFloor, doors: doorsOnFloor, windows: windowsOnFloor, dimensions, envelope };
+  return {
+    level: geometryFloor.level,
+    rooms,
+    walls: wallsOnFloor,
+    doors: doorsOnFloor,
+    windows: windowsOnFloor,
+    dimensions,
+    envelope,
+    hasStairUp: geometryFloor.level < floorCount - 1,
+    hasStairDown: geometryFloor.level > 0,
+  };
 }
 
 export function buildDrawingPackage(
@@ -126,9 +150,21 @@ export function buildDrawingPackage(
   envelope: { frontage: number; depth: number },
 ): DrawingPackage {
   const generatedAt = new Date().toISOString();
+  const floorCount = geometry.floors.length;
   const sheets: DrawingSheet[] = geometry.floors.map((floor) => {
     const wallsOnFloor = walls.filter((w) => w.id.startsWith(`wall-${floor.level}-`));
     const wallIdsOnFloor = new Set(wallsOnFloor.map((w) => w.id));
+    const assumptions = [
+      "Tỷ lệ diện tích từng phòng theo công thức mặc định, chưa qua kiến trúc sư duyệt.",
+      "Vị trí cửa lấy tâm mỗi wall, chưa tối ưu theo lối đi thực tế.",
+      "Đã tự thêm 1 sảnh/hành lang (circulation) làm lối đi chung tới bếp/phòng ngủ/WC để đảm bảo không phải đi xuyên qua phòng ngủ nào — đây là giả định bố trí, không phải phòng khách hàng yêu cầu.",
+    ];
+    if (floorCount > 1) {
+      assumptions.push(
+        "Nhà nhiều tầng: cầu thang đặt cố định 1 vị trí (chiều rộng = trọn mặt tiền, chiều sâu 3.0m) ở cuối mỗi tầng để đảm bảo thẳng hàng giữa các tầng — đơn giản hoá, chưa phải kích thước cầu thang thực tế.",
+        "Phân bổ phòng theo tầng dùng heuristic mặc định (xem ghi chú ở đầu warnings) — chưa qua kiến trúc sư duyệt.",
+      );
+    }
     return {
       floorPlan: buildFloorPlan(
         floor,
@@ -136,15 +172,18 @@ export function buildDrawingPackage(
         doors.filter((d) => wallIdsOnFloor.has(d.wallId)),
         windows.filter((w) => wallIdsOnFloor.has(w.wallId)),
         envelope,
+        floorCount,
       ),
-      titleBlock: { projectName, scale: "NOT TO SCALE", disclaimer: DISCLAIMER, generatedAt },
+      titleBlock: {
+        projectName,
+        scale: "NOT TO SCALE",
+        disclaimer: DISCLAIMER,
+        generatedAt,
+        floorLabel: floorLabel(floor.level, floorCount),
+        floorLevel: floor.level,
+      },
       warnings,
-      assumptions: [
-        "Vị trí cầu thang chưa áp dụng ở Stage 1 (nhà 1 tầng).",
-        "Tỷ lệ diện tích từng phòng theo công thức mặc định, chưa qua kiến trúc sư duyệt.",
-        "Vị trí cửa lấy tâm mỗi wall, chưa tối ưu theo lối đi thực tế.",
-        "Đã tự thêm 1 sảnh/hành lang (circulation) làm lối đi chung tới bếp/phòng ngủ/WC để đảm bảo không phải đi xuyên qua phòng ngủ nào — đây là giả định bố trí, không phải phòng khách hàng yêu cầu.",
-      ],
+      assumptions,
     };
   });
   return { sheets };

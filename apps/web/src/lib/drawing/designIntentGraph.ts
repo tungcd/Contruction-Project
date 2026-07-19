@@ -1,4 +1,5 @@
 import type { ConstraintSet } from "@acc/shared-types";
+import { allocateFloors, type FloorRoomAllocation } from "./floorAllocation";
 
 /**
  * Design Intent Graph — Stage 1 (rule-based, KHÔNG AI). Schema tái dùng
@@ -9,6 +10,14 @@ import type { ConstraintSet } from "@acc/shared-types";
  *
  * Đại diện Ý ĐỊNH không gian (không phải toạ độ) — Layout Graph (bước
  * sau) mới quyết định tô-pô vật lý cụ thể.
+ *
+ * Stage 2A: `relationships` chuyển vào TỪNG TẦNG (không còn 1 mảng phẳng
+ * dùng chung) — lý do: id như "circulation"/"staircase" LẶP LẠI ở mỗi
+ * tầng (mỗi tầng có sảnh/cầu thang riêng), nên quan hệ phải được khai
+ * báo trong đúng phạm vi tầng của nó, tránh id trùng giữa các tầng gây
+ * mơ hồ khi Layout Graph Solver đọc lại. `verticalConnections` là khái
+ * niệm MỚI, tách riêng (không phải 1 RelationshipType) — nối 2 node
+ * "staircase" ở 2 tầng liền kề, đại diện việc di chuyển giữa tầng.
  */
 
 export type Zone = "public" | "semiPrivate" | "private" | "service" | "circulation";
@@ -16,10 +25,16 @@ export type RelationshipType = "adjacency" | "connection" | "visualOpenTo" | "se
 
 export interface DesignIntentSpace {
   id: string;
-  type: string; // "entrance" | "living" | "kitchen" | "bedroom" | "wc" | ...
+  type: string; // "entrance" | "living" | "kitchen" | "bedroom" | "wc" | "circulation" | "staircase" | ...
   zone: Zone;
   areaWeight: number;
   facadeExposure: string[]; // Stage 1: luôn [] — chỉ cần cho Stage 4 Elevation
+}
+
+export interface VerticalConnection {
+  staircaseId: string; // luôn "staircase" — id lặp lại có chủ đích ở mỗi tầng, xem ghi chú trên
+  fromLevel: number;
+  toLevel: number;
 }
 
 export interface DesignIntentGraph {
@@ -30,8 +45,12 @@ export interface DesignIntentGraph {
     roofType: string | null;
     architecturalStyle: string | null;
   };
-  floors: { level: number; spaces: DesignIntentSpace[] }[];
-  relationships: { type: RelationshipType; from: string; to: string }[];
+  floors: {
+    level: number;
+    spaces: DesignIntentSpace[];
+    relationships: { type: RelationshipType; from: string; to: string }[];
+  }[];
+  verticalConnections: VerticalConnection[];
 }
 
 export class DesignIntentGraphError extends Error {
@@ -41,10 +60,67 @@ export class DesignIntentGraphError extends Error {
   }
 }
 
+const STAIRCASE_TYPE = "staircase";
+
+/** Dựng spaces + relationships cho ĐÚNG 1 tầng, tái dùng nguyên tắc circulation-là-hub đã chốt ở Stage 1.7. */
+function buildFloorDesignIntent(
+  floorAlloc: FloorRoomAllocation,
+  hasStaircaseUp: boolean,
+  hasStaircaseDown: boolean,
+): { spaces: DesignIntentSpace[]; relationships: DesignIntentGraph["floors"][number]["relationships"] } {
+  const spaces: DesignIntentSpace[] = [];
+  const relationships: DesignIntentGraph["floors"][number]["relationships"] = [];
+  let hub: string;
+
+  if (floorAlloc.hasEntrance) {
+    spaces.push({ id: "entrance", type: "entrance", zone: "public", areaWeight: 0, facadeExposure: [] });
+    hub = "entrance";
+    if (floorAlloc.hasLiving) {
+      spaces.push({ id: "living", type: "living", zone: "public", areaWeight: 1.4, facadeExposure: [] });
+      relationships.push({ type: "connection", from: hub, to: "living" });
+      hub = "living";
+    }
+  } else {
+    // Tầng không có lối vào riêng (tầng > 0) — điểm vào tầng là cầu
+    // thang (đi lên từ tầng dưới), không phải "entrance".
+    spaces.push({ id: STAIRCASE_TYPE, type: STAIRCASE_TYPE, zone: "circulation", areaWeight: 0, facadeExposure: [] });
+    hub = STAIRCASE_TYPE;
+  }
+
+  // Danh sách "phòng" cần gắn vào hub của tầng này qua circulation (nếu
+  // cần) — bếp/wc ở tầng trệt, phòng ngủ/wc ở tầng trên. Cầu thang ĐI
+  // LÊN (nếu tầng này không phải tầng cao nhất) cũng là 1 điểm đến cần
+  // gắn vào circulation của tầng trệt/tầng giữa — tầng đã dùng cầu thang
+  // làm hub (floorAlloc.hasEntrance === false) thì KHÔNG cần thêm 1 cầu
+  // thang nữa vào danh sách này (đã có sẵn ở vai trò hub).
+  const attachments: { id: string; type: string; zone: Zone; areaWeight: number }[] = [];
+  if (floorAlloc.hasKitchen) attachments.push({ id: "kitchen", type: "kitchen", zone: "public", areaWeight: 1.0 });
+  for (const id of floorAlloc.bedroomIds) attachments.push({ id, type: "bedroom", zone: "private", areaWeight: 1.0 });
+  for (const id of floorAlloc.bathroomIds) attachments.push({ id, type: "wc", zone: "service", areaWeight: 0.5 });
+  if (floorAlloc.hasEntrance && hasStaircaseUp) {
+    attachments.push({ id: STAIRCASE_TYPE, type: STAIRCASE_TYPE, zone: "circulation", areaWeight: 0 });
+  }
+
+  const needsCirculation = attachments.length >= 2;
+  if (needsCirculation) {
+    spaces.push({ id: "circulation", type: "circulation", zone: "circulation", areaWeight: 0, facadeExposure: [] });
+    relationships.push({ type: "connection", from: hub, to: "circulation" });
+    hub = "circulation";
+  }
+  for (const a of attachments) {
+    spaces.push({ ...a, facadeExposure: [] });
+    relationships.push({ type: "connection", from: hub, to: a.id });
+  }
+
+  return { spaces, relationships };
+}
+
 /**
- * Stage 1 — chỉ hỗ trợ 1 tầng, layout tuyến tính (entrance -> living ->
- * kitchen -> {bedrooms, wc}). Không xử lý otherRooms/excludedRooms (đưa
- * vào warnings, không tự bịa vị trí — No Silent Drop).
+ * Tầng 1 (Stage 1): entrance -> living -> circulation -> {kitchen,
+ * bedrooms, wc}. Tầng nhiều hơn 1 (Stage 2A): mỗi tầng tự có
+ * circulation/cầu thang riêng; entrance chỉ tồn tại ở tầng 0.
+ * `otherRooms`/`excludedRooms` không xử lý hình học — đưa vào warnings
+ * (No Silent Drop), giữ nguyên chính sách Stage 1.
  */
 export function generateDesignIntentGraph(
   constraintSet: ConstraintSet,
@@ -54,92 +130,46 @@ export function generateDesignIntentGraph(
 
   if (!site.frontage || !site.depth) {
     throw new DesignIntentGraphError(
-      "Thiếu frontage/depth trong Constraint Set — Stage 1 cần đất hình chữ nhật có đủ 2 kích thước.",
-    );
-  }
-  if ((building.floors?.value ?? 1) !== 1) {
-    throw new DesignIntentGraphError(
-      "Stage 1 chỉ hỗ trợ nhà 1 tầng — vượt phạm vi cho phép của Stage này.",
+      "Thiếu frontage/depth trong Constraint Set — cần đất hình chữ nhật có đủ 2 kích thước.",
     );
   }
 
-  const designSpaces: DesignIntentSpace[] = [
-    { id: "entrance", type: "entrance", zone: "public", areaWeight: 0, facadeExposure: [] },
-  ];
-  const relationships: DesignIntentGraph["relationships"] = [];
+  const floorCount = building.floors?.value ?? 1;
+  const allocation = allocateFloors(constraintSet);
+  warnings.push(...allocation.assumptions);
 
-  if (spaces.livingRoom?.value) {
-    designSpaces.push({ id: "living", type: "living", zone: "public", areaWeight: 1.4, facadeExposure: [] });
-    relationships.push({ type: "connection", from: "entrance", to: "living" });
-  }
+  const floors: DesignIntentGraph["floors"] = allocation.floors.map((floorAlloc) => {
+    const { spaces: floorSpaces, relationships } = buildFloorDesignIntent(
+      floorAlloc,
+      /* hasStaircaseUp */ floorAlloc.level < floorCount - 1,
+      /* hasStaircaseDown */ floorAlloc.level > 0,
+    );
+    return { level: floorAlloc.level, spaces: floorSpaces, relationships };
+  });
 
-  // CRITICAL ARCHITECTURE CORRECTION (Stage 1.7, Task 1/2 — Tech Lead
-  // Review, Stage 1.6 "Not Accepted"): Stage 1.6 từng đổi tô-pô ở đây
-  // (nối "chỉ 2 phòng đầu chạm hub, còn lại chạm phòng liền trước") để
-  // KHỚP với thuật toán hình học đã chọn — Tech Lead xác nhận đây là lỗi
-  // kiến trúc: không được đổi Ý ĐỊNH kiến trúc để geometry pass được
-  // validation. Hướng đúng: Design Intent -> Layout Graph -> Geometry,
-  // KHÔNG BAO GIỜ ngược lại.
-  //
-  // Sửa đúng: khai báo tường minh 1 node "circulation" (sảnh/hành lang) —
-  // hub DUY NHẤT nối bếp/phòng ngủ/wc. Đây là bất biến chức năng bắt
-  // buộc (không phải chi tiết hình học): lối vào bếp/mọi phòng ngủ/wc
-  // dùng chung phải KHÔNG đi xuyên qua bất kỳ phòng ngủ nào — 1 phòng
-  // ngủ riêng tư chỉ được là nút CUỐI (terminal) trong đường đi, không
-  // bao giờ là trạm trung chuyển tới phòng khác. KHÔNG "sửa" yêu cầu này
-  // bằng cách gắn nhãn WC là riêng tư (private) trừ khi Requirement nói
-  // rõ đây là WC riêng (ensuite) — fixture hiện tại không có yêu cầu đó.
-  //
-  // Geometry Solver (geometry.ts, `placeTierRowWithCirculation`) đặt
-  // circulation thành 1 cột hẹp CHẠY SUỐT chiều sâu của cả dải, nằm GIỮA
-  // 2 cột phòng còn lại — nhờ vậy circulation chạm được TẤT CẢ các phòng
-  // trong dải (không phụ thuộc phòng nào ở cột nào), hiện thực hoá đúng
-  // tô-pô hub-and-spoke khai báo ở đây, không cần "chain" như Stage 1.6.
-  const needsCirculation =
-    (spaces.kitchen?.value ? 1 : 0) + (spaces.bedrooms?.value ?? 0) + (spaces.bathrooms?.value ?? 0) >= 2;
-  let hub = "living";
-  if (needsCirculation) {
-    designSpaces.push({ id: "circulation", type: "circulation", zone: "circulation", areaWeight: 0, facadeExposure: [] });
-    relationships.push({ type: "connection", from: hub, to: "circulation" });
-    hub = "circulation";
-  }
-
-  if (spaces.kitchen?.value) {
-    designSpaces.push({ id: "kitchen", type: "kitchen", zone: "public", areaWeight: 1.0, facadeExposure: [] });
-    relationships.push({ type: "connection", from: hub, to: "kitchen" });
-  }
-
-  const bedroomCount = spaces.bedrooms?.value ?? 0;
-  for (let i = 1; i <= bedroomCount; i++) {
-    designSpaces.push({ id: `bedroom-${i}`, type: "bedroom", zone: "private", areaWeight: 1.0, facadeExposure: [] });
-    relationships.push({ type: "connection", from: hub, to: `bedroom-${i}` });
-  }
-  const bathroomCount = spaces.bathrooms?.value ?? 0;
-  for (let i = 1; i <= bathroomCount; i++) {
-    designSpaces.push({ id: `wc-${i}`, type: "wc", zone: "service", areaWeight: 0.5, facadeExposure: [] });
-    relationships.push({ type: "connection", from: hub, to: `wc-${i}` });
+  const verticalConnections: VerticalConnection[] = [];
+  for (let level = 0; level < floorCount - 1; level++) {
+    verticalConnections.push({ staircaseId: STAIRCASE_TYPE, fromLevel: level, toLevel: level + 1 });
   }
 
   if ((spaces.otherRooms?.value?.length ?? 0) > 0) {
     warnings.push(
-      `Stage 1 chưa hỗ trợ đặt vị trí cho phòng tự do: ${spaces.otherRooms!.value.join(", ")} — chưa xuất hiện trong bản vẽ.`,
+      `Chưa hỗ trợ đặt vị trí cho phòng tự do: ${spaces.otherRooms!.value.join(", ")} — chưa xuất hiện trong bản vẽ.`,
     );
   }
   if ((spaces.excludedRooms?.value?.length ?? 0) > 0) {
-    warnings.push(
-      `Ghi nhận loại trừ (chưa cần xử lý hình học ở Stage 1): ${spaces.excludedRooms!.value.join(", ")}.`,
-    );
+    warnings.push(`Ghi nhận loại trừ (chưa cần xử lý hình học): ${spaces.excludedRooms!.value.join(", ")}.`);
   }
 
   return {
     buildingContext: {
       frontage: site.frontage.value,
       depth: site.depth.value,
-      floors: building.floors?.value ?? 1,
+      floors: floorCount,
       roofType: structure.roofType?.value ?? null,
       architecturalStyle: style.architecturalStyle?.value ?? null,
     },
-    floors: [{ level: 0, spaces: designSpaces }],
-    relationships,
+    floors,
+    verticalConnections,
   };
 }

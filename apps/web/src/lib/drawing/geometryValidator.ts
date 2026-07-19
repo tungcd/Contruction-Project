@@ -45,6 +45,30 @@ function overlaps(a: GeometrySpace, b: GeometrySpace): boolean {
   return xOverlap > AREA_EPS && yOverlap > AREA_EPS;
 }
 
+/** Section 5 tách thành hàm riêng — Stage 2A gọi 1 LẦN trên Geometry gộp
+ *  TẤT CẢ tầng, không gọi per-floor (constraintSet.spaces.bedrooms là
+ *  tổng toàn nhà, không phải số phòng ngủ của riêng 1 tầng). */
+export function validateAggregateRoomCounts(geometry: Geometry, constraintSet: ConstraintSet): string[] {
+  const errors: string[] = [];
+  const allSpaces = geometry.floors.flatMap((f) => f.spaces);
+  const countByType = (type: string) => allSpaces.filter((s) => s.type === type).length;
+  const expectedBedrooms = constraintSet.spaces.bedrooms?.value ?? 0;
+  const expectedBathrooms = constraintSet.spaces.bathrooms?.value ?? 0;
+  if (countByType("bedroom") !== expectedBedrooms) {
+    errors.push(`Số phòng ngủ trong bản vẽ (${countByType("bedroom")}) khác Constraint Set (${expectedBedrooms}).`);
+  }
+  if (countByType("wc") !== expectedBathrooms) {
+    errors.push(`Số WC trong bản vẽ (${countByType("wc")}) khác Constraint Set (${expectedBathrooms}).`);
+  }
+  if (constraintSet.spaces.livingRoom?.value && countByType("living") === 0) {
+    errors.push(`Constraint Set yêu cầu phòng khách nhưng bản vẽ không có.`);
+  }
+  if (constraintSet.spaces.kitchen?.value && countByType("kitchen") === 0) {
+    errors.push(`Constraint Set yêu cầu bếp nhưng bản vẽ không có.`);
+  }
+  return errors;
+}
+
 export function validateGeometry(
   geometry: Geometry,
   layoutGraph: LayoutGraph,
@@ -52,6 +76,7 @@ export function validateGeometry(
   doors: Door[],
   constraintSet: ConstraintSet,
   windows: Window[] = [],
+  checkAggregateCounts = true,
 ): GeometryValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -227,22 +252,13 @@ export function validateGeometry(
     }
   }
 
-  // 5. Số lượng phòng khớp Constraint Set (đếm theo type).
-  const allSpaces = geometry.floors.flatMap((f) => f.spaces);
-  const countByType = (type: string) => allSpaces.filter((s) => s.type === type).length;
-  const expectedBedrooms = constraintSet.spaces.bedrooms?.value ?? 0;
-  const expectedBathrooms = constraintSet.spaces.bathrooms?.value ?? 0;
-  if (countByType("bedroom") !== expectedBedrooms) {
-    errors.push(`Số phòng ngủ trong bản vẽ (${countByType("bedroom")}) khác Constraint Set (${expectedBedrooms}).`);
-  }
-  if (countByType("wc") !== expectedBathrooms) {
-    errors.push(`Số WC trong bản vẽ (${countByType("wc")}) khác Constraint Set (${expectedBathrooms}).`);
-  }
-  if (constraintSet.spaces.livingRoom?.value && countByType("living") === 0) {
-    errors.push(`Constraint Set yêu cầu phòng khách nhưng bản vẽ không có.`);
-  }
-  if (constraintSet.spaces.kitchen?.value && countByType("kitchen") === 0) {
-    errors.push(`Constraint Set yêu cầu bếp nhưng bản vẽ không có.`);
+  // 5. Số lượng phòng khớp Constraint Set (đếm theo type) — Stage 2A: chỉ
+  //    kiểm tra khi gọi ở mức TOÀ NHÀ (checkAggregateCounts=true, mặc
+  //    định giữ nguyên hành vi Stage 1.7 cho nhà 1 tầng); khi gọi
+  //    per-floor cho nhà nhiều tầng, bỏ qua ở đây, gọi
+  //    `validateAggregateRoomCounts()` riêng 1 lần trên Geometry gộp.
+  if (checkAggregateCounts) {
+    errors.push(...validateAggregateRoomCounts(geometry, constraintSet));
   }
 
   // 6. hasElderly proximity — Stage 1 chưa có ngưỡng Founder xác nhận

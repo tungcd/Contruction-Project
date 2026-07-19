@@ -1,0 +1,209 @@
+[
+  {
+    "envelope": {
+      "frontage": 5,
+      "depth": 16
+    },
+    "nodes": [
+      {
+        "id": "entrance",
+        "type": "entrance",
+        "floor": 0,
+        "priority": 0,
+        "areaWeight": 0
+      },
+      {
+        "id": "living",
+        "type": "living",
+        "floor": 0,
+        "priority": 1,
+        "areaWeight": 1.4
+      },
+      {
+        "id": "circulation",
+        "type": "circulation",
+        "floor": 0,
+        "priority": 2,
+        "areaWeight": 0
+      },
+      {
+        "id": "kitchen",
+        "type": "kitchen",
+        "floor": 0,
+        "priority": 2,
+        "areaWeight": 1
+      },
+      {
+        "id": "wc-1",
+        "type": "wc",
+        "floor": 0,
+        "priority": 2,
+        "areaWeight": 0.5
+      },
+      {
+        "id": "staircase",
+        "type": "staircase",
+        "floor": 0,
+        "priority": 9,
+        "areaWeight": 0
+      }
+    ],
+    "edges": [
+      {
+        "type": "door",
+        "from": "entrance",
+        "to": "living"
+      },
+      {
+        "type": "door",
+        "from": "living",
+        "to": "circulation"
+      },
+      {
+        "type": "door",
+        "from": "circulation",
+        "to": "kitchen"
+      },
+      {
+        "type": "door",
+        "from": "circulation",
+        "to": "wc-1"
+      },
+      {
+        "type": "door",
+        "from": "circulation",
+        "to": "staircase"
+      }
+    ]
+  },
+  {
+    "envelope": {
+      "frontage": 5,
+      "depth": 16
+    },
+    "nodes": [
+      {
+        "id": "staircase",
+        "type": "staircase",
+        "floor": 1,
+        "priority": 9,
+        "areaWeight": 0
+      },
+      {
+        "id": "circulation",
+        "type": "circulation",
+        "floor": 1,
+        "priority": 2,
+        "areaWeight": 0
+      },
+      {
+        "id": "bedroom-1",
+        "type": "bedroom",
+        "floor": 1,
+        "priority": 2,
+        "areaWeight": 1
+      },
+      {
+        "id": "bedroom-2",
+        "type": "bedroom",
+        "floor": 1,
+        "priority": 2,
+        "areaWeight": 1
+      },
+      {
+        "id": "wc-2",
+        "type": "wc",
+        "floor": 1,
+        "priority": 2,
+        "areaWeight": 0.5
+      }
+    ],
+    "edges": [
+      {
+        "type": "door",
+        "from": "staircase",
+        "to": "circulation"
+      },
+      {
+        "type": "door",
+        "from": "circulation",
+        "to": "bedroom-1"
+      },
+      {
+        "type": "door",
+        "from": "circulation",
+        "to": "bedroom-2"
+      },
+      {
+        "type": "door",
+        "from": "circulation",
+        "to": "wc-2"
+      }
+    ]
+  },
+  {
+    "envelope": {
+      "frontage": 5,
+      "depth": 16
+    },
+    "nodes": [
+      {
+        "id": "staircase",
+        "type": "staircase",
+        "floor": 2,
+        "priority": 9,
+        "areaWeight": 0
+      },
+      {
+        "id": "circulation",
+        "type": "circulation",
+        "floor": 2,
+        "priority": 2,
+        "areaWeight": 0
+      },
+      {
+        "id": "bedroom-3",
+        "type": "bedroom",
+        "floor": 2,
+        "priority": 2,
+        "areaWeight": 1
+      },
+      {
+        "id": "bedroom-4",
+        "type": "bedroom",
+        "floor": 2,
+        "priority": 2,
+        "areaWeight": 1
+      },
+      {
+        "id": "wc-3",
+        "type": "wc",
+        "floor": 2,
+        "priority": 2,
+        "areaWeight": 0.5
+      }
+    ],
+    "edges": [
+      {
+        "type": "door",
+        "from": "staircase",
+        "to": "circulation"
+      },
+      {
+        "type": "door",
+        "from": "circulation",
+        "to": "bedroom-3"
+      },
+      {
+        "type": "door",
+        "from": "circulation",
+        "to": "bedroom-4"
+      },
+      {
+        "type": "door",
+        "from": "circulation",
+        "to": "wc-3"
+      }
+    ]
+  }
+]

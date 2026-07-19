@@ -145,20 +145,91 @@ npm run test:regression -> KHÔNG áp dụng — script này gọi API tới ser
                             1.7 (Concept Drawing); không có dev server
                             chạy trong môi trường này nên bỏ qua, không
                             phải regression do thay đổi lần này.
-npx next build           -> xem mục 8 (chạy nền, đợi kết quả trước khi
-                            gửi báo cáo)
+npx next build           -> PASS (xem mục 8 — kết quả thật, không rút gọn)
+npm run poc:constraint  -> 3/3 PASS (packages/shared-types, Constraint Set Compiler — không liên quan Stage 1.7 nhưng nằm trong Remaining Verification Gate của Tech Lead Review)
 ```
 
 ## 8. Build Verification (Task 9)
 
-Trước khi chạy `next build`, đã kiểm tra `tasklist` — vẫn có nhiều
-`node.exe` đang chạy (môi trường có sẵn, không phải do phiên này khởi
-tạo). Theo đúng nguyên tắc đã cam kết ("Do not kill unrelated Node
-processes"), KHÔNG tắt bất kỳ tiến trình nào. `npx next build` được
-chạy trực tiếp; kết quả đầy đủ sẽ bổ sung ngay bên dưới khi hoàn tất
-(chạy nền do vượt quá 180s).
+Trước khi chạy `next build`, đã kiểm tra `tasklist`/`Get-Process` — vẫn
+có nhiều `node.exe` đang chạy (môi trường có sẵn từ trước, không phải
+do phiên này khởi tạo). Theo đúng nguyên tắc đã cam kết ("Do not kill
+unrelated Node processes"), KHÔNG tắt bất kỳ tiến trình nào ở bất kỳ
+bước nào dưới đây.
 
-<!-- BUILD_RESULT_PLACEHOLDER -->
+**Lần chạy đầu bị lỗi thật (không phải do code Stage 1.7)**: `next
+build` báo `ENOENT ... rename '.next\export\500.html' -> '.next\server\
+pages\500.html'`. Xác minh nguyên nhân trước khi kết luận: dùng
+`Get-CimInstance Win32_Process` lọc theo command line chứa "next" —
+phát hiện CÓ nhiều lần gọi `next build` đã chạy chồng lên nhau (một số
+từ trước điểm tóm tắt hội thoại của phiên này), tất cả cùng ghi vào
+chung 1 thư mục `.next/` — gây race condition khi rename file export.
+Đây là lỗi hạ tầng do build chạy trùng lặp, không phải lỗi domain code.
+
+**Xử lý đúng cách** (không tắt tiến trình, không xoá dữ liệu người
+dùng): xác nhận `.next/` là build artifact được `.gitignore` (dòng 30),
+không phải dữ liệu cần giữ; xác nhận KHÔNG còn tiến trình `node` nào
+đang chạy lệnh chứa "next" tại thời điểm kiểm tra (`Get-CimInstance`
+filter theo CommandLine — rỗng); sau đó chạy lại ĐÚNG 1 lần `npx next
+build` từ `apps/web`, không chạy song song lần nào khác.
+
+**Kết quả (thật, đầy đủ)**:
+
+```
+▲ Next.js 15.5.19
+ ✓ Compiled successfully in 19.0s
+   Linting and checking validity of types ...
+   Collecting page data ...
+ ✓ Generating static pages (6/6)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                          Size  First Load JS
+┌ ○ /                                             5.51 kB         269 kB
+├ ○ /_not-found                                     995 B         104 kB
+├ ƒ /api/ai-mode                                    168 B         103 kB
+├ ƒ /api/contractor-profile                         168 B         103 kB
+├ ƒ /api/estimate                                   168 B         103 kB
+├ ƒ /api/estimate/export                            168 B         103 kB
+├ ƒ /api/pricebooks                                 168 B         103 kB
+├ ƒ /api/pricebooks/[id]                            168 B         103 kB
+├ ƒ /api/pricebooks/[id]/default                    168 B         103 kB
+├ ƒ /api/pricebooks/[id]/duplicate                  168 B         103 kB
+├ ƒ /api/projects                                   168 B         103 kB
+├ ƒ /api/projects/[id]                              168 B         103 kB
+├ ƒ /api/projects/[id]/analyze                      168 B         103 kB
+├ ƒ /api/projects/[id]/confirm-requirement          168 B         103 kB
+├ ƒ /api/projects/[id]/estimate-drafts              168 B         103 kB
+├ ƒ /api/projects/[id]/estimate-drafts/[draftId]    168 B         103 kB
+├ ƒ /api/projects/[id]/messages                     168 B         103 kB
+├ ○ /pricebooks                                   38.5 kB         309 kB
+├ ƒ /pricebooks/[id]                               3.6 kB         352 kB
+├ ƒ /projects/[id]                                7.29 kB         250 kB
+├ ƒ /projects/[id]/brief                          2.55 kB         230 kB
+├ ƒ /projects/[id]/design                         32.1 kB         249 kB
+├ ƒ /projects/[id]/estimate                        5.7 kB         373 kB
+├ ƒ /projects/[id]/proposal                       3.88 kB         231 kB
+└ ○ /settings/contractor                          11.2 kB         291 kB
+```
+
+`/projects/[id]/design` (route chứa toàn bộ pipeline Concept Drawing +
+svgRenderer.ts mới) build thành công, 32.1 kB. Exit code 0.
+
+`npm run poc:constraint` (từ `packages/shared-types`, đúng workspace
+gốc theo yêu cầu của Tech Lead Review):
+
+```
+> tsc -p tsconfig.json
+Constraint Set Compiler — Manual POC (3 fixtures)
+  PASS  simple-house
+  PASS  townhouse
+  PASS  villa
+3/3 pass
+```
+
+Cả 2 cổng xác minh đều PASS → theo đúng quy tắc Tech Lead đã nêu ("If
+both commands pass, Stage 2 is automatically authorized"), Stage 2A bắt
+đầu ngay trong báo cáo tiếp theo mà không cần thêm 1 vòng review.
 
 ## 9. File đính kèm
 

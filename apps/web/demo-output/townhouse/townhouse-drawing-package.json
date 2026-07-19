@@ -1,0 +1,1362 @@
+{
+  "sheets": [
+    {
+      "floorPlan": {
+        "level": 0,
+        "rooms": [
+          {
+            "id": "living",
+            "type": "living",
+            "label": "Phòng khách",
+            "areaM2": 31.379310344827584,
+            "polygon": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 5,
+                "y": 0
+              },
+              {
+                "x": 5,
+                "y": 6.275862068965517
+              },
+              {
+                "x": 0,
+                "y": 6.275862068965517
+              }
+            ]
+          },
+          {
+            "id": "kitchen",
+            "type": "kitchen",
+            "label": "Bếp",
+            "areaM2": 17.931034482758616,
+            "polygon": [
+              {
+                "x": 0,
+                "y": 6.275862068965517
+              },
+              {
+                "x": 4,
+                "y": 6.275862068965517
+              },
+              {
+                "x": 4,
+                "y": 10.75862068965517
+              },
+              {
+                "x": 0,
+                "y": 10.75862068965517
+              }
+            ]
+          },
+          {
+            "id": "wc-1",
+            "type": "wc",
+            "label": "WC",
+            "areaM2": 8.96551724137931,
+            "polygon": [
+              {
+                "x": 0,
+                "y": 10.75862068965517
+              },
+              {
+                "x": 4,
+                "y": 10.75862068965517
+              },
+              {
+                "x": 4,
+                "y": 12.999999999999998
+              },
+              {
+                "x": 0,
+                "y": 12.999999999999998
+              }
+            ]
+          },
+          {
+            "id": "circulation",
+            "type": "circulation",
+            "label": "Sảnh / Hành lang",
+            "areaM2": 6.724137931034483,
+            "polygon": [
+              {
+                "x": 4,
+                "y": 6.275862068965517
+              },
+              {
+                "x": 5,
+                "y": 6.275862068965517
+              },
+              {
+                "x": 5,
+                "y": 13
+              },
+              {
+                "x": 4,
+                "y": 13
+              }
+            ]
+          },
+          {
+            "id": "staircase",
+            "type": "staircase",
+            "label": "Cầu thang",
+            "areaM2": 15,
+            "polygon": [
+              {
+                "x": 0,
+                "y": 13
+              },
+              {
+                "x": 5,
+                "y": 13
+              },
+              {
+                "x": 5,
+                "y": 16
+              },
+              {
+                "x": 0,
+                "y": 16
+              }
+            ]
+          }
+        ],
+        "walls": [
+          {
+            "id": "wall-0-kitchen-living",
+            "start": {
+              "x": 0,
+              "y": 6.275862068965517
+            },
+            "end": {
+              "x": 4,
+              "y": 6.275862068965517
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "living",
+              "kitchen"
+            ]
+          },
+          {
+            "id": "wall-0-circulation-living",
+            "start": {
+              "x": 4,
+              "y": 6.275862068965517
+            },
+            "end": {
+              "x": 5,
+              "y": 6.275862068965517
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "living",
+              "circulation"
+            ]
+          },
+          {
+            "id": "wall-0-kitchen-wc-1",
+            "start": {
+              "x": 0,
+              "y": 10.75862068965517
+            },
+            "end": {
+              "x": 4,
+              "y": 10.75862068965517
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "kitchen",
+              "wc-1"
+            ]
+          },
+          {
+            "id": "wall-0-circulation-kitchen",
+            "start": {
+              "x": 4,
+              "y": 6.275862068965517
+            },
+            "end": {
+              "x": 4,
+              "y": 10.75862068965517
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "kitchen",
+              "circulation"
+            ]
+          },
+          {
+            "id": "wall-0-circulation-wc-1",
+            "start": {
+              "x": 4,
+              "y": 10.75862068965517
+            },
+            "end": {
+              "x": 4,
+              "y": 12.999999999999998
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "wc-1",
+              "circulation"
+            ]
+          },
+          {
+            "id": "wall-0-staircase-wc-1",
+            "start": {
+              "x": 0,
+              "y": 12.999999999999998
+            },
+            "end": {
+              "x": 4,
+              "y": 12.999999999999998
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "wc-1",
+              "staircase"
+            ]
+          },
+          {
+            "id": "wall-0-circulation-staircase",
+            "start": {
+              "x": 4,
+              "y": 13
+            },
+            "end": {
+              "x": 5,
+              "y": 13
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "circulation",
+              "staircase"
+            ]
+          },
+          {
+            "id": "wall-0-ext-top",
+            "start": {
+              "x": 0,
+              "y": 0
+            },
+            "end": {
+              "x": 5,
+              "y": 0
+            },
+            "type": "exterior"
+          },
+          {
+            "id": "wall-0-ext-right",
+            "start": {
+              "x": 5,
+              "y": 0
+            },
+            "end": {
+              "x": 5,
+              "y": 16
+            },
+            "type": "exterior"
+          },
+          {
+            "id": "wall-0-ext-bottom",
+            "start": {
+              "x": 5,
+              "y": 16
+            },
+            "end": {
+              "x": 0,
+              "y": 16
+            },
+            "type": "exterior"
+          },
+          {
+            "id": "wall-0-ext-left",
+            "start": {
+              "x": 0,
+              "y": 16
+            },
+            "end": {
+              "x": 0,
+              "y": 0
+            },
+            "type": "exterior"
+          }
+        ],
+        "doors": [
+          {
+            "id": "f0-door-0",
+            "wallId": "wall-0-ext-top",
+            "connects": [
+              "living",
+              "exterior"
+            ],
+            "offset": 2.5,
+            "width": 0.9
+          },
+          {
+            "id": "f0-door-1",
+            "wallId": "wall-0-circulation-living",
+            "connects": [
+              "living",
+              "circulation"
+            ],
+            "offset": 0.5,
+            "width": 0.9
+          },
+          {
+            "id": "f0-door-2",
+            "wallId": "wall-0-circulation-kitchen",
+            "connects": [
+              "circulation",
+              "kitchen"
+            ],
+            "offset": 2.241379310344827,
+            "width": 0.9
+          },
+          {
+            "id": "f0-door-3",
+            "wallId": "wall-0-circulation-wc-1",
+            "connects": [
+              "circulation",
+              "wc-1"
+            ],
+            "offset": 1.1206896551724137,
+            "width": 0.9
+          },
+          {
+            "id": "f0-door-4",
+            "wallId": "wall-0-circulation-staircase",
+            "connects": [
+              "circulation",
+              "staircase"
+            ],
+            "offset": 0.5,
+            "width": 0.9
+          }
+        ],
+        "windows": [
+          {
+            "id": "window-0-0",
+            "wallId": "wall-0-ext-top",
+            "roomId": "living",
+            "offset": 1.25,
+            "width": 1.2
+          },
+          {
+            "id": "window-0-1",
+            "wallId": "wall-0-ext-left",
+            "roomId": "kitchen",
+            "offset": 7.482758620689657,
+            "width": 1.2
+          }
+        ],
+        "dimensions": [
+          {
+            "from": {
+              "x": 0,
+              "y": 0
+            },
+            "to": {
+              "x": 5,
+              "y": 0
+            },
+            "label": "5 m"
+          },
+          {
+            "from": {
+              "x": 0,
+              "y": 0
+            },
+            "to": {
+              "x": 0,
+              "y": 16
+            },
+            "label": "16 m"
+          },
+          {
+            "from": {
+              "x": 0,
+              "y": 6.275862068965517
+            },
+            "to": {
+              "x": 4,
+              "y": 6.275862068965517
+            },
+            "label": "4.0 m"
+          },
+          {
+            "from": {
+              "x": 0,
+              "y": 10.75862068965517
+            },
+            "to": {
+              "x": 4,
+              "y": 10.75862068965517
+            },
+            "label": "4.0 m"
+          },
+          {
+            "from": {
+              "x": 4,
+              "y": 6.275862068965517
+            },
+            "to": {
+              "x": 5,
+              "y": 6.275862068965517
+            },
+            "label": "1.0 m"
+          },
+          {
+            "from": {
+              "x": 0,
+              "y": 13
+            },
+            "to": {
+              "x": 5,
+              "y": 13
+            },
+            "label": "5.0 m"
+          }
+        ],
+        "envelope": {
+          "frontage": 5,
+          "depth": 16
+        },
+        "hasStairUp": true,
+        "hasStairDown": false
+      },
+      "titleBlock": {
+        "projectName": "Townhouse Demo",
+        "scale": "NOT TO SCALE",
+        "disclaimer": "Bản vẽ khái niệm sơ bộ — dựa trên thông tin và giả định đã cung cấp, cần kiến trúc sư/kỹ sư kiểm tra lại, KHÔNG dùng để thi công trực tiếp.",
+        "generatedAt": "2026-07-19T17:18:34.878Z",
+        "floorLabel": "Tầng trệt",
+        "floorLevel": 0
+      },
+      "warnings": [
+        "Phân bổ phòng theo tầng dùng heuristic mặc định (Requirement không có chi tiết phòng theo từng tầng): tầng trệt = phòng khách/bếp/1 WC, các tầng còn lại chia đều phòng ngủ/WC còn lại.",
+        "Yêu cầu có ban công (balcony) — Stage 2A chưa đặt hình học ban công (ngoài phạm vi task hiện tại), chỉ ghi nhận yêu cầu.",
+        "Chưa hỗ trợ đặt vị trí cho phòng tự do: phòng thờ ông bà — chưa xuất hiện trong bản vẽ.",
+        "Ghi nhận loại trừ (chưa cần xử lý hình học): phòng đọc sách."
+      ],
+      "assumptions": [
+        "Tỷ lệ diện tích từng phòng theo công thức mặc định, chưa qua kiến trúc sư duyệt.",
+        "Vị trí cửa lấy tâm mỗi wall, chưa tối ưu theo lối đi thực tế.",
+        "Đã tự thêm 1 sảnh/hành lang (circulation) làm lối đi chung tới bếp/phòng ngủ/WC để đảm bảo không phải đi xuyên qua phòng ngủ nào — đây là giả định bố trí, không phải phòng khách hàng yêu cầu.",
+        "Nhà nhiều tầng: cầu thang đặt cố định 1 vị trí (chiều rộng = trọn mặt tiền, chiều sâu 3.0m) ở cuối mỗi tầng để đảm bảo thẳng hàng giữa các tầng — đơn giản hoá, chưa phải kích thước cầu thang thực tế.",
+        "Phân bổ phòng theo tầng dùng heuristic mặc định (xem ghi chú ở đầu warnings) — chưa qua kiến trúc sư duyệt."
+      ]
+    },
+    {
+      "floorPlan": {
+        "level": 1,
+        "rooms": [
+          {
+            "id": "bedroom-1",
+            "type": "bedroom",
+            "label": "Phòng ngủ",
+            "areaM2": 20.8,
+            "polygon": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 4,
+                "y": 0
+              },
+              {
+                "x": 4,
+                "y": 5.2
+              },
+              {
+                "x": 0,
+                "y": 5.2
+              }
+            ]
+          },
+          {
+            "id": "bedroom-2",
+            "type": "bedroom",
+            "label": "Phòng ngủ 2",
+            "areaM2": 20.8,
+            "polygon": [
+              {
+                "x": 0,
+                "y": 5.2
+              },
+              {
+                "x": 4,
+                "y": 5.2
+              },
+              {
+                "x": 4,
+                "y": 10.4
+              },
+              {
+                "x": 0,
+                "y": 10.4
+              }
+            ]
+          },
+          {
+            "id": "wc-2",
+            "type": "wc",
+            "label": "WC",
+            "areaM2": 10.399999999999999,
+            "polygon": [
+              {
+                "x": 0,
+                "y": 10.4
+              },
+              {
+                "x": 4,
+                "y": 10.4
+              },
+              {
+                "x": 4,
+                "y": 13
+              },
+              {
+                "x": 0,
+                "y": 13
+              }
+            ]
+          },
+          {
+            "id": "circulation",
+            "type": "circulation",
+            "label": "Sảnh / Hành lang",
+            "areaM2": 13,
+            "polygon": [
+              {
+                "x": 4,
+                "y": 0
+              },
+              {
+                "x": 5,
+                "y": 0
+              },
+              {
+                "x": 5,
+                "y": 13
+              },
+              {
+                "x": 4,
+                "y": 13
+              }
+            ]
+          },
+          {
+            "id": "staircase",
+            "type": "staircase",
+            "label": "Cầu thang",
+            "areaM2": 15,
+            "polygon": [
+              {
+                "x": 0,
+                "y": 13
+              },
+              {
+                "x": 5,
+                "y": 13
+              },
+              {
+                "x": 5,
+                "y": 16
+              },
+              {
+                "x": 0,
+                "y": 16
+              }
+            ]
+          }
+        ],
+        "walls": [
+          {
+            "id": "wall-1-bedroom-1-bedroom-2",
+            "start": {
+              "x": 0,
+              "y": 5.2
+            },
+            "end": {
+              "x": 4,
+              "y": 5.2
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "bedroom-1",
+              "bedroom-2"
+            ]
+          },
+          {
+            "id": "wall-1-bedroom-1-circulation",
+            "start": {
+              "x": 4,
+              "y": 0
+            },
+            "end": {
+              "x": 4,
+              "y": 5.2
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "bedroom-1",
+              "circulation"
+            ]
+          },
+          {
+            "id": "wall-1-bedroom-2-wc-2",
+            "start": {
+              "x": 0,
+              "y": 10.4
+            },
+            "end": {
+              "x": 4,
+              "y": 10.4
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "bedroom-2",
+              "wc-2"
+            ]
+          },
+          {
+            "id": "wall-1-bedroom-2-circulation",
+            "start": {
+              "x": 4,
+              "y": 5.2
+            },
+            "end": {
+              "x": 4,
+              "y": 10.4
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "bedroom-2",
+              "circulation"
+            ]
+          },
+          {
+            "id": "wall-1-circulation-wc-2",
+            "start": {
+              "x": 4,
+              "y": 10.4
+            },
+            "end": {
+              "x": 4,
+              "y": 13
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "wc-2",
+              "circulation"
+            ]
+          },
+          {
+            "id": "wall-1-staircase-wc-2",
+            "start": {
+              "x": 0,
+              "y": 13
+            },
+            "end": {
+              "x": 4,
+              "y": 13
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "wc-2",
+              "staircase"
+            ]
+          },
+          {
+            "id": "wall-1-circulation-staircase",
+            "start": {
+              "x": 4,
+              "y": 13
+            },
+            "end": {
+              "x": 5,
+              "y": 13
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "circulation",
+              "staircase"
+            ]
+          },
+          {
+            "id": "wall-1-ext-top",
+            "start": {
+              "x": 0,
+              "y": 0
+            },
+            "end": {
+              "x": 5,
+              "y": 0
+            },
+            "type": "exterior"
+          },
+          {
+            "id": "wall-1-ext-right",
+            "start": {
+              "x": 5,
+              "y": 0
+            },
+            "end": {
+              "x": 5,
+              "y": 16
+            },
+            "type": "exterior"
+          },
+          {
+            "id": "wall-1-ext-bottom",
+            "start": {
+              "x": 5,
+              "y": 16
+            },
+            "end": {
+              "x": 0,
+              "y": 16
+            },
+            "type": "exterior"
+          },
+          {
+            "id": "wall-1-ext-left",
+            "start": {
+              "x": 0,
+              "y": 16
+            },
+            "end": {
+              "x": 0,
+              "y": 0
+            },
+            "type": "exterior"
+          }
+        ],
+        "doors": [
+          {
+            "id": "f1-door-0",
+            "wallId": "wall-1-circulation-staircase",
+            "connects": [
+              "staircase",
+              "circulation"
+            ],
+            "offset": 0.5,
+            "width": 0.9
+          },
+          {
+            "id": "f1-door-1",
+            "wallId": "wall-1-bedroom-1-circulation",
+            "connects": [
+              "circulation",
+              "bedroom-1"
+            ],
+            "offset": 2.6,
+            "width": 0.9
+          },
+          {
+            "id": "f1-door-2",
+            "wallId": "wall-1-bedroom-2-circulation",
+            "connects": [
+              "circulation",
+              "bedroom-2"
+            ],
+            "offset": 2.6,
+            "width": 0.9
+          },
+          {
+            "id": "f1-door-3",
+            "wallId": "wall-1-circulation-wc-2",
+            "connects": [
+              "circulation",
+              "wc-2"
+            ],
+            "offset": 1.2999999999999998,
+            "width": 0.9
+          }
+        ],
+        "windows": [
+          {
+            "id": "window-1-2",
+            "wallId": "wall-1-ext-top",
+            "roomId": "bedroom-1",
+            "offset": 2,
+            "width": 1.2
+          },
+          {
+            "id": "window-1-3",
+            "wallId": "wall-1-ext-left",
+            "roomId": "bedroom-2",
+            "offset": 8.2,
+            "width": 1.2
+          }
+        ],
+        "dimensions": [
+          {
+            "from": {
+              "x": 0,
+              "y": 0
+            },
+            "to": {
+              "x": 5,
+              "y": 0
+            },
+            "label": "5 m"
+          },
+          {
+            "from": {
+              "x": 0,
+              "y": 0
+            },
+            "to": {
+              "x": 0,
+              "y": 16
+            },
+            "label": "16 m"
+          },
+          {
+            "from": {
+              "x": 0,
+              "y": 0
+            },
+            "to": {
+              "x": 4,
+              "y": 0
+            },
+            "label": "4.0 m"
+          },
+          {
+            "from": {
+              "x": 0,
+              "y": 5.2
+            },
+            "to": {
+              "x": 4,
+              "y": 5.2
+            },
+            "label": "4.0 m"
+          },
+          {
+            "from": {
+              "x": 0,
+              "y": 10.4
+            },
+            "to": {
+              "x": 4,
+              "y": 10.4
+            },
+            "label": "4.0 m"
+          },
+          {
+            "from": {
+              "x": 4,
+              "y": 0
+            },
+            "to": {
+              "x": 5,
+              "y": 0
+            },
+            "label": "1.0 m"
+          },
+          {
+            "from": {
+              "x": 0,
+              "y": 13
+            },
+            "to": {
+              "x": 5,
+              "y": 13
+            },
+            "label": "5.0 m"
+          }
+        ],
+        "envelope": {
+          "frontage": 5,
+          "depth": 16
+        },
+        "hasStairUp": true,
+        "hasStairDown": true
+      },
+      "titleBlock": {
+        "projectName": "Townhouse Demo",
+        "scale": "NOT TO SCALE",
+        "disclaimer": "Bản vẽ khái niệm sơ bộ — dựa trên thông tin và giả định đã cung cấp, cần kiến trúc sư/kỹ sư kiểm tra lại, KHÔNG dùng để thi công trực tiếp.",
+        "generatedAt": "2026-07-19T17:18:34.878Z",
+        "floorLabel": "Tầng 1",
+        "floorLevel": 1
+      },
+      "warnings": [
+        "Phân bổ phòng theo tầng dùng heuristic mặc định (Requirement không có chi tiết phòng theo từng tầng): tầng trệt = phòng khách/bếp/1 WC, các tầng còn lại chia đều phòng ngủ/WC còn lại.",
+        "Yêu cầu có ban công (balcony) — Stage 2A chưa đặt hình học ban công (ngoài phạm vi task hiện tại), chỉ ghi nhận yêu cầu.",
+        "Chưa hỗ trợ đặt vị trí cho phòng tự do: phòng thờ ông bà — chưa xuất hiện trong bản vẽ.",
+        "Ghi nhận loại trừ (chưa cần xử lý hình học): phòng đọc sách."
+      ],
+      "assumptions": [
+        "Tỷ lệ diện tích từng phòng theo công thức mặc định, chưa qua kiến trúc sư duyệt.",
+        "Vị trí cửa lấy tâm mỗi wall, chưa tối ưu theo lối đi thực tế.",
+        "Đã tự thêm 1 sảnh/hành lang (circulation) làm lối đi chung tới bếp/phòng ngủ/WC để đảm bảo không phải đi xuyên qua phòng ngủ nào — đây là giả định bố trí, không phải phòng khách hàng yêu cầu.",
+        "Nhà nhiều tầng: cầu thang đặt cố định 1 vị trí (chiều rộng = trọn mặt tiền, chiều sâu 3.0m) ở cuối mỗi tầng để đảm bảo thẳng hàng giữa các tầng — đơn giản hoá, chưa phải kích thước cầu thang thực tế.",
+        "Phân bổ phòng theo tầng dùng heuristic mặc định (xem ghi chú ở đầu warnings) — chưa qua kiến trúc sư duyệt."
+      ]
+    },
+    {
+      "floorPlan": {
+        "level": 2,
+        "rooms": [
+          {
+            "id": "bedroom-3",
+            "type": "bedroom",
+            "label": "Phòng ngủ",
+            "areaM2": 20.8,
+            "polygon": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 4,
+                "y": 0
+              },
+              {
+                "x": 4,
+                "y": 5.2
+              },
+              {
+                "x": 0,
+                "y": 5.2
+              }
+            ]
+          },
+          {
+            "id": "bedroom-4",
+            "type": "bedroom",
+            "label": "Phòng ngủ 2",
+            "areaM2": 20.8,
+            "polygon": [
+              {
+                "x": 0,
+                "y": 5.2
+              },
+              {
+                "x": 4,
+                "y": 5.2
+              },
+              {
+                "x": 4,
+                "y": 10.4
+              },
+              {
+                "x": 0,
+                "y": 10.4
+              }
+            ]
+          },
+          {
+            "id": "wc-3",
+            "type": "wc",
+            "label": "WC",
+            "areaM2": 10.399999999999999,
+            "polygon": [
+              {
+                "x": 0,
+                "y": 10.4
+              },
+              {
+                "x": 4,
+                "y": 10.4
+              },
+              {
+                "x": 4,
+                "y": 13
+              },
+              {
+                "x": 0,
+                "y": 13
+              }
+            ]
+          },
+          {
+            "id": "circulation",
+            "type": "circulation",
+            "label": "Sảnh / Hành lang",
+            "areaM2": 13,
+            "polygon": [
+              {
+                "x": 4,
+                "y": 0
+              },
+              {
+                "x": 5,
+                "y": 0
+              },
+              {
+                "x": 5,
+                "y": 13
+              },
+              {
+                "x": 4,
+                "y": 13
+              }
+            ]
+          },
+          {
+            "id": "staircase",
+            "type": "staircase",
+            "label": "Cầu thang",
+            "areaM2": 15,
+            "polygon": [
+              {
+                "x": 0,
+                "y": 13
+              },
+              {
+                "x": 5,
+                "y": 13
+              },
+              {
+                "x": 5,
+                "y": 16
+              },
+              {
+                "x": 0,
+                "y": 16
+              }
+            ]
+          }
+        ],
+        "walls": [
+          {
+            "id": "wall-2-bedroom-3-bedroom-4",
+            "start": {
+              "x": 0,
+              "y": 5.2
+            },
+            "end": {
+              "x": 4,
+              "y": 5.2
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "bedroom-3",
+              "bedroom-4"
+            ]
+          },
+          {
+            "id": "wall-2-bedroom-3-circulation",
+            "start": {
+              "x": 4,
+              "y": 0
+            },
+            "end": {
+              "x": 4,
+              "y": 5.2
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "bedroom-3",
+              "circulation"
+            ]
+          },
+          {
+            "id": "wall-2-bedroom-4-wc-3",
+            "start": {
+              "x": 0,
+              "y": 10.4
+            },
+            "end": {
+              "x": 4,
+              "y": 10.4
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "bedroom-4",
+              "wc-3"
+            ]
+          },
+          {
+            "id": "wall-2-bedroom-4-circulation",
+            "start": {
+              "x": 4,
+              "y": 5.2
+            },
+            "end": {
+              "x": 4,
+              "y": 10.4
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "bedroom-4",
+              "circulation"
+            ]
+          },
+          {
+            "id": "wall-2-circulation-wc-3",
+            "start": {
+              "x": 4,
+              "y": 10.4
+            },
+            "end": {
+              "x": 4,
+              "y": 13
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "wc-3",
+              "circulation"
+            ]
+          },
+          {
+            "id": "wall-2-staircase-wc-3",
+            "start": {
+              "x": 0,
+              "y": 13
+            },
+            "end": {
+              "x": 4,
+              "y": 13
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "wc-3",
+              "staircase"
+            ]
+          },
+          {
+            "id": "wall-2-circulation-staircase",
+            "start": {
+              "x": 4,
+              "y": 13
+            },
+            "end": {
+              "x": 5,
+              "y": 13
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "circulation",
+              "staircase"
+            ]
+          },
+          {
+            "id": "wall-2-ext-top",
+            "start": {
+              "x": 0,
+              "y": 0
+            },
+            "end": {
+              "x": 5,
+              "y": 0
+            },
+            "type": "exterior"
+          },
+          {
+            "id": "wall-2-ext-right",
+            "start": {
+              "x": 5,
+              "y": 0
+            },
+            "end": {
+              "x": 5,
+              "y": 16
+            },
+            "type": "exterior"
+          },
+          {
+            "id": "wall-2-ext-bottom",
+            "start": {
+              "x": 5,
+              "y": 16
+            },
+            "end": {
+              "x": 0,
+              "y": 16
+            },
+            "type": "exterior"
+          },
+          {
+            "id": "wall-2-ext-left",
+            "start": {
+              "x": 0,
+              "y": 16
+            },
+            "end": {
+              "x": 0,
+              "y": 0
+            },
+            "type": "exterior"
+          }
+        ],
+        "doors": [
+          {
+            "id": "f2-door-0",
+            "wallId": "wall-2-circulation-staircase",
+            "connects": [
+              "staircase",
+              "circulation"
+            ],
+            "offset": 0.5,
+            "width": 0.9
+          },
+          {
+            "id": "f2-door-1",
+            "wallId": "wall-2-bedroom-3-circulation",
+            "connects": [
+              "circulation",
+              "bedroom-3"
+            ],
+            "offset": 2.6,
+            "width": 0.9
+          },
+          {
+            "id": "f2-door-2",
+            "wallId": "wall-2-bedroom-4-circulation",
+            "connects": [
+              "circulation",
+              "bedroom-4"
+            ],
+            "offset": 2.6,
+            "width": 0.9
+          },
+          {
+            "id": "f2-door-3",
+            "wallId": "wall-2-circulation-wc-3",
+            "connects": [
+              "circulation",
+              "wc-3"
+            ],
+            "offset": 1.2999999999999998,
+            "width": 0.9
+          }
+        ],
+        "windows": [
+          {
+            "id": "window-2-4",
+            "wallId": "wall-2-ext-top",
+            "roomId": "bedroom-3",
+            "offset": 2,
+            "width": 1.2
+          },
+          {
+            "id": "window-2-5",
+            "wallId": "wall-2-ext-left",
+            "roomId": "bedroom-4",
+            "offset": 8.2,
+            "width": 1.2
+          }
+        ],
+        "dimensions": [
+          {
+            "from": {
+              "x": 0,
+              "y": 0
+            },
+            "to": {
+              "x": 5,
+              "y": 0
+            },
+            "label": "5 m"
+          },
+          {
+            "from": {
+              "x": 0,
+              "y": 0
+            },
+            "to": {
+              "x": 0,
+              "y": 16
+            },
+            "label": "16 m"
+          },
+          {
+            "from": {
+              "x": 0,
+              "y": 0
+            },
+            "to": {
+              "x": 4,
+              "y": 0
+            },
+            "label": "4.0 m"
+          },
+          {
+            "from": {
+              "x": 0,
+              "y": 5.2
+            },
+            "to": {
+              "x": 4,
+              "y": 5.2
+            },
+            "label": "4.0 m"
+          },
+          {
+            "from": {
+              "x": 0,
+              "y": 10.4
+            },
+            "to": {
+              "x": 4,
+              "y": 10.4
+            },
+            "label": "4.0 m"
+          },
+          {
+            "from": {
+              "x": 4,
+              "y": 0
+            },
+            "to": {
+              "x": 5,
+              "y": 0
+            },
+            "label": "1.0 m"
+          },
+          {
+            "from": {
+              "x": 0,
+              "y": 13
+            },
+            "to": {
+              "x": 5,
+              "y": 13
+            },
+            "label": "5.0 m"
+          }
+        ],
+        "envelope": {
+          "frontage": 5,
+          "depth": 16
+        },
+        "hasStairUp": false,
+        "hasStairDown": true
+      },
+      "titleBlock": {
+        "projectName": "Townhouse Demo",
+        "scale": "NOT TO SCALE",
+        "disclaimer": "Bản vẽ khái niệm sơ bộ — dựa trên thông tin và giả định đã cung cấp, cần kiến trúc sư/kỹ sư kiểm tra lại, KHÔNG dùng để thi công trực tiếp.",
+        "generatedAt": "2026-07-19T17:18:34.878Z",
+        "floorLabel": "Tầng 2 (Tầng trên cùng)",
+        "floorLevel": 2
+      },
+      "warnings": [
+        "Phân bổ phòng theo tầng dùng heuristic mặc định (Requirement không có chi tiết phòng theo từng tầng): tầng trệt = phòng khách/bếp/1 WC, các tầng còn lại chia đều phòng ngủ/WC còn lại.",
+        "Yêu cầu có ban công (balcony) — Stage 2A chưa đặt hình học ban công (ngoài phạm vi task hiện tại), chỉ ghi nhận yêu cầu.",
+        "Chưa hỗ trợ đặt vị trí cho phòng tự do: phòng thờ ông bà — chưa xuất hiện trong bản vẽ.",
+        "Ghi nhận loại trừ (chưa cần xử lý hình học): phòng đọc sách."
+      ],
+      "assumptions": [
+        "Tỷ lệ diện tích từng phòng theo công thức mặc định, chưa qua kiến trúc sư duyệt.",
+        "Vị trí cửa lấy tâm mỗi wall, chưa tối ưu theo lối đi thực tế.",
+        "Đã tự thêm 1 sảnh/hành lang (circulation) làm lối đi chung tới bếp/phòng ngủ/WC để đảm bảo không phải đi xuyên qua phòng ngủ nào — đây là giả định bố trí, không phải phòng khách hàng yêu cầu.",
+        "Nhà nhiều tầng: cầu thang đặt cố định 1 vị trí (chiều rộng = trọn mặt tiền, chiều sâu 3.0m) ở cuối mỗi tầng để đảm bảo thẳng hàng giữa các tầng — đơn giản hoá, chưa phải kích thước cầu thang thực tế.",
+        "Phân bổ phòng theo tầng dùng heuristic mặc định (xem ghi chú ở đầu warnings) — chưa qua kiến trúc sư duyệt."
+      ]
+    }
+  ]
+}

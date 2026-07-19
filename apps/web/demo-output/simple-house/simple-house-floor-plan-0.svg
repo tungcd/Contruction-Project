@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 595 842" preserveAspectRatio="xMidYMid meet">
     <rect x="0" y="0" width="595" height="842" fill="#ffffff" />
     
-    <text x="24" font-size="12" font-weight="700"><tspan x="24" y="36.32">Simple House Demo</tspan></text>
-    <text x="24" y="58" font-size="9" fill="#666">NOT TO SCALE — Mặt bằng tầng (Concept) — Lập ngày 19/7/2026</text>
+    <text x="24" font-size="12" font-weight="700"><tspan x="24" y="36.32">Simple House Demo — Tầng trệt</tspan></text>
+    <text x="24" y="58" font-size="9" fill="#666">NOT TO SCALE — Mặt bằng tầng (Concept) — Lập ngày 20/7/2026</text>
   
     
       <line x1="136.7" y1="90" x2="136.7" y2="98" stroke="#bbb" stroke-width="0.5" />
@@ -33,26 +33,32 @@
       
     
         <rect x="136.7" y="98" width="363.6" height="173.1428571428571" fill="#fafafa" stroke="none" />
+        
         <text x="318.5" font-size="12" text-anchor="middle" font-weight="600"><tspan x="318.5" y="168.11428571428573">Phòng khách</tspan></text>
         <text x="318.5" y="222.66285714285712" text-anchor="middle" font-size="9" fill="#666">17.1 m²</text>
       
         <rect x="136.7" y="271.1428571428571" width="151.5" height="216.4285714285715" fill="#fafafa" stroke="none" />
+        
         <text x="212.45" font-size="12" text-anchor="middle" font-weight="600"><tspan x="212.45" y="357.7057142857143">Bếp</tspan></text>
         <text x="212.45" y="426.9714285714286" text-anchor="middle" font-size="9" fill="#666">8.9 m²</text>
       
         <rect x="136.7" y="487.5714285714286" width="151.5" height="216.4285714285714" fill="#fafafa" stroke="none" />
+        
         <text x="212.45" font-size="12" text-anchor="middle" font-weight="600"><tspan x="212.45" y="574.1342857142856">Phòng ngủ</tspan></text>
         <text x="212.45" y="643.4" text-anchor="middle" font-size="9" fill="#666">8.9 m²</text>
       
         <rect x="348.79999999999995" y="271.1428571428571" width="151.50000000000006" height="288.57142857142867" fill="#fafafa" stroke="none" />
+        
         <text x="424.54999999999995" font-size="12" text-anchor="middle" font-weight="600"><tspan x="424.54999999999995" y="385.12">Phòng ngủ 2</tspan></text>
         <text x="424.54999999999995" y="478.9142857142857" text-anchor="middle" font-size="9" fill="#666">11.9 m²</text>
       
         <rect x="348.79999999999995" y="559.7142857142858" width="151.50000000000006" height="144.28571428571422" fill="#fafafa" stroke="none" />
+        
         <text x="424.54999999999995" font-size="12" text-anchor="middle" font-weight="600"><tspan x="424.54999999999995" y="618.8628571428571">WC</tspan></text>
         <text x="424.54999999999995" y="663.6" text-anchor="middle" font-size="9" fill="#666">6.0 m²</text>
       
         <rect x="288.2" y="271.1428571428571" width="60.599999999999966" height="432.8571428571429" fill="#fafafa" stroke="none" />
+        
         <text x="318.5" font-size="12" text-anchor="middle" font-weight="600"><tspan x="318.5" y="425.54857142857134">Sảnh /</tspan><tspan x="318.5" y="439.9485714285713">Hành</tspan><tspan x="318.5" y="454.34857142857135">lang</tspan></text>
         <text x="318.5" y="582.8" text-anchor="middle" font-size="9" fill="#666">7.1 m²</text>
       
@@ -77,6 +83,6 @@
     <path d="M 294.26 604.5871428571429 A 54.54 54.54 0 0 1 348.79999999999995 659.1271428571429" fill="none" stroke="#9ca3af" stroke-width="1" stroke-dasharray="2,2" />
   
     <line x1="191.23999999999998" y1="98" x2="263.96" y2="98" stroke="#2563eb" stroke-width="2.5" /><line x1="136.7" y1="415.7171428571428" x2="136.7" y2="342.9971428571429" stroke="#2563eb" stroke-width="2.5" /><line x1="136.7" y1="632.1457142857143" x2="136.7" y2="559.4257142857143" stroke="#2563eb" stroke-width="2.5" /><line x1="500.3" y1="379.06857142857143" x2="500.3" y2="451.78857142857134" stroke="#2563eb" stroke-width="2.5" />
-    <text x="24" y="720" font-size="9" fill="#b45309">⚠ Phòng "living" (living) tỷ lệ khung hình 2.10:1 — ngoài khoảng ưu tiên (tối đa 1.8:1), vẫn trong giới hạn</text><text x="24" y="732" font-size="9" fill="#b45309">chấp nhận được.</text><text x="24" y="744" font-size="9" fill="#b45309">⚠ Phòng "bedroom-1" (bedroom) tỷ lệ khung hình 1.90:1 — ngoài khoảng ưu tiên (tối đa 1.5:1), vẫn trong giới</text><text x="24" y="756" font-size="9" fill="#b45309">hạn chấp nhận được.</text>
+    <text x="24" y="720" font-size="9" fill="#b45309">⚠ [Tầng 0] Phòng "living" (living) tỷ lệ khung hình 2.10:1 — ngoài khoảng ưu tiên (tối đa 1.8:1), vẫn trong</text><text x="24" y="732" font-size="9" fill="#b45309">giới hạn chấp nhận được.</text><text x="24" y="744" font-size="9" fill="#b45309">⚠ [Tầng 0] Phòng "bedroom-1" (bedroom) tỷ lệ khung hình 1.90:1 — ngoài khoảng ưu tiên (tối đa 1.5:1), vẫn</text><text x="24" y="756" font-size="9" fill="#b45309">trong giới hạn chấp nhận được.</text>
     <text x="24" y="772" font-size="8" fill="#b91c1c">Bản vẽ khái niệm sơ bộ — dựa trên thông tin và giả định đã cung cấp, cần kiến trúc sư/kỹ sư kiểm tra lại, KHÔNG dùng để thi</text><text x="24" y="783" font-size="8" fill="#b91c1c">công trực tiếp.</text>
   </svg>

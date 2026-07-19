@@ -63,6 +63,11 @@
  * hết padding/border của nó — bất kỳ khoảng trắng nào phía TRÊN svg
  * trong lúc in đều cộng dồn vào chiều cao 842pt và đẩy nội dung cuối
  * (disclaimer) tràn trang.
+ *
+ * Stage 2A, Task 5: nhà nhiều tầng in TOÀN BỘ sheet, mỗi tầng 1 trang
+ * riêng — `.design-sheet` (bọc quanh mỗi SVG, xem design/page.tsx)
+ * dùng `page-break-after` để ngắt trang giữa các tầng, trang cuối không
+ * ngắt thừa (`:last-child`).
  */
 @media print {
   .design-print-area {
@@ -82,6 +87,12 @@
     width: 100% !important;
     height: auto !important;
     display: block;
+  }
+  .design-print-area .design-sheet {
+    page-break-after: always;
+  }
+  .design-print-area .design-sheet:last-child {
+    page-break-after: auto;
   }
   @page {
     size: A4 portrait;

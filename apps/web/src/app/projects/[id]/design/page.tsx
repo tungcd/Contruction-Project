@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Segmented } from "antd";
 import { ArrowLeft, Printer, RefreshCw } from "lucide-react";
 import { compileRequirementToConstraintSet } from "@acc/shared-types";
 import { projectService } from "@/services/project.service";
@@ -13,15 +14,20 @@ import { generateConceptDrawing } from "@/lib/drawing/generateDrawing";
 import { renderFloorPlanToSvg } from "@/lib/drawing/svgRenderer";
 
 /**
- * Concept Drawing — Stage 1 (Single-Floor Geometry POC). Chỉ hỗ trợ nhà
- * 1 tầng theo đúng phạm vi được Founder/Tech Lead phê duyệt (xem
- * documents/CHATGPT_CONTEXT/2026-07/2026-W29/2026-07-18/
- * 21_Architecture-Concept-Drawing-MVP-Revised.md). Không cầu thang,
- * không nhiều tầng, không villa, không AI layout.
+ * Concept Drawing — hỗ trợ nhà 1 tầng (Stage 1) VÀ nhiều tầng + cầu
+ * thang (Stage 2A, xem documents/CHATGPT_CONTEXT/2026-07/2026-W29/
+ * 2026-07-19/01_Completion-Report-Concept-Drawing-Stage1.7.md và báo
+ * cáo Stage 2A). Villa/AI layout generation vẫn ngoài phạm vi.
+ *
+ * Web preview chỉ hiện 1 sheet (chọn qua `Segmented` — Task 5), nhưng
+ * NÚT IN luôn in TOÀN BỘ sheet (mỗi tầng 1 trang A4 riêng, xem
+ * `.design-print-area` trong globals.css và `renderAllSheetsToPrintHtml`
+ * bên dưới) — không giới hạn bản in chỉ 1 tầng đang xem trên màn hình.
  */
 export default function DesignPage() {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
+  const [selectedFloor, setSelectedFloor] = useState(0);
 
   const { data: project, isLoading } = useQuery({
     queryKey: ["project", id],
@@ -50,9 +56,15 @@ export default function DesignPage() {
     }
   }, [project]);
 
-  const svg = result?.drawing
-    ? renderFloorPlanToSvg(result.drawing.drawingPackage.sheets[0])
-    : null;
+  const sheets = result?.drawing?.drawingPackage.sheets ?? [];
+  const activeIndex = Math.min(selectedFloor, Math.max(sheets.length - 1, 0));
+  const svg = sheets[activeIndex] ? renderFloorPlanToSvg(sheets[activeIndex]) : null;
+  // In: LUÔN render đủ mọi tầng (không chỉ tầng đang xem) — mỗi sheet 1
+  // <div class="design-sheet"> riêng, page-break-after ngăn giữa các tầng
+  // (xem .design-print-area .design-sheet trong globals.css).
+  const allSheetsHtml = sheets
+    .map((s) => `<div class="design-sheet">${renderFloorPlanToSvg(s)}</div>`)
+    .join("");
 
   return (
     <main className="design-print-area mx-auto max-w-4xl px-4 py-8">
@@ -93,21 +105,38 @@ export default function DesignPage() {
 
       {svg && result?.drawing && (
         <div className="space-y-4">
-          <Card>
+          {sheets.length > 1 && (
+            <div className="print:hidden">
+              <Segmented
+                value={activeIndex}
+                onChange={(v) => setSelectedFloor(Number(v))}
+                options={sheets.map((s, i) => ({ label: s.titleBlock.floorLabel, value: i }))}
+              />
+            </div>
+          )}
+
+          {/* Xem trên màn hình: CHỈ tầng đang chọn. */}
+          <Card className="print:hidden">
             <CardContent className="overflow-x-auto pt-4">
               {/* SVG do renderFloorPlanToSvg sinh — chuỗi tĩnh, không chứa input người dùng thô. */}
               <div dangerouslySetInnerHTML={{ __html: svg }} />
             </CardContent>
           </Card>
 
-          {result.drawing.drawingPackage.sheets[0].warnings.length > 0 && (
-            <Card className="border-amber-300">
+          {/* In: LUÔN toàn bộ sheet, mỗi tầng 1 trang riêng (xem .design-print-area trong globals.css). */}
+          <div
+            className="hidden print:block"
+            dangerouslySetInnerHTML={{ __html: allSheetsHtml }}
+          />
+
+          {sheets[activeIndex].warnings.length > 0 && (
+            <Card className="border-amber-300 print:hidden">
               <CardHeader>
-                <CardTitle className="text-base">Cảnh báo</CardTitle>
+                <CardTitle className="text-base">Cảnh báo ({sheets[activeIndex].titleBlock.floorLabel})</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="list-inside list-disc space-y-1 text-sm text-amber-700">
-                  {result.drawing.drawingPackage.sheets[0].warnings.map((w) => (
+                  {sheets[activeIndex].warnings.map((w) => (
                     <li key={w}>{w}</li>
                   ))}
                 </ul>
@@ -115,13 +144,13 @@ export default function DesignPage() {
             </Card>
           )}
 
-          <Card>
+          <Card className="print:hidden">
             <CardHeader>
-              <CardTitle className="text-base">Giả định</CardTitle>
+              <CardTitle className="text-base">Giả định ({sheets[activeIndex].titleBlock.floorLabel})</CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="list-inside list-disc space-y-1 text-sm text-muted-foreground">
-                {result.drawing.drawingPackage.sheets[0].assumptions.map((a) => (
+                {sheets[activeIndex].assumptions.map((a) => (
                   <li key={a}>{a}</li>
                 ))}
               </ul>

@@ -53,7 +53,13 @@ function placeDoorOnWall(
   return { id, wallId: wall.id, connects, offset: length / 2, width };
 }
 
-export function placeDoors(layoutGraph: LayoutGraph, walls: Wall[]): PlaceDoorsResult {
+/**
+ * @param idPrefix Stage 2A — nhà nhiều tầng gọi hàm này 1 LẦN MỖI TẦNG
+ *   (mỗi tầng tự có LayoutGraph riêng); truyền `f{level}-` để id cửa
+ *   không trùng giữa các tầng (mặc định "" giữ nguyên hành vi Stage 1.7
+ *   1 tầng).
+ */
+export function placeDoors(layoutGraph: LayoutGraph, walls: Wall[], idPrefix = ""): PlaceDoorsResult {
   const doors: Door[] = [];
   const warnings: string[] = [];
   let doorIndex = 0;
@@ -72,7 +78,7 @@ export function placeDoors(layoutGraph: LayoutGraph, walls: Wall[]): PlaceDoorsR
         continue;
       }
       doors.push(
-        placeDoorOnWall(`door-${doorIndex++}`, facadeWall, [roomId, "exterior"], warnings),
+        placeDoorOnWall(`${idPrefix}door-${doorIndex++}`, facadeWall, [roomId, "exterior"], warnings),
       );
       continue;
     }
@@ -84,7 +90,7 @@ export function placeDoors(layoutGraph: LayoutGraph, walls: Wall[]): PlaceDoorsR
       warnings.push(`Không tìm thấy wall giữa "${edge.from}" và "${edge.to}" — không đặt được cửa.`);
       continue;
     }
-    doors.push(placeDoorOnWall(`door-${doorIndex++}`, wall, [edge.from, edge.to], warnings));
+    doors.push(placeDoorOnWall(`${idPrefix}door-${doorIndex++}`, wall, [edge.from, edge.to], warnings));
   }
 
   return { doors, warnings };
