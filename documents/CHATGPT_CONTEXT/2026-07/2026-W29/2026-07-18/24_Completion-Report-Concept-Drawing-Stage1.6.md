@@ -188,10 +188,20 @@ PASS.
 - `npm run poc:drawing`: 20/20 PASS.
 - `npm run poc:proposal`: 4/4 PASS.
 - `npm run poc:constraint` (shared-types): 3/3 PASS.
-- `npx next build`: đang xác nhận lại lần cuối (build có chạy chậm bất
-  thường lần này trên máy hiện tại — sẽ báo cập nhật nếu phát hiện gì
-  khác thường; typecheck/POC đã confirm code đúng, build chỉ là bước
-  đóng gói).
+- `npx next build`: **KHÔNG xác nhận lại được lần này** — nhiều tiến
+  trình `node.exe` đang chạy trên máy (có thể gồm cả các lần build bị
+  timeout trước đó của chính phiên làm việc này), một trong số đó đang
+  giữ khoá file `.next/trace` khiến build mới không chạy được. Theo
+  đúng quy tắc an toàn đã đặt ra ("không kill toàn bộ tiến trình node"),
+  tôi KHÔNG tự ý tắt bất kỳ tiến trình nào để gỡ khoá — không phân biệt
+  được đâu là tiến trình của tôi, đâu có thể là của Founder. Nói rõ giới
+  hạn này thay vì báo PASS không chắc chắn. `npx tsc --noEmit` (chính
+  bước type-check mà `next build` cũng chạy) đã PASS, và các thay đổi
+  Stage 1.6 chỉ thêm export/field vào file `lib/` có sẵn, không đụng gì
+  tới routing/bundling — rủi ro build framework-level phát sinh mới là
+  thấp, nhưng đây là suy luận, không phải xác nhận trực tiếp. Đề xuất
+  Founder tự chạy `npm run build` một lần khi tiện (có thể cần khởi
+  động lại terminal/máy để giải phóng khoá file trước).
 
 ## Next
 
