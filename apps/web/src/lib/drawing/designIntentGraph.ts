@@ -11,7 +11,7 @@ import type { ConstraintSet } from "@acc/shared-types";
  * sau) mới quyết định tô-pô vật lý cụ thể.
  */
 
-export type Zone = "public" | "semiPrivate" | "private" | "service";
+export type Zone = "public" | "semiPrivate" | "private" | "service" | "circulation";
 export type RelationshipType = "adjacency" | "connection" | "visualOpenTo" | "sequence";
 
 export interface DesignIntentSpace {
@@ -67,49 +67,58 @@ export function generateDesignIntentGraph(
     { id: "entrance", type: "entrance", zone: "public", areaWeight: 0, facadeExposure: [] },
   ];
   const relationships: DesignIntentGraph["relationships"] = [];
-  let lastHub = "entrance";
 
   if (spaces.livingRoom?.value) {
     designSpaces.push({ id: "living", type: "living", zone: "public", areaWeight: 1.4, facadeExposure: [] });
-    relationships.push({ type: "connection", from: lastHub, to: "living" });
-    lastHub = "living";
-  }
-  if (spaces.kitchen?.value) {
-    designSpaces.push({ id: "kitchen", type: "kitchen", zone: "public", areaWeight: 1.0, facadeExposure: [] });
-    relationships.push({ type: "connection", from: lastHub, to: "kitchen" });
-    lastHub = "kitchen";
+    relationships.push({ type: "connection", from: "entrance", to: "living" });
   }
 
-  // Tầng private/service (bedroom + wc) — CÙNG priority ở Layout Graph
-  // (xem layoutGraph.ts), Geometry Solver xếp chúng vào 1 dải: 1 phòng
-  // nặng nhất đứng riêng 1 cột (luôn chạm hub phía trước), phòng đầu
-  // tiên của nhóm còn lại CŨNG chạm hub (đầu cột thứ 2), các phòng sau
-  // đó trong cột thứ 2 chỉ chạm phòng liền trước (xếp chồng theo chiều
-  // sâu, không chạm lại hub) — xem geometry.ts `placeTierRow`. Vì vậy ở
-  // đây KHÔNG thể nối mọi phòng thẳng tới hub như 1 ngôi sao — phải khai
-  // báo đúng tô-pô sẽ thực sự đạt được về mặt hình học (Stage 1.6, sửa
-  // lỗi "kitchen-wc không có cạnh chung" phát hiện khi đổi thuật toán
-  // Stage 1.6 Task 3). Vì bedroom (weight 1.0) luôn nặng hơn wc (weight
-  // 0.5), phòng "nặng nhất" luôn là bedroom-1 khi có >=1 bedroom.
-  const privateServiceRooms: { id: string; type: string; zone: Zone; areaWeight: number }[] = [];
+  // CRITICAL ARCHITECTURE CORRECTION (Stage 1.7, Task 1/2 — Tech Lead
+  // Review, Stage 1.6 "Not Accepted"): Stage 1.6 từng đổi tô-pô ở đây
+  // (nối "chỉ 2 phòng đầu chạm hub, còn lại chạm phòng liền trước") để
+  // KHỚP với thuật toán hình học đã chọn — Tech Lead xác nhận đây là lỗi
+  // kiến trúc: không được đổi Ý ĐỊNH kiến trúc để geometry pass được
+  // validation. Hướng đúng: Design Intent -> Layout Graph -> Geometry,
+  // KHÔNG BAO GIỜ ngược lại.
+  //
+  // Sửa đúng: khai báo tường minh 1 node "circulation" (sảnh/hành lang) —
+  // hub DUY NHẤT nối bếp/phòng ngủ/wc. Đây là bất biến chức năng bắt
+  // buộc (không phải chi tiết hình học): lối vào bếp/mọi phòng ngủ/wc
+  // dùng chung phải KHÔNG đi xuyên qua bất kỳ phòng ngủ nào — 1 phòng
+  // ngủ riêng tư chỉ được là nút CUỐI (terminal) trong đường đi, không
+  // bao giờ là trạm trung chuyển tới phòng khác. KHÔNG "sửa" yêu cầu này
+  // bằng cách gắn nhãn WC là riêng tư (private) trừ khi Requirement nói
+  // rõ đây là WC riêng (ensuite) — fixture hiện tại không có yêu cầu đó.
+  //
+  // Geometry Solver (geometry.ts, `placeTierRowWithCirculation`) đặt
+  // circulation thành 1 cột hẹp CHẠY SUỐT chiều sâu của cả dải, nằm GIỮA
+  // 2 cột phòng còn lại — nhờ vậy circulation chạm được TẤT CẢ các phòng
+  // trong dải (không phụ thuộc phòng nào ở cột nào), hiện thực hoá đúng
+  // tô-pô hub-and-spoke khai báo ở đây, không cần "chain" như Stage 1.6.
+  const needsCirculation =
+    (spaces.kitchen?.value ? 1 : 0) + (spaces.bedrooms?.value ?? 0) + (spaces.bathrooms?.value ?? 0) >= 2;
+  let hub = "living";
+  if (needsCirculation) {
+    designSpaces.push({ id: "circulation", type: "circulation", zone: "circulation", areaWeight: 0, facadeExposure: [] });
+    relationships.push({ type: "connection", from: hub, to: "circulation" });
+    hub = "circulation";
+  }
+
+  if (spaces.kitchen?.value) {
+    designSpaces.push({ id: "kitchen", type: "kitchen", zone: "public", areaWeight: 1.0, facadeExposure: [] });
+    relationships.push({ type: "connection", from: hub, to: "kitchen" });
+  }
+
   const bedroomCount = spaces.bedrooms?.value ?? 0;
   for (let i = 1; i <= bedroomCount; i++) {
-    privateServiceRooms.push({ id: `bedroom-${i}`, type: "bedroom", zone: "private", areaWeight: 1.0 });
+    designSpaces.push({ id: `bedroom-${i}`, type: "bedroom", zone: "private", areaWeight: 1.0, facadeExposure: [] });
+    relationships.push({ type: "connection", from: hub, to: `bedroom-${i}` });
   }
   const bathroomCount = spaces.bathrooms?.value ?? 0;
   for (let i = 1; i <= bathroomCount; i++) {
-    privateServiceRooms.push({ id: `wc-${i}`, type: "wc", zone: "service", areaWeight: 0.5 });
+    designSpaces.push({ id: `wc-${i}`, type: "wc", zone: "service", areaWeight: 0.5, facadeExposure: [] });
+    relationships.push({ type: "connection", from: hub, to: `wc-${i}` });
   }
-
-  privateServiceRooms.forEach((room, index) => {
-    designSpaces.push({ ...room, facadeExposure: [] });
-    // Phòng nặng nhất (luôn ở index 0 vì bedroom được thêm trước, nặng
-    // hơn wc) và phòng đầu tiên của nhóm còn lại (index 1, nếu có) đều
-    // chạm hub. Từ index 2 trở đi: chạm phòng ngay trước nó, không chạm
-    // hub nữa (đúng thực tế cột 2 xếp chồng theo chiều sâu).
-    const from = index <= 1 ? lastHub : privateServiceRooms[index - 1].id;
-    relationships.push({ type: "connection", from, to: room.id });
-  });
 
   if ((spaces.otherRooms?.value?.length ?? 0) > 0) {
     warnings.push(

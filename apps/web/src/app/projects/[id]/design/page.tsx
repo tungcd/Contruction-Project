@@ -69,8 +69,8 @@ export default function DesignPage() {
         )}
       </div>
 
-      <h1 className="mb-1 text-xl font-bold">Bản vẽ khái niệm (Concept Drawing)</h1>
-      <p className="mb-4 text-sm text-muted-foreground">
+      <h1 className="mb-1 text-xl font-bold print:hidden">Bản vẽ khái niệm (Concept Drawing)</h1>
+      <p className="mb-4 text-sm text-muted-foreground print:hidden">
         Stage 1 — mặt bằng 1 tầng, sơ bộ, chưa qua kiến trúc sư duyệt.
       </p>
 

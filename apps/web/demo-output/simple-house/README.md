@@ -1,8 +1,8 @@
-# Simple House — Concept Drawing Artifacts (Stage 1.6)
+# Simple House — Concept Drawing Artifacts (Stage 1.7)
 
 Sinh bởi `npm run drawing:artifacts`. Template: `townhouse-single-floor-v1`.
 Geometry validation: PASSED.
-Warnings (không chặn, vẫn PASS): Phòng "living" (living) tỷ lệ khung hình 2.10:1 — ngoài khoảng ưu tiên (tối đa 1.8:1), vẫn trong giới hạn chấp nhận được. | Phòng "kitchen" (kitchen) tỷ lệ khung hình 2.94:1 — ngoài khoảng ưu tiên (tối đa 2.2:1), vẫn trong giới hạn chấp nhận được.
+Warnings (không chặn, vẫn PASS): Phòng "living" (living) tỷ lệ khung hình 2.10:1 — ngoài khoảng ưu tiên (tối đa 1.8:1), vẫn trong giới hạn chấp nhận được. | Phòng "bedroom-1" (bedroom) tỷ lệ khung hình 1.90:1 — ngoài khoảng ưu tiên (tối đa 1.5:1), vẫn trong giới hạn chấp nhận được.
 
 ## Files
 

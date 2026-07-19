@@ -3,6 +3,8 @@ import { generateLayout } from "./layoutGenerator";
 import { deriveWalls, type Wall } from "./wall";
 import { placeDoors } from "./door";
 import type { Door } from "./door";
+import { placeWindows } from "./window";
+import type { Window } from "./window";
 import { validateGeometry, type GeometryValidationResult } from "./geometryValidator";
 import { buildDrawingPackage, type DrawingPackage } from "./drawingDocument";
 import type { LayoutGraph } from "./layoutGraph";
@@ -28,7 +30,7 @@ export interface ConceptDrawingResult {
   validation: GeometryValidationResult;
   templateId: string;
   /** Dữ liệu trung gian — chỉ để debug/export artifact, KHÔNG dùng để tính lại gì (đã tính đủ trong drawingPackage). */
-  intermediates: { layoutGraph: LayoutGraph; geometry: Geometry; walls: Wall[]; doors: Door[] };
+  intermediates: { layoutGraph: LayoutGraph; geometry: Geometry; walls: Wall[]; doors: Door[]; windows: Window[] };
 }
 
 export function generateConceptDrawing(
@@ -38,15 +40,17 @@ export function generateConceptDrawing(
   const { templateId, layoutGraph, geometry, warnings } = generateLayout(constraintSet);
   const walls = deriveWalls(geometry);
   const { doors, warnings: doorWarnings } = placeDoors(layoutGraph, walls);
-  const validation = validateGeometry(geometry, layoutGraph, walls, doors, constraintSet);
+  const { windows, warnings: windowWarnings } = placeWindows(geometry, walls, doors, layoutGraph.envelope);
+  const validation = validateGeometry(geometry, layoutGraph, walls, doors, constraintSet, windows);
   const drawingPackage = buildDrawingPackage(
     geometry,
     walls,
     doors,
+    windows,
     projectName,
-    [...warnings, ...doorWarnings, ...validation.errors, ...validation.warnings],
+    [...warnings, ...doorWarnings, ...windowWarnings, ...validation.errors, ...validation.warnings],
     layoutGraph.envelope,
   );
 
-  return { drawingPackage, validation, templateId, intermediates: { layoutGraph, geometry, walls, doors } };
+  return { drawingPackage, validation, templateId, intermediates: { layoutGraph, geometry, walls, doors, windows } };
 }

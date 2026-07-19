@@ -1,5 +1,5 @@
 import type { ConstraintSet } from "@acc/shared-types";
-import { generateDesignIntentGraph } from "../designIntentGraph";
+import { generateDesignIntentGraph, type DesignIntentGraph } from "../designIntentGraph";
 import { buildLayoutGraph, type LayoutGraph } from "../layoutGraph";
 
 /**
@@ -7,11 +7,18 @@ import { buildLayoutGraph, type LayoutGraph } from "../layoutGraph";
  * template, template KHÔNG tự giải hình học (không tính toạ độ). Template
  * chỉ chịu trách nhiệm: có áp dụng được không (`appliesWhen`), và dựng
  * LayoutGraph (tô-pô) cho trường hợp của nó.
+ *
+ * Trả cả `dig` (không chỉ `layoutGraph`) — Stage 1.7, Task 3 cần biết
+ * zone (private/service/...) của từng space để validate tô-pô circulation
+ * TRƯỚC khi Geometry Solver chạy; LayoutNode không tự mang zone.
  */
 export interface LayoutTemplate {
   id: string;
   appliesWhen: (ctx: { frontage: number; depth: number; floors: number }) => boolean;
-  buildLayoutGraph: (constraintSet: ConstraintSet, warnings: string[]) => LayoutGraph;
+  buildLayoutGraph: (
+    constraintSet: ConstraintSet,
+    warnings: string[],
+  ) => { dig: DesignIntentGraph; layoutGraph: LayoutGraph };
 }
 
 /**
@@ -23,7 +30,7 @@ export const TOWNHOUSE_TEMPLATE: LayoutTemplate = {
   appliesWhen: (ctx) => ctx.floors === 1 && ctx.frontage <= ctx.depth,
   buildLayoutGraph: (constraintSet, warnings) => {
     const dig = generateDesignIntentGraph(constraintSet, warnings);
-    return buildLayoutGraph(dig);
+    return { dig, layoutGraph: buildLayoutGraph(dig) };
   },
 };
 

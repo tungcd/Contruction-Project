@@ -2,84 +2,101 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8" />
-<title>Simple House — Concept Drawing (Stage 1.6)</title>
+<title>Simple House — Concept Drawing (Stage 1.7)</title>
 <style>
-  /* Stage 1.6, Task 5 — A4 tường minh, SVG co giãn theo viewBox (không
-     phụ thuộc canvas pixel cố định), không cắt nội dung. */
-  @page { size: A4 portrait; margin: 15mm; }
+  /* Stage 1.7, Task 6 — viewBox đã LUÔN đúng tỷ lệ A4 (595x842) với vùng
+     nội dung tính toán tường minh (không còn "vẽ khít rồi width:100%"
+     như Stage 1.6) — @page ở đây chỉ set khổ giấy in, không quyết định
+     bố cục bên trong SVG. */
+  @page { size: A4 portrait; margin: 0; }
   html, body { margin: 0; padding: 0; font-family: system-ui, sans-serif; }
-  .sheet { padding: 24px; }
+  .sheet { padding: 0; }
   svg { width: 100%; height: auto; display: block; }
-  @media print {
-    .sheet { padding: 0; }
-  }
 </style>
 </head>
 <body>
 <div class="sheet">
-<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 300 540" preserveAspectRatio="xMidYMid meet">
-    <rect x="0" y="0" width="300" height="540" fill="#ffffff" />
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 595 842" preserveAspectRatio="xMidYMid meet">
+    <rect x="0" y="0" width="595" height="842" fill="#ffffff" />
     
-        <line x1="60" y1="46" x2="240" y2="46" stroke="#999" stroke-width="0.5" />
-        <text x="150" y="42" text-anchor="middle" font-size="9" fill="#999">6 m</text>
+    <text x="24" font-size="12" font-weight="700"><tspan x="24" y="36.32">Simple House Demo</tspan></text>
+    <text x="24" y="58" font-size="9" fill="#666">NOT TO SCALE — Mặt bằng tầng (Concept) — Lập ngày 19/7/2026</text>
+  
+    
+      <line x1="136.7" y1="90" x2="136.7" y2="98" stroke="#bbb" stroke-width="0.5" />
+      <line x1="500.3" y1="90" x2="500.3" y2="98" stroke="#bbb" stroke-width="0.5" />
+      <line x1="136.7" y1="90" x2="500.3" y2="90" stroke="#666" stroke-width="0.6" />
+      <text x="318.5" y="86" text-anchor="middle" font-size="9" fill="#333">6 m</text>
+    
+      <line x1="56" y1="98" x2="136.7" y2="98" stroke="#bbb" stroke-width="0.5" />
+      <line x1="56" y1="704" x2="136.7" y2="704" stroke="#bbb" stroke-width="0.5" />
+      <line x1="56" y1="98" x2="56" y2="704" stroke="#666" stroke-width="0.6" />
+      <text x="0" y="0" text-anchor="middle" font-size="9" fill="#333" transform="translate(51, 401) rotate(-90)">10 m</text>
+    
+    
+        <line x1="136.7" y1="261.1428571428571" x2="288.2" y2="261.1428571428571" stroke="#ccc" stroke-width="0.5" />
+        <text x="212.45" y="258.1428571428571" text-anchor="middle" font-size="8" fill="#999">2.5 m</text>
       
-        <line x1="60" y1="46" x2="60" y2="346" stroke="#999" stroke-width="0.5" />
-        <text x="60" y="192" text-anchor="middle" font-size="9" fill="#999">10 m</text>
+        <line x1="136.7" y1="477.5714285714286" x2="288.2" y2="477.5714285714286" stroke="#ccc" stroke-width="0.5" />
+        <text x="212.45" y="474.5714285714286" text-anchor="middle" font-size="8" fill="#999">2.5 m</text>
       
-        <line x1="60" y1="131.71428571428572" x2="240" y2="131.71428571428572" stroke="#999" stroke-width="0.5" />
-        <text x="150" y="127.71428571428572" text-anchor="middle" font-size="9" fill="#999">6.0 m</text>
+        <line x1="348.79999999999995" y1="261.1428571428571" x2="500.3" y2="261.1428571428571" stroke="#ccc" stroke-width="0.5" />
+        <text x="424.54999999999995" y="258.1428571428571" text-anchor="middle" font-size="8" fill="#999">2.5 m</text>
       
-        <line x1="60" y1="192.93877551020407" x2="168" y2="192.93877551020407" stroke="#999" stroke-width="0.5" />
-        <text x="114" y="188.93877551020407" text-anchor="middle" font-size="9" fill="#999">3.6 m</text>
+        <line x1="348.79999999999995" y1="549.7142857142858" x2="500.3" y2="549.7142857142858" stroke="#ccc" stroke-width="0.5" />
+        <text x="424.54999999999995" y="546.7142857142858" text-anchor="middle" font-size="8" fill="#999">2.5 m</text>
       
-        <line x1="168" y1="192.93877551020407" x2="240" y2="192.93877551020407" stroke="#999" stroke-width="0.5" />
-        <text x="204" y="188.93877551020407" text-anchor="middle" font-size="9" fill="#999">2.4 m</text>
-      
-        <line x1="168" y1="294.9795918367347" x2="240" y2="294.9795918367347" stroke="#999" stroke-width="0.5" />
-        <text x="204" y="290.9795918367347" text-anchor="middle" font-size="9" fill="#999">2.4 m</text>
+        <line x1="288.2" y1="261.1428571428571" x2="348.79999999999995" y2="261.1428571428571" stroke="#ccc" stroke-width="0.5" />
+        <text x="318.5" y="258.1428571428571" text-anchor="middle" font-size="8" fill="#999">1.0 m</text>
       
     
-        <rect x="60" y="60" width="180" height="85.71428571428572" fill="#fafafa" stroke="none" />
-        <text x="150" y="96.85714285714286" text-anchor="middle" font-size="12" font-weight="600">Phòng khách</text>
-        <text x="150" y="112.85714285714286" text-anchor="middle" font-size="10" fill="#666">17.1 m²</text>
+        <rect x="136.7" y="98" width="363.6" height="173.1428571428571" fill="#fafafa" stroke="none" />
+        <text x="318.5" font-size="12" text-anchor="middle" font-weight="600"><tspan x="318.5" y="168.11428571428573">Phòng khách</tspan></text>
+        <text x="318.5" y="222.66285714285712" text-anchor="middle" font-size="9" fill="#666">17.1 m²</text>
       
-        <rect x="60" y="145.71428571428572" width="180" height="61.224489795918345" fill="#fafafa" stroke="none" />
-        <text x="150" y="170.32653061224488" text-anchor="middle" font-size="12" font-weight="600">Bếp</text>
-        <text x="150" y="186.32653061224488" text-anchor="middle" font-size="10" fill="#666">12.2 m²</text>
+        <rect x="136.7" y="271.1428571428571" width="151.5" height="216.4285714285715" fill="#fafafa" stroke="none" />
+        <text x="212.45" font-size="12" text-anchor="middle" font-weight="600"><tspan x="212.45" y="357.7057142857143">Bếp</tspan></text>
+        <text x="212.45" y="426.9714285714286" text-anchor="middle" font-size="9" fill="#666">8.9 m²</text>
       
-        <rect x="60" y="206.93877551020407" width="108" height="153.06122448979593" fill="#fafafa" stroke="none" />
-        <text x="114" y="277.46938775510205" text-anchor="middle" font-size="12" font-weight="600">Phòng ngủ</text>
-        <text x="114" y="293.46938775510205" text-anchor="middle" font-size="10" fill="#666">18.4 m²</text>
+        <rect x="136.7" y="487.5714285714286" width="151.5" height="216.4285714285714" fill="#fafafa" stroke="none" />
+        <text x="212.45" font-size="12" text-anchor="middle" font-weight="600"><tspan x="212.45" y="574.1342857142856">Phòng ngủ</tspan></text>
+        <text x="212.45" y="643.4" text-anchor="middle" font-size="9" fill="#666">8.9 m²</text>
       
-        <rect x="168" y="206.93877551020407" width="72" height="102.04081632653063" fill="#fafafa" stroke="none" />
-        <text x="204" y="251.9591836734694" text-anchor="middle" font-size="12" font-weight="600">Phòng ngủ 2</text>
-        <text x="204" y="267.9591836734694" text-anchor="middle" font-size="10" fill="#666">8.2 m²</text>
+        <rect x="348.79999999999995" y="271.1428571428571" width="151.50000000000006" height="288.57142857142867" fill="#fafafa" stroke="none" />
+        <text x="424.54999999999995" font-size="12" text-anchor="middle" font-weight="600"><tspan x="424.54999999999995" y="385.12">Phòng ngủ 2</tspan></text>
+        <text x="424.54999999999995" y="478.9142857142857" text-anchor="middle" font-size="9" fill="#666">11.9 m²</text>
       
-        <rect x="168" y="308.9795918367347" width="72" height="51.0204081632653" fill="#fafafa" stroke="none" />
-        <text x="204" y="328.48979591836735" text-anchor="middle" font-size="12" font-weight="600">WC</text>
-        <text x="204" y="344.48979591836735" text-anchor="middle" font-size="10" fill="#666">4.1 m²</text>
+        <rect x="348.79999999999995" y="559.7142857142858" width="151.50000000000006" height="144.28571428571422" fill="#fafafa" stroke="none" />
+        <text x="424.54999999999995" font-size="12" text-anchor="middle" font-weight="600"><tspan x="424.54999999999995" y="618.8628571428571">WC</tspan></text>
+        <text x="424.54999999999995" y="663.6" text-anchor="middle" font-size="9" fill="#666">6.0 m²</text>
       
-    <line x1="60" y1="145.71428571428572" x2="136.5" y2="145.71428571428572" stroke="#6b7280" stroke-width="1.5" /><line x1="163.5" y1="145.71428571428572" x2="240" y2="145.71428571428572" stroke="#6b7280" stroke-width="1.5" /><line x1="60" y1="206.93877551020407" x2="100.5" y2="206.93877551020407" stroke="#6b7280" stroke-width="1.5" /><line x1="127.5" y1="206.93877551020407" x2="168" y2="206.93877551020407" stroke="#6b7280" stroke-width="1.5" /><line x1="168" y1="206.93877551020407" x2="190.5" y2="206.93877551020407" stroke="#6b7280" stroke-width="1.5" /><line x1="217.5" y1="206.93877551020407" x2="240" y2="206.93877551020407" stroke="#6b7280" stroke-width="1.5" /><line x1="168" y1="206.93877551020407" x2="168" y2="308.9795918367347" stroke="#6b7280" stroke-width="1.5" /><line x1="168" y1="308.9795918367347" x2="168" y2="360" stroke="#6b7280" stroke-width="1.5" /><line x1="168" y1="308.9795918367347" x2="190.5" y2="308.9795918367347" stroke="#6b7280" stroke-width="1.5" /><line x1="217.5" y1="308.9795918367347" x2="240" y2="308.9795918367347" stroke="#6b7280" stroke-width="1.5" /><line x1="60" y1="60" x2="136.5" y2="60" stroke="#111827" stroke-width="3" /><line x1="163.5" y1="60" x2="240" y2="60" stroke="#111827" stroke-width="3" /><line x1="240" y1="60" x2="240" y2="360" stroke="#111827" stroke-width="3" /><line x1="240" y1="360" x2="60" y2="360" stroke="#111827" stroke-width="3" /><line x1="60" y1="360" x2="60" y2="60" stroke="#111827" stroke-width="3" />
+        <rect x="288.2" y="271.1428571428571" width="60.599999999999966" height="432.8571428571429" fill="#fafafa" stroke="none" />
+        <text x="318.5" font-size="12" text-anchor="middle" font-weight="600"><tspan x="318.5" y="425.54857142857134">Sảnh /</tspan><tspan x="318.5" y="439.9485714285713">Hành</tspan><tspan x="318.5" y="454.34857142857135">lang</tspan></text>
+        <text x="318.5" y="582.8" text-anchor="middle" font-size="9" fill="#666">7.1 m²</text>
+      
+    <line x1="136.7" y1="271.1428571428571" x2="288.2" y2="271.1428571428571" stroke="#6b7280" stroke-width="1.5" /><line x1="348.79999999999995" y1="271.1428571428571" x2="500.3" y2="271.1428571428571" stroke="#6b7280" stroke-width="1.5" /><line x1="288.2" y1="271.1428571428571" x2="291.23" y2="271.1428571428571" stroke="#6b7280" stroke-width="1.5" /><line x1="345.77" y1="271.1428571428571" x2="348.79999999999995" y2="271.1428571428571" stroke="#6b7280" stroke-width="1.5" /><line x1="136.7" y1="487.5714285714286" x2="288.2" y2="487.5714285714286" stroke="#6b7280" stroke-width="1.5" /><line x1="288.2" y1="271.1428571428571" x2="288.2" y2="352.0871428571429" stroke="#6b7280" stroke-width="1.5" /><line x1="288.2" y1="406.62714285714287" x2="288.2" y2="487.5714285714286" stroke="#6b7280" stroke-width="1.5" /><line x1="288.2" y1="487.5714285714286" x2="288.2" y2="568.5157142857142" stroke="#6b7280" stroke-width="1.5" /><line x1="288.2" y1="623.0557142857143" x2="288.2" y2="704" stroke="#6b7280" stroke-width="1.5" /><line x1="348.79999999999995" y1="559.7142857142858" x2="500.3" y2="559.7142857142858" stroke="#6b7280" stroke-width="1.5" /><line x1="348.79999999999995" y1="271.1428571428571" x2="348.79999999999995" y2="388.1585714285714" stroke="#6b7280" stroke-width="1.5" /><line x1="348.79999999999995" y1="442.6985714285714" x2="348.79999999999995" y2="559.7142857142858" stroke="#6b7280" stroke-width="1.5" /><line x1="348.79999999999995" y1="559.7142857142858" x2="348.79999999999995" y2="604.5871428571429" stroke="#6b7280" stroke-width="1.5" /><line x1="348.79999999999995" y1="659.1271428571429" x2="348.79999999999995" y2="704" stroke="#6b7280" stroke-width="1.5" /><line x1="136.7" y1="98" x2="191.23999999999998" y2="98" stroke="#111827" stroke-width="3" /><line x1="263.96" y1="98" x2="291.23" y2="98" stroke="#111827" stroke-width="3" /><line x1="345.77" y1="98" x2="500.3" y2="98" stroke="#111827" stroke-width="3" /><line x1="500.3" y1="98" x2="500.3" y2="379.06857142857143" stroke="#111827" stroke-width="3" /><line x1="500.3" y1="451.78857142857134" x2="500.3" y2="704" stroke="#111827" stroke-width="3" /><line x1="500.3" y1="704" x2="136.7" y2="704" stroke="#111827" stroke-width="3" /><line x1="136.7" y1="704" x2="136.7" y2="632.1457142857143" stroke="#111827" stroke-width="3" /><line x1="136.7" y1="559.4257142857143" x2="136.7" y2="415.7171428571428" stroke="#111827" stroke-width="3" /><line x1="136.7" y1="342.9971428571429" x2="136.7" y2="98" stroke="#111827" stroke-width="3" />
     
-    <line x1="136.5" y1="60" x2="136.5" y2="87" stroke="#374151" stroke-width="1.5" />
-    <path d="M 136.5 87 A 27 27 0 0 1 163.5 60" fill="none" stroke="#9ca3af" stroke-width="1" stroke-dasharray="2,2" />
+    <line x1="291.23" y1="98" x2="291.23" y2="152.54" stroke="#374151" stroke-width="1.5" />
+    <path d="M 291.23 152.54 A 54.54 54.54 0 0 1 345.77 98" fill="none" stroke="#9ca3af" stroke-width="1" stroke-dasharray="2,2" />
   
-    <line x1="136.5" y1="145.71428571428572" x2="136.5" y2="172.7142857142857" stroke="#374151" stroke-width="1.5" />
-    <path d="M 136.5 172.7142857142857 A 27 27 0 0 1 163.5 145.71428571428572" fill="none" stroke="#9ca3af" stroke-width="1" stroke-dasharray="2,2" />
+    <line x1="291.23" y1="271.1428571428571" x2="291.23" y2="325.68285714285713" stroke="#374151" stroke-width="1.5" />
+    <path d="M 291.23 325.68285714285713 A 54.54 54.54 0 0 1 345.77 271.1428571428571" fill="none" stroke="#9ca3af" stroke-width="1" stroke-dasharray="2,2" />
   
-    <line x1="100.5" y1="206.93877551020407" x2="100.5" y2="233.93877551020407" stroke="#374151" stroke-width="1.5" />
-    <path d="M 100.5 233.93877551020407 A 27 27 0 0 1 127.5 206.93877551020407" fill="none" stroke="#9ca3af" stroke-width="1" stroke-dasharray="2,2" />
+    <line x1="288.2" y1="352.0871428571429" x2="233.66" y2="352.0871428571429" stroke="#374151" stroke-width="1.5" />
+    <path d="M 233.66 352.0871428571429 A 54.54 54.54 0 0 1 288.2 406.62714285714287" fill="none" stroke="#9ca3af" stroke-width="1" stroke-dasharray="2,2" />
   
-    <line x1="190.5" y1="206.93877551020407" x2="190.5" y2="233.93877551020407" stroke="#374151" stroke-width="1.5" />
-    <path d="M 190.5 233.93877551020407 A 27 27 0 0 1 217.5 206.93877551020407" fill="none" stroke="#9ca3af" stroke-width="1" stroke-dasharray="2,2" />
+    <line x1="348.79999999999995" y1="388.1585714285714" x2="294.26" y2="388.1585714285714" stroke="#374151" stroke-width="1.5" />
+    <path d="M 294.26 388.1585714285714 A 54.54 54.54 0 0 1 348.79999999999995 442.6985714285714" fill="none" stroke="#9ca3af" stroke-width="1" stroke-dasharray="2,2" />
   
-    <line x1="190.5" y1="308.9795918367347" x2="190.5" y2="335.9795918367347" stroke="#374151" stroke-width="1.5" />
-    <path d="M 190.5 335.9795918367347 A 27 27 0 0 1 217.5 308.9795918367347" fill="none" stroke="#9ca3af" stroke-width="1" stroke-dasharray="2,2" />
+    <line x1="288.2" y1="568.5157142857142" x2="233.66" y2="568.5157142857142" stroke="#374151" stroke-width="1.5" />
+    <path d="M 233.66 568.5157142857142 A 54.54 54.54 0 0 1 288.2 623.0557142857143" fill="none" stroke="#9ca3af" stroke-width="1" stroke-dasharray="2,2" />
   
-    <text x="60" y="450" font-size="10" fill="#b45309">⚠ Phòng "living" (living) tỷ lệ khung hình 2.10:1 — ngoài khoảng ưu tiên (tối đa 1.8:1), vẫn trong giới hạn chấp nhận được.</text><text x="60" y="464" font-size="10" fill="#b45309">⚠ Phòng "kitchen" (kitchen) tỷ lệ khung hình 2.94:1 — ngoài khoảng ưu tiên (tối đa 2.2:1), vẫn trong giới hạn chấp nhận được.</text>
-    <text x="60" y="500" font-size="11" font-weight="600">Simple House Demo — Mặt bằng tầng (Concept)</text>
-    <text x="60" y="516" font-size="9" fill="#666">NOT TO SCALE — Lập ngày 19/7/2026</text>
-    <text x="60" y="532" font-size="9" fill="#b91c1c">Bản vẽ khái niệm sơ bộ — dựa trên thông tin và giả định đã cung cấp, cần kiến trúc sư/kỹ sư kiểm tra lại, KHÔNG dùng để thi công trực tiếp.</text>
+    <line x1="348.79999999999995" y1="604.5871428571429" x2="294.26" y2="604.5871428571429" stroke="#374151" stroke-width="1.5" />
+    <path d="M 294.26 604.5871428571429 A 54.54 54.54 0 0 1 348.79999999999995 659.1271428571429" fill="none" stroke="#9ca3af" stroke-width="1" stroke-dasharray="2,2" />
+  
+    <line x1="191.23999999999998" y1="98" x2="263.96" y2="98" stroke="#2563eb" stroke-width="2.5" /><line x1="136.7" y1="415.7171428571428" x2="136.7" y2="342.9971428571429" stroke="#2563eb" stroke-width="2.5" /><line x1="136.7" y1="632.1457142857143" x2="136.7" y2="559.4257142857143" stroke="#2563eb" stroke-width="2.5" /><line x1="500.3" y1="379.06857142857143" x2="500.3" y2="451.78857142857134" stroke="#2563eb" stroke-width="2.5" />
+    <text x="24" y="720" font-size="9" fill="#b45309">⚠ Phòng "living" (living) tỷ lệ khung hình 2.10:1 — ngoài khoảng ưu tiên (tối đa 1.8:1), vẫn trong giới hạn</text><text x="24" y="732" font-size="9" fill="#b45309">chấp nhận được.</text><text x="24" y="744" font-size="9" fill="#b45309">⚠ Phòng "bedroom-1" (bedroom) tỷ lệ khung hình 1.90:1 — ngoài khoảng ưu tiên (tối đa 1.5:1), vẫn trong giới</text><text x="24" y="756" font-size="9" fill="#b45309">hạn chấp nhận được.</text>
+    <text x="24" y="772" font-size="8" fill="#b91c1c">Bản vẽ khái niệm sơ bộ — dựa trên thông tin và giả định đã cung cấp, cần kiến trúc sư/kỹ sư kiểm tra lại, KHÔNG dùng để thi</text><text x="24" y="783" font-size="8" fill="#b91c1c">công trực tiếp.</text>
   </svg>
 </div>
 </body>

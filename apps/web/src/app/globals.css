@@ -54,10 +54,15 @@
 }
 
 /**
- * Concept Drawing Stage 1 — cùng pattern .proposal-print-area, scope
- * riêng. Stage 1.6 Task 5: A4 tường minh, SVG (đã dùng viewBox +
- * width="100%" — xem svgRenderer.ts) co giãn vừa khổ giấy, không phụ
- * thuộc canvas pixel cố định.
+ * Concept Drawing — cùng pattern .proposal-print-area, scope riêng.
+ * Stage 1.7, Task 6: viewBox của SVG giờ LUÔN đúng khổ A4 (595x842 pt),
+ * tự chừa margin/vùng title/disclaimer BÊN TRONG chính nó (xem
+ * svgRenderer.ts) — @page ở đây chỉ set khổ giấy, margin=0 để viewBox
+ * ánh xạ 1:1 ra trang in, KHÔNG cộng dồn thêm margin ngoài (cộng dồn sẽ
+ * làm mặt bằng bị đẩy tràn sang trang 2). Card bọc SVG cũng phải bỏ
+ * hết padding/border của nó — bất kỳ khoảng trắng nào phía TRÊN svg
+ * trong lúc in đều cộng dồn vào chiều cao 842pt và đẩy nội dung cuối
+ * (disclaimer) tràn trang.
  */
 @media print {
   .design-print-area {
@@ -66,15 +71,20 @@
   }
   .design-print-area .ant-card {
     box-shadow: none !important;
-    border: 1px solid #ddd !important;
+    border: none !important;
+    padding: 0 !important;
     break-inside: avoid;
+  }
+  .design-print-area .ant-card > * {
+    padding: 0 !important;
   }
   .design-print-area svg {
     width: 100% !important;
     height: auto !important;
+    display: block;
   }
   @page {
     size: A4 portrait;
-    margin: 15mm;
+    margin: 0;
   }
 }

@@ -40,18 +40,20 @@ export interface LayoutGraph {
   edges: LayoutEdge[];
 }
 
-// bedroom/wc CÙNG priority (3) có chủ đích — Design Intent Graph nối cả
-// hai loại này trực tiếp tới cùng 1 hub (kitchen), nên Geometry Solver
-// (nhóm node theo priority thành từng dải) phải xếp chúng cùng 1 dải để
-// dải đó thực sự liền kề hub — khác priority sẽ tách thành 2 dải riêng,
-// khiến 1 trong 2 loại không còn chạm hub (bug phát hiện qua Manual POC
-// Stage 1, xem 22_Completion-Report-Concept-Drawing-Stage1.md).
+// circulation/kitchen/bedroom/wc CÙNG priority (2) có chủ đích (Stage
+// 1.7, Task 2): Design Intent Graph nối bếp/mọi phòng ngủ/wc trực tiếp
+// tới hub "circulation" — Geometry Solver (nhóm node theo priority
+// thành từng dải) phải xếp chúng CÙNG 1 dải để circulation thực sự đặt
+// được thành 1 cột chạy suốt dải đó, chạm mọi phòng còn lại (xem
+// geometry.ts `placeTierRowWithCirculation`). Khác priority sẽ tách
+// circulation ra 1 dải riêng, làm mất đúng lý do nó tồn tại.
 const TYPE_PRIORITY: Record<string, number> = {
   entrance: 0,
   living: 1,
+  circulation: 2,
   kitchen: 2,
-  bedroom: 3,
-  wc: 3,
+  bedroom: 2,
+  wc: 2,
 };
 
 function priorityOf(type: string): number {

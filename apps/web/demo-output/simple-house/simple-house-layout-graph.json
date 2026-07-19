@@ -19,6 +19,13 @@
       "areaWeight": 1.4
     },
     {
+      "id": "circulation",
+      "type": "circulation",
+      "floor": 0,
+      "priority": 2,
+      "areaWeight": 0
+    },
+    {
       "id": "kitchen",
       "type": "kitchen",
       "floor": 0,
@@ -29,21 +36,21 @@
       "id": "bedroom-1",
       "type": "bedroom",
       "floor": 0,
-      "priority": 3,
+      "priority": 2,
       "areaWeight": 1
     },
     {
       "id": "bedroom-2",
       "type": "bedroom",
       "floor": 0,
-      "priority": 3,
+      "priority": 2,
       "areaWeight": 1
     },
     {
       "id": "wc-1",
       "type": "wc",
       "floor": 0,
-      "priority": 3,
+      "priority": 2,
       "areaWeight": 0.5
     }
   ],
@@ -56,21 +63,26 @@
     {
       "type": "door",
       "from": "living",
+      "to": "circulation"
+    },
+    {
+      "type": "door",
+      "from": "circulation",
       "to": "kitchen"
     },
     {
       "type": "door",
-      "from": "kitchen",
+      "from": "circulation",
       "to": "bedroom-1"
     },
     {
       "type": "door",
-      "from": "kitchen",
+      "from": "circulation",
       "to": "bedroom-2"
     },
     {
       "type": "door",
-      "from": "bedroom-2",
+      "from": "circulation",
       "to": "wc-1"
     }
   ]

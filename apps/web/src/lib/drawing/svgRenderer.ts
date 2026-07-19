@@ -1,72 +1,131 @@
-import type { DrawingSheet, FloorPlanView } from "./drawingDocument";
+import type { DrawingSheet, Dimension } from "./drawingDocument";
 import type { Door } from "./door";
 import type { Wall } from "./wall";
+import type { Window } from "./window";
+import type { Point } from "./geometry";
 
 /**
- * SVG Renderer — hàm thuần, sinh chuỗi SVG thô (không phải React
- * component) để dùng lại nguyên vẹn cho cả hiển thị web LẪN in/PDF
- * (window.print() trên chính chuỗi này — xem Tech Lead Review mục 5,
- * tái dùng pattern Proposal Task 3, KHÔNG dựng renderer PDF riêng).
+ * SVG Renderer — hàm thuần, sinh chuỗi SVG thô, dùng lại nguyên vẹn cho
+ * cả hiển thị web LẪN in/PDF (window.print() trên chính chuỗi này — Tech
+ * Lead Review mục 5, tái dùng pattern Proposal Task 3, KHÔNG dựng
+ * renderer PDF riêng).
  *
- * Chỉ module NÀY được biết pixel (SCALE/MARGIN) — mọi input đều ở đơn
- * vị mét, đúng Coordinate & Unit Contract (xem geometry.ts). SVG dùng
- * `viewBox` + `width="100%"` (Stage 1.6, Task 5) — không phụ thuộc
- * canvas pixel cố định, co giãn theo khung chứa (web hoặc trang in).
+ * Stage 1.7, Task 6 (Critical fix — Stage 1.6 SVG không fit 1 trang A4,
+ * bị cắt chữ): KHÔNG còn "vẽ khít nội dung rồi width:100%" — viewBox
+ * LUÔN đúng tỷ lệ A4 (595x842, đơn vị pt), chia thành các VÙNG cố định
+ * (header/viewport/warnings/disclaimer). `scale` (m -> px) tính từ CẢ 2
+ * chiều rộng/sâu của khung vẽ còn lại (`Math.min`), không chỉ 1 chiều —
+ * đảm bảo mặt bằng luôn nằm gọn trong vùng viewport, không tràn trang.
+ *
+ * Chỉ module NÀY được biết pixel/toạ độ trang in — mọi input đều ở đơn
+ * vị mét, đúng Coordinate & Unit Contract (xem geometry.ts).
  */
 
-const SCALE = 30; // px / m (chỉ ảnh hưởng toạ độ NỘI BỘ viewBox, không phải kích thước hiển thị thật)
-const MARGIN = 60; // px — chỗ cho dimension + title block
+// Kích thước trang A4 chân phương ở đơn vị "point" (1/72 inch) — cùng hệ
+// quy ước @page { size: A4 } trong globals.css, KHÔNG lẫn với mét domain.
+const PAGE_WIDTH = 595;
+const PAGE_HEIGHT = 842;
+const PAGE_MARGIN = 24;
+const HEADER_HEIGHT = 46;
+// Khoảng chừa bên trong viewport CHO dimension tổng (width phía trên,
+// depth phía trái) — tách biệt khỏi vùng mặt bằng thực tế.
+const DIM_TOP = 28;
+const DIM_LEFT = 42;
 
 function esc(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-interface DoorOnWall {
-  door: Door;
-  offsetStart: number; // dọc theo wall, từ wall.start
-  offsetEnd: number;
+/**
+ * Task 7 — bọc dòng theo ước lượng bề rộng ký tự trung bình (không có
+ * font-metrics thật trong hàm sinh chuỗi thuần) — đủ để KHÔNG chữ nào
+ * tràn ra ngoài khung chứa, không cần chính xác tuyệt đối (bản vẽ khái
+ * niệm, không phải typesetting engine).
+ */
+function wrapText(text: string, maxWidthPx: number, fontSize: number): string[] {
+  const avgCharWidth = fontSize * 0.55;
+  const maxChars = Math.max(4, Math.floor(maxWidthPx / avgCharWidth));
+  const words = text.split(" ");
+  const lines: string[] = [];
+  let current = "";
+  for (const word of words) {
+    const candidate = current ? `${current} ${word}` : word;
+    if (candidate.length > maxChars && current) {
+      lines.push(current);
+      current = word;
+    } else {
+      current = candidate;
+    }
+  }
+  if (current) lines.push(current);
+  return lines;
 }
 
-function doorsOnWall(wall: Wall, doors: Door[]): DoorOnWall[] {
-  return doors
-    .filter((d) => d.wallId === wall.id)
-    .map((d) => ({ door: d, offsetStart: d.offset - d.width / 2, offsetEnd: d.offset + d.width / 2 }))
-    .sort((a, b) => a.offsetStart - b.offsetStart);
+function tspanBlock(x: number, yCenter: number, lines: string[], fontSize: number, attrs: string): string {
+  const lineHeight = fontSize * 1.2;
+  const totalHeight = lines.length * lineHeight;
+  const startY = yCenter - totalHeight / 2 + lineHeight * 0.8;
+  const tspans = lines.map((l, i) => `<tspan x="${x}" y="${startY + i * lineHeight}">${esc(l)}</tspan>`).join("");
+  return `<text x="${x}" font-size="${fontSize}" ${attrs}>${tspans}</text>`;
 }
 
 /**
- * Stage 1.6, Task 4 — wall phải THỰC SỰ có khe hở tại vị trí cửa (không
- * chỉ đè 1 đoạn màu trắng lên tường liền mạch như Stage 1.5). Trả về
- * các đoạn "đặc" (solid) còn lại sau khi trừ đi các khoảng cửa.
+ * Task 7 — nhãn phòng phải nằm gọn trong polygon: bọc dòng theo bề rộng
+ * phòng, GIẢM font-size dần (có sàn tối thiểu) nếu vẫn không vừa chiều
+ * cao dành cho nhãn (~55% chiều cao phòng, phần còn lại cho dòng diện
+ * tích). Cụ thể sửa lỗi "Phòng ngủ 2" tràn ra ngoài polygon ở Stage 1.6.
  */
-function wallSolidSegments(wall: Wall, doors: Door[]): { start: { x: number; y: number }; end: { x: number; y: number } }[] {
+function fitLabel(label: string, pxWidth: number, pxHeight: number): { fontSize: number; lines: string[] } {
+  const minFontSize = 8;
+  let fontSize = 12;
+  const padding = 10;
+  let lines = wrapText(label, pxWidth - padding, fontSize);
+  while (
+    fontSize > minFontSize &&
+    (lines.length * fontSize * 1.2 > pxHeight * 0.55 || lines.some((l) => l.length * fontSize * 0.55 > pxWidth - padding + 1))
+  ) {
+    fontSize -= 1;
+    lines = wrapText(label, pxWidth - padding, fontSize);
+  }
+  return { fontSize, lines };
+}
+
+interface Opening {
+  start: number;
+  end: number;
+}
+
+function openingsOnWall(wall: Wall, doors: Door[], windows: Window[]): Opening[] {
+  const doorOpenings = doors.filter((d) => d.wallId === wall.id).map((d) => ({ start: d.offset - d.width / 2, end: d.offset + d.width / 2 }));
+  const windowOpenings = windows.filter((w) => w.wallId === wall.id).map((w) => ({ start: w.offset - w.width / 2, end: w.offset + w.width / 2 }));
+  return [...doorOpenings, ...windowOpenings].sort((a, b) => a.start - b.start);
+}
+
+/** Wall phải THỰC SỰ có khe hở tại vị trí cửa/cửa sổ, không chỉ đè màu trắng. */
+function wallSolidSegments(wall: Wall, doors: Door[], windows: Window[]): { start: Point; end: Point }[] {
   const length = Math.hypot(wall.end.x - wall.start.x, wall.end.y - wall.start.y);
   if (length === 0) return [];
   const dirX = (wall.end.x - wall.start.x) / length;
   const dirY = (wall.end.y - wall.start.y) / length;
   const pointAt = (offset: number) => ({ x: wall.start.x + dirX * offset, y: wall.start.y + dirY * offset });
 
-  const gaps = doorsOnWall(wall, doors);
-  const segments: { start: { x: number; y: number }; end: { x: number; y: number } }[] = [];
+  const gaps = openingsOnWall(wall, doors, windows);
+  const segments: { start: Point; end: Point }[] = [];
   let cursor = 0;
   for (const gap of gaps) {
-    if (gap.offsetStart > cursor) segments.push({ start: pointAt(cursor), end: pointAt(gap.offsetStart) });
-    cursor = Math.max(cursor, gap.offsetEnd);
+    if (gap.start > cursor) segments.push({ start: pointAt(cursor), end: pointAt(gap.start) });
+    cursor = Math.max(cursor, gap.end);
   }
   if (cursor < length) segments.push({ start: pointAt(cursor), end: pointAt(length) });
   return segments;
 }
 
-/** Ký hiệu cửa: đoạn cắt (đã xử lý ở wallSolidSegments) + lá cửa + vòng cung mở 90°. */
-function doorSymbol(door: Door, wall: Wall, toPx: (m: number) => number): string {
+/** Ký hiệu cửa đi: lá cửa (line) + vòng cung mở 90° — quy ước hiển thị cố định, KHÔNG lưu ở Door domain model. */
+function doorSymbol(door: Door, wall: Wall, toPx: (p: Point) => Point, scale: number): string {
   const length = Math.hypot(wall.end.x - wall.start.x, wall.end.y - wall.start.y);
   if (length === 0) return "";
   const dirX = (wall.end.x - wall.start.x) / length;
   const dirY = (wall.end.y - wall.start.y) / length;
-  // Vuông góc với wall — quy ước cố định (xoay 90° ngược chiều kim đồng
-  // hồ). Đơn giản hoá có chủ đích: KHÔNG thêm hingeSide/swingDirection
-  // vào Door domain model (giữ nguyên như đã chốt) — renderer tự chọn 1
-  // quy ước hiển thị nhất quán, không lưu lại quyết định này ở domain.
   const perpX = -dirY;
   const perpY = dirX;
 
@@ -76,10 +135,10 @@ function doorSymbol(door: Door, wall: Wall, toPx: (m: number) => number): string
   const openEnd = { x: wall.start.x + dirX * openOffset, y: wall.start.y + dirY * openOffset };
   const leafEnd = { x: hinge.x + perpX * door.width, y: hinge.y + perpY * door.width };
 
-  const hingePx = { x: toPx(hinge.x), y: toPx(hinge.y) };
-  const leafPx = { x: toPx(leafEnd.x), y: toPx(leafEnd.y) };
-  const openPx = { x: toPx(openEnd.x), y: toPx(openEnd.y) };
-  const radiusPx = door.width * SCALE;
+  const hingePx = toPx(hinge);
+  const leafPx = toPx(leafEnd);
+  const openPx = toPx(openEnd);
+  const radiusPx = door.width * scale;
 
   return `
     <line x1="${hingePx.x}" y1="${hingePx.y}" x2="${leafPx.x}" y2="${leafPx.y}" stroke="#374151" stroke-width="1.5" />
@@ -87,81 +146,201 @@ function doorSymbol(door: Door, wall: Wall, toPx: (m: number) => number): string
   `;
 }
 
+/** Ký hiệu cửa sổ đơn giản (Stage 1.7, Task 5) — 1 đoạn màu riêng biệt bắc qua khe hở, KHÔNG lá/vòng cung (phân biệt trực quan với cửa đi). */
+function windowSymbol(win: Window, wall: Wall, toPx: (p: Point) => Point): string {
+  const length = Math.hypot(wall.end.x - wall.start.x, wall.end.y - wall.start.y);
+  if (length === 0) return "";
+  const dirX = (wall.end.x - wall.start.x) / length;
+  const dirY = (wall.end.y - wall.start.y) / length;
+  const p1 = { x: wall.start.x + dirX * (win.offset - win.width / 2), y: wall.start.y + dirY * (win.offset - win.width / 2) };
+  const p2 = { x: wall.start.x + dirX * (win.offset + win.width / 2), y: wall.start.y + dirY * (win.offset + win.width / 2) };
+  const p1px = toPx(p1);
+  const p2px = toPx(p2);
+  return `<line x1="${p1px.x}" y1="${p1px.y}" x2="${p2px.x}" y2="${p2px.y}" stroke="#2563eb" stroke-width="2.5" />`;
+}
+
+const OVERALL_EPS = 1e-6;
+
+function isOverallWidth(d: Dimension, envelope: { frontage: number; depth: number }): boolean {
+  return (
+    Math.abs(d.from.x) < OVERALL_EPS &&
+    Math.abs(d.from.y) < OVERALL_EPS &&
+    Math.abs(d.to.y) < OVERALL_EPS &&
+    Math.abs(d.to.x - envelope.frontage) < OVERALL_EPS
+  );
+}
+
+function isOverallDepth(d: Dimension, envelope: { frontage: number; depth: number }): boolean {
+  return (
+    Math.abs(d.from.x) < OVERALL_EPS &&
+    Math.abs(d.from.y) < OVERALL_EPS &&
+    Math.abs(d.to.x) < OVERALL_EPS &&
+    Math.abs(d.to.y - envelope.depth) < OVERALL_EPS
+  );
+}
+
 export function renderFloorPlanToSvg(sheet: DrawingSheet): string {
   const { floorPlan, titleBlock, warnings } = sheet;
-  const width = floorPlan.envelope.frontage * SCALE + MARGIN * 2;
-  const height = floorPlan.envelope.depth * SCALE + MARGIN * 2 + 120; // +120: title block/warnings dưới bản vẽ
+  const { envelope } = floorPlan;
+  const contentWidth = PAGE_WIDTH - 2 * PAGE_MARGIN;
 
-  const toPx = (m: number) => m * SCALE + MARGIN;
+  // Task 8 — bọc trước disclaimer/warnings để biết chính xác chiều cao
+  // vùng footer cần chừa (không đoán 1 số cố định như Stage 1.6).
+  const disclaimerLines = wrapText(titleBlock.disclaimer, contentWidth, 8);
+  const warningLines = warnings.flatMap((w) => wrapText(`⚠ ${w}`, contentWidth, 9));
+  const disclaimerHeight = disclaimerLines.length * 11 + 8;
+  const warningsHeight = warningLines.length > 0 ? warningLines.length * 12 + 12 : 0;
+  const footerHeight = 16 + warningsHeight + disclaimerHeight + 8;
+
+  const viewportX0 = PAGE_MARGIN;
+  const viewportX1 = PAGE_WIDTH - PAGE_MARGIN;
+  const viewportY0 = PAGE_MARGIN + HEADER_HEIGHT;
+  const viewportY1 = PAGE_HEIGHT - PAGE_MARGIN - footerHeight;
+  const viewportWidth = viewportX1 - viewportX0;
+  const viewportHeight = viewportY1 - viewportY0;
+
+  const planAreaX0 = viewportX0 + DIM_LEFT;
+  const planAreaY0 = viewportY0 + DIM_TOP;
+  const planAreaWidth = viewportWidth - DIM_LEFT;
+  const planAreaHeight = viewportHeight - DIM_TOP;
+
+  // Scale tính từ CẢ 2 chiều (Task 6) — đảm bảo mặt bằng luôn fit gọn
+  // trong vùng viewport còn lại, không phụ thuộc chiều nào chiếm ưu thế.
+  const scale = Math.min(planAreaWidth / envelope.frontage, planAreaHeight / envelope.depth);
+  const planPxWidth = envelope.frontage * scale;
+  const planPxHeight = envelope.depth * scale;
+  const offsetX = planAreaX0 + (planAreaWidth - planPxWidth) / 2;
+  const offsetY = planAreaY0 + (planAreaHeight - planPxHeight) / 2;
+
+  const toPx = (p: Point): Point => ({ x: offsetX + p.x * scale, y: offsetY + p.y * scale });
 
   const roomRects = floorPlan.rooms
     .map((r) => {
-      const xs = r.polygon.map((p) => toPx(p.x));
-      const ys = r.polygon.map((p) => toPx(p.y));
+      const xs = r.polygon.map((p) => toPx(p).x);
+      const ys = r.polygon.map((p) => toPx(p).y);
       const x = Math.min(...xs);
       const y = Math.min(...ys);
       const w = Math.max(...xs) - x;
       const h = Math.max(...ys) - y;
       const cx = x + w / 2;
-      const cy = y + h / 2;
+      const labelCy = y + h * 0.38;
+      const areaCy = y + h * 0.72;
+      const { fontSize, lines } = fitLabel(r.label, w, h);
+      const labelBlock = tspanBlock(cx, labelCy, lines, fontSize, `text-anchor="middle" font-weight="600"`);
       return `
         <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#fafafa" stroke="none" />
-        <text x="${cx}" y="${cy - 6}" text-anchor="middle" font-size="12" font-weight="600">${esc(r.label)}</text>
-        <text x="${cx}" y="${cy + 10}" text-anchor="middle" font-size="10" fill="#666">${r.areaM2.toFixed(1)} m²</text>
+        ${labelBlock}
+        <text x="${cx}" y="${areaCy}" text-anchor="middle" font-size="9" fill="#666">${r.areaM2.toFixed(1)} m²</text>
       `;
     })
     .join("");
 
-  // Exterior: đen, dày (3px). Interior: xám, mảnh (1.5px) — phân biệt cả
-  // màu lẫn độ dày. Mỗi wall được cắt thành nhiều đoạn "đặc" quanh vị
-  // trí cửa (Stage 1.6, Task 4) — không còn là 1 đường liền bị đè màu.
   const wallLines = floorPlan.walls
     .flatMap((w) => {
       const isExterior = w.type === "exterior";
       const strokeWidth = isExterior ? 3 : 1.5;
       const stroke = isExterior ? "#111827" : "#6b7280";
-      return wallSolidSegments(w, floorPlan.doors).map(
-        (seg) =>
-          `<line x1="${toPx(seg.start.x)}" y1="${toPx(seg.start.y)}" x2="${toPx(seg.end.x)}" y2="${toPx(seg.end.y)}" stroke="${stroke}" stroke-width="${strokeWidth}" />`,
-      );
+      return wallSolidSegments(w, floorPlan.doors, floorPlan.windows).map((seg) => {
+        const a = toPx(seg.start);
+        const b = toPx(seg.end);
+        return `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${stroke}" stroke-width="${strokeWidth}" />`;
+      });
     })
     .join("");
 
   const doorSymbols = floorPlan.doors
     .map((d) => {
       const wall = floorPlan.walls.find((w) => w.id === d.wallId);
-      return wall ? doorSymbol(d, wall, toPx) : "";
+      return wall ? doorSymbol(d, wall, toPx, scale) : "";
     })
     .join("");
 
-  const dimensionLines = floorPlan.dimensions
+  const windowSymbols = floorPlan.windows
+    .map((win) => {
+      const wall = floorPlan.walls.find((w) => w.id === win.wallId);
+      return wall ? windowSymbol(win, wall, toPx) : "";
+    })
+    .join("");
+
+  // Task 8 — dimension tổng (width/depth) tách biệt: có extension line
+  // ra khỏi mặt bằng, đặt ở vùng DIM_TOP/DIM_LEFT đã chừa riêng; depth
+  // dùng label xoay dọc để không đè lên chính đường dimension.
+  const overallWidthDim = floorPlan.dimensions.find((d) => isOverallWidth(d, envelope));
+  const overallDepthDim = floorPlan.dimensions.find((d) => isOverallDepth(d, envelope));
+  const subDimensions = floorPlan.dimensions.filter((d) => d !== overallWidthDim && d !== overallDepthDim);
+
+  let overallDimSvg = "";
+  if (overallWidthDim) {
+    const y = planAreaY0 - 8;
+    const x0 = offsetX;
+    const x1 = offsetX + planPxWidth;
+    overallDimSvg += `
+      <line x1="${x0}" y1="${y}" x2="${x0}" y2="${offsetY}" stroke="#bbb" stroke-width="0.5" />
+      <line x1="${x1}" y1="${y}" x2="${x1}" y2="${offsetY}" stroke="#bbb" stroke-width="0.5" />
+      <line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#666" stroke-width="0.6" />
+      <text x="${(x0 + x1) / 2}" y="${y - 4}" text-anchor="middle" font-size="9" fill="#333">${esc(overallWidthDim.label)}</text>
+    `;
+  }
+  if (overallDepthDim) {
+    const x = planAreaX0 - 10;
+    const y0 = offsetY;
+    const y1 = offsetY + planPxHeight;
+    overallDimSvg += `
+      <line x1="${x}" y1="${y0}" x2="${offsetX}" y2="${y0}" stroke="#bbb" stroke-width="0.5" />
+      <line x1="${x}" y1="${y1}" x2="${offsetX}" y2="${y1}" stroke="#bbb" stroke-width="0.5" />
+      <line x1="${x}" y1="${y0}" x2="${x}" y2="${y1}" stroke="#666" stroke-width="0.6" />
+      <text x="0" y="0" text-anchor="middle" font-size="9" fill="#333" transform="translate(${x - 5}, ${(y0 + y1) / 2}) rotate(-90)">${esc(overallDepthDim.label)}</text>
+    `;
+  }
+
+  const subDimensionLines = subDimensions
     .map((d) => {
-      const x1 = toPx(d.from.x);
-      const y1 = toPx(d.from.y) - 14;
-      const x2 = toPx(d.to.x);
-      const y2 = toPx(d.to.y) - 14;
-      const midX = (x1 + x2) / 2;
-      const midY = (y1 + y2) / 2;
+      const a = toPx(d.from);
+      const b = toPx(d.to);
+      const y = a.y - 10;
+      const midX = (a.x + b.x) / 2;
       return `
-        <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#999" stroke-width="0.5" />
-        <text x="${midX}" y="${midY - 4}" text-anchor="middle" font-size="9" fill="#999">${esc(d.label)}</text>
+        <line x1="${a.x}" y1="${y}" x2="${b.x}" y2="${y}" stroke="#ccc" stroke-width="0.5" />
+        <text x="${midX}" y="${y - 3}" text-anchor="middle" font-size="8" fill="#999">${esc(d.label)}</text>
       `;
     })
     .join("");
 
-  const warningsText = warnings
-    .map((w, i) => `<text x="${MARGIN}" y="${height - 90 + i * 14}" font-size="10" fill="#b45309">⚠ ${esc(w)}</text>`)
+  // Header — tên dự án + scale/ngày, bọc dòng nếu tên dự án dài (Task 7).
+  const titleLines = wrapText(titleBlock.projectName, contentWidth, 12);
+  const titleBlockSvg = `
+    ${tspanBlock(PAGE_MARGIN, PAGE_MARGIN + 8, titleLines, 12, `font-weight="700"`)}
+    <text x="${PAGE_MARGIN}" y="${PAGE_MARGIN + 8 + titleLines.length * 14 + 12}" font-size="9" fill="#666">${esc(titleBlock.scale)} — Mặt bằng tầng (Concept) — Lập ngày ${new Date(titleBlock.generatedAt).toLocaleDateString("vi-VN")}</text>
+  `;
+
+  // Footer — warnings (nếu có) rồi disclaimer, mọi dòng đã bọc sẵn ở trên.
+  let footerY = viewportY1 + 16;
+  const warningsSvg = warningLines
+    .map((line) => {
+      const svg = `<text x="${PAGE_MARGIN}" y="${footerY}" font-size="9" fill="#b45309">${esc(line)}</text>`;
+      footerY += 12;
+      return svg;
+    })
+    .join("");
+  if (warningLines.length > 0) footerY += 4;
+  const disclaimerSvg = disclaimerLines
+    .map((line) => {
+      const svg = `<text x="${PAGE_MARGIN}" y="${footerY}" font-size="8" fill="#b91c1c">${esc(line)}</text>`;
+      footerY += 11;
+      return svg;
+    })
     .join("");
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet">
-    <rect x="0" y="0" width="${width}" height="${height}" fill="#ffffff" />
-    ${dimensionLines}
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 ${PAGE_WIDTH} ${PAGE_HEIGHT}" preserveAspectRatio="xMidYMid meet">
+    <rect x="0" y="0" width="${PAGE_WIDTH}" height="${PAGE_HEIGHT}" fill="#ffffff" />
+    ${titleBlockSvg}
+    ${overallDimSvg}
+    ${subDimensionLines}
     ${roomRects}
     ${wallLines}
     ${doorSymbols}
-    ${warningsText}
-    <text x="${MARGIN}" y="${height - 40}" font-size="11" font-weight="600">${esc(titleBlock.projectName)} — Mặt bằng tầng (Concept)</text>
-    <text x="${MARGIN}" y="${height - 24}" font-size="9" fill="#666">${esc(titleBlock.scale)} — Lập ngày ${new Date(titleBlock.generatedAt).toLocaleDateString("vi-VN")}</text>
-    <text x="${MARGIN}" y="${height - 8}" font-size="9" fill="#b91c1c">${esc(titleBlock.disclaimer)}</text>
+    ${windowSymbols}
+    ${warningsSvg}
+    ${disclaimerSvg}
   </svg>`;
 }

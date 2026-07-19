@@ -1,6 +1,7 @@
 import type { Geometry, GeometrySpace, Point } from "./geometry";
 import type { Wall } from "./wall";
 import type { Door } from "./door";
+import type { Window } from "./window";
 
 /**
  * Drawing Document Model — dữ liệu thuần, KHÔNG biết gì về SVG/PDF
@@ -14,6 +15,7 @@ const ROOM_LABEL: Record<string, string> = {
   bedroom: "Phòng ngủ",
   wc: "WC",
   entrance: "Lối vào",
+  circulation: "Sảnh / Hành lang",
 };
 
 function labelFor(space: GeometrySpace, indexInType: number): string {
@@ -51,6 +53,7 @@ export interface FloorPlanView {
   rooms: FloorPlanRoom[];
   walls: Wall[];
   doors: Door[];
+  windows: Window[];
   dimensions: Dimension[];
   envelope: { frontage: number; depth: number };
 }
@@ -80,6 +83,7 @@ function buildFloorPlan(
   geometryFloor: Geometry["floors"][number],
   wallsOnFloor: Wall[],
   doorsOnFloor: Door[],
+  windowsOnFloor: Window[],
   envelope: { frontage: number; depth: number },
 ): FloorPlanView {
   const typeCounter = new Map<string, number>();
@@ -109,13 +113,14 @@ function buildFloorPlan(
       .map((b) => ({ from: { x: b.x0, y: b.y0 }, to: { x: b.x1, y: b.y0 }, label: `${(b.x1 - b.x0).toFixed(1)} m` })),
   ];
 
-  return { level: geometryFloor.level, rooms, walls: wallsOnFloor, doors: doorsOnFloor, dimensions, envelope };
+  return { level: geometryFloor.level, rooms, walls: wallsOnFloor, doors: doorsOnFloor, windows: windowsOnFloor, dimensions, envelope };
 }
 
 export function buildDrawingPackage(
   geometry: Geometry,
   walls: Wall[],
   doors: Door[],
+  windows: Window[],
   projectName: string,
   warnings: string[],
   envelope: { frontage: number; depth: number },
@@ -129,14 +134,16 @@ export function buildDrawingPackage(
         floor,
         wallsOnFloor,
         doors.filter((d) => wallIdsOnFloor.has(d.wallId)),
+        windows.filter((w) => wallIdsOnFloor.has(w.wallId)),
         envelope,
       ),
       titleBlock: { projectName, scale: "NOT TO SCALE", disclaimer: DISCLAIMER, generatedAt },
       warnings,
       assumptions: [
-        "Vị trí cầu thang/hành lang chưa áp dụng ở Stage 1 (nhà 1 tầng).",
+        "Vị trí cầu thang chưa áp dụng ở Stage 1 (nhà 1 tầng).",
         "Tỷ lệ diện tích từng phòng theo công thức mặc định, chưa qua kiến trúc sư duyệt.",
         "Vị trí cửa lấy tâm mỗi wall, chưa tối ưu theo lối đi thực tế.",
+        "Đã tự thêm 1 sảnh/hành lang (circulation) làm lối đi chung tới bếp/phòng ngủ/WC để đảm bảo không phải đi xuyên qua phòng ngủ nào — đây là giả định bố trí, không phải phòng khách hàng yêu cầu.",
       ],
     };
   });

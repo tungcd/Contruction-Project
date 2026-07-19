@@ -32,71 +32,71 @@
             "id": "kitchen",
             "type": "kitchen",
             "label": "Bếp",
-            "areaM2": 12.244897959183671,
+            "areaM2": 8.92857142857143,
             "polygon": [
               {
                 "x": 0,
                 "y": 2.8571428571428568
               },
               {
-                "x": 6,
+                "x": 2.5,
                 "y": 2.8571428571428568
               },
               {
-                "x": 6,
-                "y": 4.897959183673469
+                "x": 2.5,
+                "y": 6.428571428571429
               },
               {
                 "x": 0,
-                "y": 4.897959183673469
-              }
-            ]
-          },
-          {
-            "id": "bedroom-1",
-            "type": "bedroom",
-            "label": "Phòng ngủ",
-            "areaM2": 18.367346938775512,
-            "polygon": [
-              {
-                "x": 0,
-                "y": 4.897959183673469
-              },
-              {
-                "x": 3.6,
-                "y": 4.897959183673469
-              },
-              {
-                "x": 3.6,
-                "y": 10
-              },
-              {
-                "x": 0,
-                "y": 10
+                "y": 6.428571428571429
               }
             ]
           },
           {
             "id": "bedroom-2",
             "type": "bedroom",
-            "label": "Phòng ngủ 2",
-            "areaM2": 8.16326530612245,
+            "label": "Phòng ngủ",
+            "areaM2": 8.928571428571427,
             "polygon": [
               {
-                "x": 3.6,
-                "y": 4.897959183673469
+                "x": 0,
+                "y": 6.428571428571429
+              },
+              {
+                "x": 2.5,
+                "y": 6.428571428571429
+              },
+              {
+                "x": 2.5,
+                "y": 10
+              },
+              {
+                "x": 0,
+                "y": 10
+              }
+            ]
+          },
+          {
+            "id": "bedroom-1",
+            "type": "bedroom",
+            "label": "Phòng ngủ 2",
+            "areaM2": 11.904761904761905,
+            "polygon": [
+              {
+                "x": 3.5,
+                "y": 2.8571428571428568
               },
               {
                 "x": 6,
-                "y": 4.897959183673469
+                "y": 2.8571428571428568
               },
               {
                 "x": 6,
-                "y": 8.299319727891156
+                "y": 7.619047619047619
               },
               {
-                "x": 3.6,
-                "y": 8.299319727891156
+                "x": 3.5,
+                "y": 7.619047619047619
               }
             ]
           },
@@ -104,22 +104,46 @@
             "id": "wc-1",
             "type": "wc",
             "label": "WC",
-            "areaM2": 4.0816326530612255,
+            "areaM2": 5.952380952380953,
             "polygon": [
               {
-                "x": 3.6,
-                "y": 8.299319727891156
+                "x": 3.5,
+                "y": 7.619047619047619
               },
               {
                 "x": 6,
-                "y": 8.299319727891156
+                "y": 7.619047619047619
               },
               {
                 "x": 6,
                 "y": 10
               },
               {
-                "x": 3.6,
+                "x": 3.5,
+                "y": 10
+              }
+            ]
+          },
+          {
+            "id": "circulation",
+            "type": "circulation",
+            "label": "Sảnh / Hành lang",
+            "areaM2": 7.142857142857143,
+            "polygon": [
+              {
+                "x": 2.5,
+                "y": 2.8571428571428568
+              },
+              {
+                "x": 3.5,
+                "y": 2.8571428571428568
+              },
+              {
+                "x": 3.5,
+                "y": 10
+              },
+              {
+                "x": 2.5,
                 "y": 10
               }
             ]
@@ -133,7 +157,7 @@
               "y": 2.8571428571428568
             },
             "end": {
-              "x": 6,
+              "x": 2.5,
               "y": 2.8571428571428568
             },
             "type": "interior",
@@ -143,30 +167,46 @@
             ]
           },
           {
-            "id": "wall-0-bedroom-1-kitchen",
+            "id": "wall-0-bedroom-1-living",
             "start": {
-              "x": 0,
-              "y": 4.897959183673469
+              "x": 3.5,
+              "y": 2.8571428571428568
             },
             "end": {
-              "x": 3.6,
-              "y": 4.897959183673469
+              "x": 6,
+              "y": 2.8571428571428568
             },
             "type": "interior",
             "betweenRoomIds": [
-              "kitchen",
+              "living",
               "bedroom-1"
+            ]
+          },
+          {
+            "id": "wall-0-circulation-living",
+            "start": {
+              "x": 2.5,
+              "y": 2.8571428571428568
+            },
+            "end": {
+              "x": 3.5,
+              "y": 2.8571428571428568
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "living",
+              "circulation"
             ]
           },
           {
             "id": "wall-0-bedroom-2-kitchen",
             "start": {
-              "x": 3.6,
-              "y": 4.897959183673469
+              "x": 0,
+              "y": 6.428571428571429
             },
             "end": {
-              "x": 6,
-              "y": 4.897959183673469
+              "x": 2.5,
+              "y": 6.428571428571429
             },
             "type": "interior",
             "betweenRoomIds": [
@@ -175,30 +215,46 @@
             ]
           },
           {
-            "id": "wall-0-bedroom-1-bedroom-2",
+            "id": "wall-0-circulation-kitchen",
             "start": {
-              "x": 3.6,
-              "y": 4.897959183673469
+              "x": 2.5,
+              "y": 2.8571428571428568
             },
             "end": {
-              "x": 3.6,
-              "y": 8.299319727891156
+              "x": 2.5,
+              "y": 6.428571428571429
             },
             "type": "interior",
             "betweenRoomIds": [
-              "bedroom-1",
-              "bedroom-2"
+              "kitchen",
+              "circulation"
+            ]
+          },
+          {
+            "id": "wall-0-bedroom-2-circulation",
+            "start": {
+              "x": 2.5,
+              "y": 6.428571428571429
+            },
+            "end": {
+              "x": 2.5,
+              "y": 10
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "bedroom-2",
+              "circulation"
             ]
           },
           {
             "id": "wall-0-bedroom-1-wc-1",
             "start": {
-              "x": 3.6,
-              "y": 8.299319727891156
+              "x": 3.5,
+              "y": 7.619047619047619
             },
             "end": {
-              "x": 3.6,
-              "y": 10
+              "x": 6,
+              "y": 7.619047619047619
             },
             "type": "interior",
             "betweenRoomIds": [
@@ -207,19 +263,35 @@
             ]
           },
           {
-            "id": "wall-0-bedroom-2-wc-1",
+            "id": "wall-0-bedroom-1-circulation",
             "start": {
-              "x": 3.6,
-              "y": 8.299319727891156
+              "x": 3.5,
+              "y": 2.8571428571428568
             },
             "end": {
-              "x": 6,
-              "y": 8.299319727891156
+              "x": 3.5,
+              "y": 7.619047619047619
             },
             "type": "interior",
             "betweenRoomIds": [
-              "bedroom-2",
-              "wc-1"
+              "bedroom-1",
+              "circulation"
+            ]
+          },
+          {
+            "id": "wall-0-circulation-wc-1",
+            "start": {
+              "x": 3.5,
+              "y": 7.619047619047619
+            },
+            "end": {
+              "x": 3.5,
+              "y": 10
+            },
+            "type": "interior",
+            "betweenRoomIds": [
+              "wc-1",
+              "circulation"
             ]
           },
           {
@@ -284,43 +356,83 @@
           },
           {
             "id": "door-1",
-            "wallId": "wall-0-kitchen-living",
+            "wallId": "wall-0-circulation-living",
             "connects": [
               "living",
-              "kitchen"
+              "circulation"
             ],
-            "offset": 3,
+            "offset": 0.5,
             "width": 0.9
           },
           {
             "id": "door-2",
-            "wallId": "wall-0-bedroom-1-kitchen",
+            "wallId": "wall-0-circulation-kitchen",
             "connects": [
-              "kitchen",
-              "bedroom-1"
+              "circulation",
+              "kitchen"
             ],
-            "offset": 1.8,
+            "offset": 1.785714285714286,
             "width": 0.9
           },
           {
             "id": "door-3",
-            "wallId": "wall-0-bedroom-2-kitchen",
+            "wallId": "wall-0-bedroom-1-circulation",
             "connects": [
-              "kitchen",
-              "bedroom-2"
+              "circulation",
+              "bedroom-1"
             ],
-            "offset": 1.2,
+            "offset": 2.380952380952381,
             "width": 0.9
           },
           {
             "id": "door-4",
-            "wallId": "wall-0-bedroom-2-wc-1",
+            "wallId": "wall-0-bedroom-2-circulation",
             "connects": [
-              "bedroom-2",
+              "circulation",
+              "bedroom-2"
+            ],
+            "offset": 1.7857142857142856,
+            "width": 0.9
+          },
+          {
+            "id": "door-5",
+            "wallId": "wall-0-circulation-wc-1",
+            "connects": [
+              "circulation",
               "wc-1"
             ],
-            "offset": 1.2,
+            "offset": 1.1904761904761907,
             "width": 0.9
+          }
+        ],
+        "windows": [
+          {
+            "id": "window-0",
+            "wallId": "wall-0-ext-top",
+            "roomId": "living",
+            "offset": 1.5,
+            "width": 1.2
+          },
+          {
+            "id": "window-1",
+            "wallId": "wall-0-ext-left",
+            "roomId": "kitchen",
+            "offset": 5.357142857142858,
+            "width": 1.2
+          },
+          {
+            "id": "window-2",
+            "wallId": "wall-0-ext-left",
+            "roomId": "bedroom-2",
+            "offset": 1.7857142857142856,
+            "width": 1.2
+          },
+          {
+            "id": "window-3",
+            "wallId": "wall-0-ext-right",
+            "roomId": "bedroom-1",
+            "offset": 5.238095238095237,
+            "width": 1.2
           }
         ],
         "dimensions": [
@@ -352,43 +464,54 @@
               "y": 2.8571428571428568
             },
             "to": {
-              "x": 6,
+              "x": 2.5,
               "y": 2.8571428571428568
             },
-            "label": "6.0 m"
+            "label": "2.5 m"
           },
           {
             "from": {
               "x": 0,
-              "y": 4.897959183673469
+              "y": 6.428571428571429
             },
             "to": {
-              "x": 3.6,
-              "y": 4.897959183673469
+              "x": 2.5,
+              "y": 6.428571428571429
             },
-            "label": "3.6 m"
+            "label": "2.5 m"
           },
           {
             "from": {
-              "x": 3.6,
-              "y": 4.897959183673469
+              "x": 3.5,
+              "y": 2.8571428571428568
             },
             "to": {
               "x": 6,
-              "y": 4.897959183673469
+              "y": 2.8571428571428568
             },
-            "label": "2.4 m"
+            "label": "2.5 m"
           },
           {
             "from": {
-              "x": 3.6,
-              "y": 8.299319727891156
+              "x": 3.5,
+              "y": 7.619047619047619
             },
             "to": {
               "x": 6,
-              "y": 8.299319727891156
+              "y": 7.619047619047619
             },
-            "label": "2.4 m"
+            "label": "2.5 m"
+          },
+          {
+            "from": {
+              "x": 2.5,
+              "y": 2.8571428571428568
+            },
+            "to": {
+              "x": 3.5,
+              "y": 2.8571428571428568
+            },
+            "label": "1.0 m"
           }
         ],
         "envelope": {
@@ -400,16 +523,17 @@
         "projectName": "Simple House Demo",
         "scale": "NOT TO SCALE",
         "disclaimer": "Bản vẽ khái niệm sơ bộ — dựa trên thông tin và giả định đã cung cấp, cần kiến trúc sư/kỹ sư kiểm tra lại, KHÔNG dùng để thi công trực tiếp.",
-        "generatedAt": "2026-07-18T17:27:37.983Z"
+        "generatedAt": "2026-07-19T16:14:17.877Z"
       },
       "warnings": [
         "Phòng \"living\" (living) tỷ lệ khung hình 2.10:1 — ngoài khoảng ưu tiên (tối đa 1.8:1), vẫn trong giới hạn chấp nhận được.",
-        "Phòng \"kitchen\" (kitchen) tỷ lệ khung hình 2.94:1 — ngoài khoảng ưu tiên (tối đa 2.2:1), vẫn trong giới hạn chấp nhận được."
+        "Phòng \"bedroom-1\" (bedroom) tỷ lệ khung hình 1.90:1 — ngoài khoảng ưu tiên (tối đa 1.5:1), vẫn trong giới hạn chấp nhận được."
       ],
       "assumptions": [
-        "Vị trí cầu thang/hành lang chưa áp dụng ở Stage 1 (nhà 1 tầng).",
+        "Vị trí cầu thang chưa áp dụng ở Stage 1 (nhà 1 tầng).",
         "Tỷ lệ diện tích từng phòng theo công thức mặc định, chưa qua kiến trúc sư duyệt.",
-        "Vị trí cửa lấy tâm mỗi wall, chưa tối ưu theo lối đi thực tế."
+        "Vị trí cửa lấy tâm mỗi wall, chưa tối ưu theo lối đi thực tế.",
+        "Đã tự thêm 1 sảnh/hành lang (circulation) làm lối đi chung tới bếp/phòng ngủ/WC để đảm bảo không phải đi xuyên qua phòng ngủ nào — đây là giả định bố trí, không phải phòng khách hàng yêu cầu."
       ]
     }
   ]

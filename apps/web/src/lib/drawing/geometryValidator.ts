@@ -3,6 +3,7 @@ import { GEOMETRY_EPS, type Geometry, type GeometrySpace } from "./geometry";
 import type { LayoutGraph } from "./layoutGraph";
 import type { Wall } from "./wall";
 import type { Door } from "./door";
+import type { Window } from "./window";
 import { aspectRatioOf, constraintFor } from "./roomConstraints";
 
 /**
@@ -50,6 +51,7 @@ export function validateGeometry(
   walls: Wall[],
   doors: Door[],
   constraintSet: ConstraintSet,
+  windows: Window[] = [],
 ): GeometryValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -192,6 +194,36 @@ export function validateGeometry(
     );
     if (!hasDoor) {
       errors.push(`Cạnh "door" giữa "${edge.from}" và "${edge.to}" trong LayoutGraph không có Door tương ứng nào được vẽ.`);
+    }
+  }
+
+  // 4c. Window validation (Stage 1.7, Task 5) — phải tham chiếu wall có
+  //     thật (VÀ là exterior — cửa sổ không đặt trên tường trong nhà),
+  //     nằm gọn trong wall, và không chồng lấn cửa đi trên cùng wall.
+  for (const win of windows) {
+    const wall = wallById.get(win.wallId);
+    if (!wall) {
+      errors.push(`Cửa sổ "${win.id}" tham chiếu wall "${win.wallId}" không tồn tại.`);
+      continue;
+    }
+    if (wall.type !== "exterior") {
+      errors.push(`Cửa sổ "${win.id}" đặt trên wall "${win.wallId}" không phải tường ngoài.`);
+    }
+    const length = Math.hypot(wall.end.x - wall.start.x, wall.end.y - wall.start.y);
+    if (win.width <= 0) {
+      errors.push(`Cửa sổ "${win.id}" có width không dương (${win.width}).`);
+    }
+    if (win.offset - win.width / 2 < -AREA_EPS || win.offset + win.width / 2 > length + AREA_EPS) {
+      errors.push(`Cửa sổ "${win.id}" vượt quá 2 đầu wall "${wall.id}".`);
+    }
+    const overlapsDoor = doors.some(
+      (d) =>
+        d.wallId === win.wallId &&
+        win.offset - win.width / 2 < d.offset + d.width / 2 - AREA_EPS &&
+        win.offset + win.width / 2 > d.offset - d.width / 2 + AREA_EPS,
+    );
+    if (overlapsDoor) {
+      errors.push(`Cửa sổ "${win.id}" chồng lấn 1 cửa đi trên cùng wall "${wall.id}".`);
     }
   }
 

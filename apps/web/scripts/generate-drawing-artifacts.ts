@@ -1,5 +1,5 @@
 /**
- * Sinh artifact có thể review được (Stage 1.5/1.6, Task 1) — không chỉ
+ * Sinh artifact có thể review được (Stage 1.5/1.6/1.7) — không chỉ
  * báo cáo PASS/FAIL, mà xuất ra file thật để xem trực tiếp.
  *
  *   npm run drawing:artifacts
@@ -60,17 +60,16 @@ const printHtml = `<!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="utf-8" />
-<title>Simple House — Concept Drawing (Stage 1.6)</title>
+<title>Simple House — Concept Drawing (Stage 1.7)</title>
 <style>
-  /* Stage 1.6, Task 5 — A4 tường minh, SVG co giãn theo viewBox (không
-     phụ thuộc canvas pixel cố định), không cắt nội dung. */
-  @page { size: A4 portrait; margin: 15mm; }
+  /* Stage 1.7, Task 6 — viewBox đã LUÔN đúng tỷ lệ A4 (595x842) với vùng
+     nội dung tính toán tường minh (không còn "vẽ khít rồi width:100%"
+     như Stage 1.6) — @page ở đây chỉ set khổ giấy in, không quyết định
+     bố cục bên trong SVG. */
+  @page { size: A4 portrait; margin: 0; }
   html, body { margin: 0; padding: 0; font-family: system-ui, sans-serif; }
-  .sheet { padding: 24px; }
+  .sheet { padding: 0; }
   svg { width: 100%; height: auto; display: block; }
-  @media print {
-    .sheet { padding: 0; }
-  }
 </style>
 </head>
 <body>
@@ -81,7 +80,7 @@ ${svg}
 </html>`;
 writeFileSync(path.join(outDir, "simple-house-floor-plan-print.html"), printHtml);
 
-const readme = `# Simple House — Concept Drawing Artifacts (Stage 1.6)
+const readme = `# Simple House — Concept Drawing Artifacts (Stage 1.7)
 
 Sinh bởi \`npm run drawing:artifacts\`. Template: \`${templateId}\`.
 Geometry validation: ${validation.passed ? "PASSED" : "FAILED — " + validation.errors.join("; ")}.

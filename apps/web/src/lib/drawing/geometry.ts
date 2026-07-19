@@ -83,20 +83,24 @@ function targetAspectRatio(type: string): number {
   return (c.preferredAspectRatioMin + c.preferredAspectRatioMax) / 2;
 }
 
+/** Chiều rộng cố định của hành lang/sảnh (circulation) — không suy ra từ
+ *  areaWeight (circulation không phải phòng khách hàng yêu cầu, xem
+ *  designIntentGraph.ts), mà là 1 hằng số kích thước hành lang tối
+ *  thiểu thông thường trong nhà ở dân dụng. */
+const CIRCULATION_WIDTH = 1.0; // m
+
 /**
  * Đặt hình cho 1 dải (tier) rộng `frontage`, sâu `tierDepth`.
  *
  * - 1 node: chiếm trọn dải (như cũ).
  * - 2 node: chia rộng theo areaWeight (như cũ — đã cho tỷ lệ ổn với 2 node).
- * - >=3 node (Stage 1.6, Task 3 — sửa lỗi WC "khe hẹp" 4.25:1 đã phát
- *   hiện ở Stage 1.5): 1 node NẶNG NHẤT đứng riêng 1 cột (chiếm trọn
- *   chiều sâu dải), các node còn lại dồn vào 1 cột thứ 2, chia chiều sâu
- *   theo areaWeight bên trong cột đó. Chiều rộng mỗi cột tính từ tỷ lệ
- *   khung hình MỤC TIÊU của từng phòng (không phải areaWeight thô) rồi
- *   chuẩn hoá (normalize) để tổng đúng bằng `frontage` — lý do: cột chỉ
- *   có 1 phòng phải "gánh" trọn chiều sâu dải, cần rộng hơn tỷ lệ
- *   areaWeight thuần mới ra tỷ lệ khung hình hợp lý (xem
- *   23_Completion-Report-Concept-Drawing-Stage1.5.md — phân tích lỗi).
+ * - >=3 node, KHÔNG có circulation trong dải: 1 node NẶNG NHẤT đứng
+ *   riêng 1 cột (chiếm trọn chiều sâu dải), các node còn lại dồn vào 1
+ *   cột thứ 2, chia chiều sâu theo areaWeight bên trong cột đó. Chiều
+ *   rộng mỗi cột tính từ tỷ lệ khung hình MỤC TIÊU của từng phòng rồi
+ *   chuẩn hoá để tổng đúng bằng `frontage` (giữ lại cho tier khác không
+ *   cần circulation — xem 23_...Stage1.5.md).
+ * - Dải CÓ circulation (Stage 1.7, Task 2): xem `placeTierRowWithCirculation`.
  */
 function placeTierRow(
   tier: LayoutNode[],
@@ -104,6 +108,12 @@ function placeTierRow(
   tierDepth: number,
   y0: number,
 ): GeometrySpace[] {
+  const circulation = tier.find((n) => n.type === "circulation");
+  if (circulation) {
+    const rest = tier.filter((n) => n.id !== circulation.id);
+    return placeTierRowWithCirculation(circulation, rest, frontage, tierDepth, y0);
+  }
+
   if (tier.length === 1) {
     return [{ id: tier[0].id, type: tier[0].type, polygon: rect(0, y0, frontage, y0 + tierDepth) }];
   }
@@ -155,10 +165,84 @@ function placeTierRow(
   return spaces;
 }
 
+/**
+ * Dải có circulation (Stage 1.7, Task 2 — hiện thực hoá đúng tô-pô hub
+ * "circulation nối mọi phòng còn lại" đã khai báo ở designIntentGraph.ts,
+ * KHÔNG suy diễn ngược): circulation đặt thành 1 cột hẹp CHẠY SUỐT
+ * chiều sâu dải, nằm GIỮA 2 cột phòng còn lại — cột trái/phải đều có 1
+ * cạnh chung với TOÀN BỘ chiều dài cột circulation, nên MỌI phòng xếp
+ * chồng trong cột trái lẫn cột phải đều chạm circulation, bất kể xếp
+ * ở vị trí nào trong cột (không như Stage 1.6, nơi chỉ phòng đầu cột
+ * mới chạm hub). Nhờ vậy không cần "chain" — mọi phòng chạm circulation
+ * là hub thật, đúng 1-đường-đi-duy-nhất đã khai báo.
+ *
+ * Chia node còn lại vào 2 cột theo round-robin (không phải nặng/nhẹ):
+ * tránh dồn 2 phòng cùng loại nặng (vd 2 bedroom) vào cùng 1 cột khiến
+ * cột kia quá hẹp cho phòng còn lại (đã thử và thấy hỏng khi tính tay).
+ * 2 cột luôn CHIA ĐỀU chiều rộng còn lại (không theo areaWeight) — vì
+ * chiều rộng cột cần đủ minWidth cho loại phòng bất kỳ rơi vào cột đó
+ * (vd bedroom cần >=2.4m); areaWeight chỉ quyết định chiều SÂU của từng
+ * phòng bên trong cột của nó.
+ */
+function placeTierRowWithCirculation(
+  circulation: LayoutNode,
+  rest: LayoutNode[],
+  frontage: number,
+  tierDepth: number,
+  y0: number,
+): GeometrySpace[] {
+  if (rest.length === 0) {
+    return [{ id: circulation.id, type: circulation.type, polygon: rect(0, y0, frontage, y0 + tierDepth) }];
+  }
+  if (rest.length === 1) {
+    const roomsWidth = frontage - CIRCULATION_WIDTH;
+    return [
+      { id: rest[0].id, type: rest[0].type, polygon: rect(0, y0, roomsWidth, y0 + tierDepth) },
+      {
+        id: circulation.id,
+        type: circulation.type,
+        polygon: rect(roomsWidth, y0, frontage, y0 + tierDepth),
+      },
+    ];
+  }
+
+  const roomsAreaWidth = frontage - CIRCULATION_WIDTH;
+  const colWidth = roomsAreaWidth / 2;
+  const columns: LayoutNode[][] = [[], []];
+  rest.forEach((n, i) => columns[i % 2].push(n));
+  const colXStarts = [0, colWidth + CIRCULATION_WIDTH];
+
+  const spaces: GeometrySpace[] = [];
+  columns.forEach((col, colIndex) => {
+    if (col.length === 0) return;
+    const colWeight = col.reduce((s, n) => s + n.areaWeight, 0);
+    let subY = y0;
+    for (const n of col) {
+      const subDepth = colWeight > 0 ? (n.areaWeight / colWeight) * tierDepth : tierDepth / col.length;
+      spaces.push({
+        id: n.id,
+        type: n.type,
+        polygon: rect(colXStarts[colIndex], subY, colXStarts[colIndex] + colWidth, subY + subDepth),
+      });
+      subY += subDepth;
+    }
+  });
+
+  spaces.push({
+    id: circulation.id,
+    type: circulation.type,
+    polygon: rect(colWidth, y0, colWidth + CIRCULATION_WIDTH, y0 + tierDepth),
+  });
+  return spaces;
+}
+
 export function solveGeometry(layoutGraph: LayoutGraph, level = 0): Geometry {
   const { envelope } = layoutGraph;
-  // entrance (areaWeight = 0) không chiếm diện tích — loại khỏi packing.
-  const placeable = layoutGraph.nodes.filter((n) => n.areaWeight > 0);
+  // entrance là node ảo, không chiếm diện tích thật — loại khỏi packing.
+  // circulation CŨNG có areaWeight=0 (không suy ra từ nhu cầu diện tích,
+  // xem CIRCULATION_WIDTH) nhưng VẪN cần 1 polygon thật (Stage 1.7) — lọc
+  // theo type thay vì areaWeight > 0 để không loại nhầm circulation.
+  const placeable = layoutGraph.nodes.filter((n) => n.type !== "entrance");
   if (placeable.length === 0) {
     throw new GeometrySolverError("Không có phòng nào để đặt hình học (LayoutGraph rỗng).");
   }
