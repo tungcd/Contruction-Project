@@ -70,7 +70,7 @@
     },
     {
       "type": "door",
-      "from": "kitchen",
+      "from": "bedroom-2",
       "to": "wc-1"
     }
   ]

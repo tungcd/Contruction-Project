@@ -73,6 +73,17 @@ try {
     `${totalArea.toFixed(2)} vs ${expectedArea}`,
   );
 
+  // Stage 1.6, Task 2/3 — WC không còn là "khe hẹp" (đã 4.25:1 ở Stage 1.5).
+  const wcRoom = sheet.floorPlan.rooms.find((r) => r.type === "wc");
+  if (wcRoom) {
+    const xs = wcRoom.polygon.map((p) => p.x);
+    const ys = wcRoom.polygon.map((p) => p.y);
+    const w = Math.max(...xs) - Math.min(...xs);
+    const d = Math.max(...ys) - Math.min(...ys);
+    const ratio = Math.max(w, d) / Math.min(w, d);
+    check("WC không còn tỷ lệ khe hẹp (< 2.5:1)", ratio < 2.5, `${ratio.toFixed(2)}:1`);
+  }
+
   check("có title block + disclaimer", sheet.titleBlock.disclaimer.length > 0);
   check("có ít nhất 1 wall exterior", sheet.floorPlan.walls.some((w) => w.type === "exterior"));
   check("có ít nhất 1 wall interior", sheet.floorPlan.walls.some((w) => w.type === "interior"));
@@ -93,6 +104,15 @@ try {
   const svg = renderFloorPlanToSvg(sheet);
   check("SVG sinh được, không rỗng", svg.includes("<svg") && svg.length > 200);
   check("SVG có vẽ cửa (không chỉ tường liền mạch)", svg.includes("stroke-dasharray"));
+  // Stage 1.6, Task 4 — cửa phải có lá cửa (line) + vòng cung mở (path arc),
+  // và số đoạn wall phải NHIỀU HƠN số wall gốc (đã bị cắt khe hở tại cửa).
+  check("SVG có vẽ vòng cung mở cửa (path arc)", svg.includes("<path"));
+  const wallSegmentCount = (svg.match(/stroke-width="(3|1\.5)"/g) ?? []).length;
+  check(
+    "Wall bị cắt khe hở tại vị trí cửa (nhiều đoạn hơn số wall + door)",
+    wallSegmentCount > sheet.floorPlan.walls.length,
+    `${wallSegmentCount} đoạn vs ${sheet.floorPlan.walls.length} wall gốc`,
+  );
 
   // Cùng input -> cùng hình học (Deterministic — bất biến bắt buộc).
   const second = generateConceptDrawing(constraintSet, "Simple House Demo");

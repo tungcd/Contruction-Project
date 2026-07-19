@@ -1,5 +1,6 @@
 import type { DrawingSheet, FloorPlanView } from "./drawingDocument";
 import type { Door } from "./door";
+import type { Wall } from "./wall";
 
 /**
  * SVG Renderer — hàm thuần, sinh chuỗi SVG thô (không phải React
@@ -8,34 +9,81 @@ import type { Door } from "./door";
  * tái dùng pattern Proposal Task 3, KHÔNG dựng renderer PDF riêng).
  *
  * Chỉ module NÀY được biết pixel (SCALE/MARGIN) — mọi input đều ở đơn
- * vị mét, đúng Coordinate & Unit Contract (xem geometry.ts).
+ * vị mét, đúng Coordinate & Unit Contract (xem geometry.ts). SVG dùng
+ * `viewBox` + `width="100%"` (Stage 1.6, Task 5) — không phụ thuộc
+ * canvas pixel cố định, co giãn theo khung chứa (web hoặc trang in).
  */
 
-const SCALE = 30; // px / m
+const SCALE = 30; // px / m (chỉ ảnh hưởng toạ độ NỘI BỘ viewBox, không phải kích thước hiển thị thật)
 const MARGIN = 60; // px — chỗ cho dimension + title block
 
 function esc(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-function doorSegment(door: Door, floorPlan: FloorPlanView, toPx: (m: number) => number): string {
-  const wall = floorPlan.walls.find((w) => w.id === door.wallId);
-  if (!wall) return "";
+interface DoorOnWall {
+  door: Door;
+  offsetStart: number; // dọc theo wall, từ wall.start
+  offsetEnd: number;
+}
+
+function doorsOnWall(wall: Wall, doors: Door[]): DoorOnWall[] {
+  return doors
+    .filter((d) => d.wallId === wall.id)
+    .map((d) => ({ door: d, offsetStart: d.offset - d.width / 2, offsetEnd: d.offset + d.width / 2 }))
+    .sort((a, b) => a.offsetStart - b.offsetStart);
+}
+
+/**
+ * Stage 1.6, Task 4 — wall phải THỰC SỰ có khe hở tại vị trí cửa (không
+ * chỉ đè 1 đoạn màu trắng lên tường liền mạch như Stage 1.5). Trả về
+ * các đoạn "đặc" (solid) còn lại sau khi trừ đi các khoảng cửa.
+ */
+function wallSolidSegments(wall: Wall, doors: Door[]): { start: { x: number; y: number }; end: { x: number; y: number } }[] {
+  const length = Math.hypot(wall.end.x - wall.start.x, wall.end.y - wall.start.y);
+  if (length === 0) return [];
+  const dirX = (wall.end.x - wall.start.x) / length;
+  const dirY = (wall.end.y - wall.start.y) / length;
+  const pointAt = (offset: number) => ({ x: wall.start.x + dirX * offset, y: wall.start.y + dirY * offset });
+
+  const gaps = doorsOnWall(wall, doors);
+  const segments: { start: { x: number; y: number }; end: { x: number; y: number } }[] = [];
+  let cursor = 0;
+  for (const gap of gaps) {
+    if (gap.offsetStart > cursor) segments.push({ start: pointAt(cursor), end: pointAt(gap.offsetStart) });
+    cursor = Math.max(cursor, gap.offsetEnd);
+  }
+  if (cursor < length) segments.push({ start: pointAt(cursor), end: pointAt(length) });
+  return segments;
+}
+
+/** Ký hiệu cửa: đoạn cắt (đã xử lý ở wallSolidSegments) + lá cửa + vòng cung mở 90°. */
+function doorSymbol(door: Door, wall: Wall, toPx: (m: number) => number): string {
   const length = Math.hypot(wall.end.x - wall.start.x, wall.end.y - wall.start.y);
   if (length === 0) return "";
   const dirX = (wall.end.x - wall.start.x) / length;
   const dirY = (wall.end.y - wall.start.y) / length;
-  const half = door.width / 2;
-  const cx = wall.start.x + dirX * door.offset;
-  const cy = wall.start.y + dirY * door.offset;
-  const p1 = { x: cx - dirX * half, y: cy - dirY * half };
-  const p2 = { x: cx + dirX * half, y: cy + dirY * half };
-  // Đè 1 đoạn trắng lên wall để tạo khe hở, rồi vẽ 1 đường nét đứt xanh
-  // đánh dấu vị trí cửa — đơn giản, không cần ký hiệu vòng cung mở cửa
-  // (swingDirection là optional ở Stage 1.5, chưa implement).
+  // Vuông góc với wall — quy ước cố định (xoay 90° ngược chiều kim đồng
+  // hồ). Đơn giản hoá có chủ đích: KHÔNG thêm hingeSide/swingDirection
+  // vào Door domain model (giữ nguyên như đã chốt) — renderer tự chọn 1
+  // quy ước hiển thị nhất quán, không lưu lại quyết định này ở domain.
+  const perpX = -dirY;
+  const perpY = dirX;
+
+  const hingeOffset = door.offset - door.width / 2;
+  const openOffset = door.offset + door.width / 2;
+  const hinge = { x: wall.start.x + dirX * hingeOffset, y: wall.start.y + dirY * hingeOffset };
+  const openEnd = { x: wall.start.x + dirX * openOffset, y: wall.start.y + dirY * openOffset };
+  const leafEnd = { x: hinge.x + perpX * door.width, y: hinge.y + perpY * door.width };
+
+  const hingePx = { x: toPx(hinge.x), y: toPx(hinge.y) };
+  const leafPx = { x: toPx(leafEnd.x), y: toPx(leafEnd.y) };
+  const openPx = { x: toPx(openEnd.x), y: toPx(openEnd.y) };
+  const radiusPx = door.width * SCALE;
+
   return `
-    <line x1="${toPx(p1.x)}" y1="${toPx(p1.y)}" x2="${toPx(p2.x)}" y2="${toPx(p2.y)}" stroke="#ffffff" stroke-width="5" />
-    <line x1="${toPx(p1.x)}" y1="${toPx(p1.y)}" x2="${toPx(p2.x)}" y2="${toPx(p2.y)}" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="3,2" />
+    <line x1="${hingePx.x}" y1="${hingePx.y}" x2="${leafPx.x}" y2="${leafPx.y}" stroke="#374151" stroke-width="1.5" />
+    <path d="M ${leafPx.x} ${leafPx.y} A ${radiusPx} ${radiusPx} 0 0 1 ${openPx.x} ${openPx.y}" fill="none" stroke="#9ca3af" stroke-width="1" stroke-dasharray="2,2" />
   `;
 }
 
@@ -64,19 +112,27 @@ export function renderFloorPlanToSvg(sheet: DrawingSheet): string {
     })
     .join("");
 
-  // Exterior: đen, dày (3px). Interior: xám, mảnh (1.5px) — phân biệt
-  // được cả bằng màu lẫn độ dày (Stage 1.5 Task 5 — trước đó chỉ khác
-  // độ dày, cùng màu, khó phân biệt khi thu nhỏ/in đen trắng nhạt).
+  // Exterior: đen, dày (3px). Interior: xám, mảnh (1.5px) — phân biệt cả
+  // màu lẫn độ dày. Mỗi wall được cắt thành nhiều đoạn "đặc" quanh vị
+  // trí cửa (Stage 1.6, Task 4) — không còn là 1 đường liền bị đè màu.
   const wallLines = floorPlan.walls
-    .map((w) => {
+    .flatMap((w) => {
       const isExterior = w.type === "exterior";
       const strokeWidth = isExterior ? 3 : 1.5;
       const stroke = isExterior ? "#111827" : "#6b7280";
-      return `<line x1="${toPx(w.start.x)}" y1="${toPx(w.start.y)}" x2="${toPx(w.end.x)}" y2="${toPx(w.end.y)}" stroke="${stroke}" stroke-width="${strokeWidth}" />`;
+      return wallSolidSegments(w, floorPlan.doors).map(
+        (seg) =>
+          `<line x1="${toPx(seg.start.x)}" y1="${toPx(seg.start.y)}" x2="${toPx(seg.end.x)}" y2="${toPx(seg.end.y)}" stroke="${stroke}" stroke-width="${strokeWidth}" />`,
+      );
     })
     .join("");
 
-  const doorLines = floorPlan.doors.map((d) => doorSegment(d, floorPlan, toPx)).join("");
+  const doorSymbols = floorPlan.doors
+    .map((d) => {
+      const wall = floorPlan.walls.find((w) => w.id === d.wallId);
+      return wall ? doorSymbol(d, wall, toPx) : "";
+    })
+    .join("");
 
   const dimensionLines = floorPlan.dimensions
     .map((d) => {
@@ -97,12 +153,12 @@ export function renderFloorPlanToSvg(sheet: DrawingSheet): string {
     .map((w, i) => `<text x="${MARGIN}" y="${height - 90 + i * 14}" font-size="10" fill="#b45309">⚠ ${esc(w)}</text>`)
     .join("");
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet">
     <rect x="0" y="0" width="${width}" height="${height}" fill="#ffffff" />
     ${dimensionLines}
     ${roomRects}
     ${wallLines}
-    ${doorLines}
+    ${doorSymbols}
     ${warningsText}
     <text x="${MARGIN}" y="${height - 40}" font-size="11" font-weight="600">${esc(titleBlock.projectName)} — Mặt bằng tầng (Concept)</text>
     <text x="${MARGIN}" y="${height - 24}" font-size="9" fill="#666">${esc(titleBlock.scale)} — Lập ngày ${new Date(titleBlock.generatedAt).toLocaleDateString("vi-VN")}</text>

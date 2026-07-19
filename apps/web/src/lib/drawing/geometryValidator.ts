@@ -3,6 +3,7 @@ import { GEOMETRY_EPS, type Geometry, type GeometrySpace } from "./geometry";
 import type { LayoutGraph } from "./layoutGraph";
 import type { Wall } from "./wall";
 import type { Door } from "./door";
+import { aspectRatioOf, constraintFor } from "./roomConstraints";
 
 /**
  * Geometry Validation — tái dùng quy tắc đã spec ở Golden Contract #6/#7
@@ -13,6 +14,8 @@ import type { Door } from "./door";
 export interface GeometryValidationResult {
   passed: boolean;
   errors: string[];
+  /** Stage 1.6, Task 2 — vi phạm preferred (không phải hard) aspect ratio: vẫn PASS, chỉ cảnh báo. */
+  warnings: string[];
 }
 
 // Cố ý KHÁC GEOMETRY_EPS (1e-6, dùng cho so sánh toạ độ bằng nhau tuyệt
@@ -49,6 +52,7 @@ export function validateGeometry(
   constraintSet: ConstraintSet,
 ): GeometryValidationResult {
   const errors: string[] = [];
+  const warnings: string[] = [];
 
   for (const floor of geometry.floors) {
     const { spaces } = floor;
@@ -67,6 +71,36 @@ export function validateGeometry(
       }
       if (Math.max(...ys) > layoutGraph.envelope.depth + AREA_EPS) {
         errors.push(`Phòng "${s.id}" vượt quá chiều sâu đất (${layoutGraph.envelope.depth}m).`);
+      }
+
+      // 1b. Room Geometry Constraint (Stage 1.6, Task 2) — chặn hình học
+      //     "khe hẹp" phi lý (vd WC 1.2x5.1m phát hiện ở Stage 1.5).
+      //     minWidth/minDepth/hardAspectRatioMax vi phạm -> fail cứng.
+      //     Ngoài preferred (nhưng trong hard) -> chỉ cảnh báo, vẫn pass.
+      const constraint = constraintFor(s.type);
+      if (constraint) {
+        const width = Math.max(...xs) - Math.min(...xs);
+        const depth = Math.max(...ys) - Math.min(...ys);
+        if (width < constraint.minWidth - AREA_EPS) {
+          errors.push(
+            `Phòng "${s.id}" (${s.type}) rộng ${width.toFixed(2)}m — nhỏ hơn tối thiểu ${constraint.minWidth}m.`,
+          );
+        }
+        if (depth < constraint.minDepth - AREA_EPS) {
+          errors.push(
+            `Phòng "${s.id}" (${s.type}) sâu ${depth.toFixed(2)}m — nhỏ hơn tối thiểu ${constraint.minDepth}m.`,
+          );
+        }
+        const ratio = aspectRatioOf(width, depth);
+        if (ratio > constraint.hardAspectRatioMax + AREA_EPS) {
+          errors.push(
+            `Phòng "${s.id}" (${s.type}) tỷ lệ khung hình ${ratio.toFixed(2)}:1 — vượt ngưỡng cứng ${constraint.hardAspectRatioMax}:1 (hình "khe hẹp" phi lý).`,
+          );
+        } else if (ratio > constraint.preferredAspectRatioMax + AREA_EPS) {
+          warnings.push(
+            `Phòng "${s.id}" (${s.type}) tỷ lệ khung hình ${ratio.toFixed(2)}:1 — ngoài khoảng ưu tiên (tối đa ${constraint.preferredAspectRatioMax}:1), vẫn trong giới hạn chấp nhận được.`,
+          );
+        }
       }
     }
 
@@ -188,5 +222,5 @@ export function validateGeometry(
     );
   }
 
-  return { passed: errors.length === 0, errors };
+  return { passed: errors.length === 0, errors, warnings };
 }

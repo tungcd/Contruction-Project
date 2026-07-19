@@ -80,19 +80,36 @@ export function generateDesignIntentGraph(
     lastHub = "kitchen";
   }
 
+  // Tầng private/service (bedroom + wc) — CÙNG priority ở Layout Graph
+  // (xem layoutGraph.ts), Geometry Solver xếp chúng vào 1 dải: 1 phòng
+  // nặng nhất đứng riêng 1 cột (luôn chạm hub phía trước), phòng đầu
+  // tiên của nhóm còn lại CŨNG chạm hub (đầu cột thứ 2), các phòng sau
+  // đó trong cột thứ 2 chỉ chạm phòng liền trước (xếp chồng theo chiều
+  // sâu, không chạm lại hub) — xem geometry.ts `placeTierRow`. Vì vậy ở
+  // đây KHÔNG thể nối mọi phòng thẳng tới hub như 1 ngôi sao — phải khai
+  // báo đúng tô-pô sẽ thực sự đạt được về mặt hình học (Stage 1.6, sửa
+  // lỗi "kitchen-wc không có cạnh chung" phát hiện khi đổi thuật toán
+  // Stage 1.6 Task 3). Vì bedroom (weight 1.0) luôn nặng hơn wc (weight
+  // 0.5), phòng "nặng nhất" luôn là bedroom-1 khi có >=1 bedroom.
+  const privateServiceRooms: { id: string; type: string; zone: Zone; areaWeight: number }[] = [];
   const bedroomCount = spaces.bedrooms?.value ?? 0;
   for (let i = 1; i <= bedroomCount; i++) {
-    const id = `bedroom-${i}`;
-    designSpaces.push({ id, type: "bedroom", zone: "private", areaWeight: 1.0, facadeExposure: [] });
-    relationships.push({ type: "connection", from: lastHub, to: id });
+    privateServiceRooms.push({ id: `bedroom-${i}`, type: "bedroom", zone: "private", areaWeight: 1.0 });
   }
-
   const bathroomCount = spaces.bathrooms?.value ?? 0;
   for (let i = 1; i <= bathroomCount; i++) {
-    const id = `wc-${i}`;
-    designSpaces.push({ id, type: "wc", zone: "service", areaWeight: 0.5, facadeExposure: [] });
-    relationships.push({ type: "connection", from: lastHub, to: id });
+    privateServiceRooms.push({ id: `wc-${i}`, type: "wc", zone: "service", areaWeight: 0.5 });
   }
+
+  privateServiceRooms.forEach((room, index) => {
+    designSpaces.push({ ...room, facadeExposure: [] });
+    // Phòng nặng nhất (luôn ở index 0 vì bedroom được thêm trước, nặng
+    // hơn wc) và phòng đầu tiên của nhóm còn lại (index 1, nếu có) đều
+    // chạm hub. Từ index 2 trở đi: chạm phòng ngay trước nó, không chạm
+    // hub nữa (đúng thực tế cột 2 xếp chồng theo chiều sâu).
+    const from = index <= 1 ? lastHub : privateServiceRooms[index - 1].id;
+    relationships.push({ type: "connection", from, to: room.id });
+  });
 
   if ((spaces.otherRooms?.value?.length ?? 0) > 0) {
     warnings.push(

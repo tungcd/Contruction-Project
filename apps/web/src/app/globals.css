@@ -54,7 +54,10 @@
 }
 
 /**
- * Concept Drawing Stage 1 — cùng pattern .proposal-print-area, scope riêng.
+ * Concept Drawing Stage 1 — cùng pattern .proposal-print-area, scope
+ * riêng. Stage 1.6 Task 5: A4 tường minh, SVG (đã dùng viewBox +
+ * width="100%" — xem svgRenderer.ts) co giãn vừa khổ giấy, không phụ
+ * thuộc canvas pixel cố định.
  */
 @media print {
   .design-print-area {
@@ -65,5 +68,13 @@
     box-shadow: none !important;
     border: 1px solid #ddd !important;
     break-inside: avoid;
+  }
+  .design-print-area svg {
+    width: 100% !important;
+    height: auto !important;
+  }
+  @page {
+    size: A4 portrait;
+    margin: 15mm;
   }
 }

@@ -1,19 +1,20 @@
 /**
- * Sinh artifact có thể review được (Stage 1.5, Task 1) — không chỉ báo
- * cáo PASS/FAIL, mà xuất ra file thật để xem trực tiếp.
+ * Sinh artifact có thể review được (Stage 1.5/1.6, Task 1) — không chỉ
+ * báo cáo PASS/FAIL, mà xuất ra file thật để xem trực tiếp.
  *
  *   npm run drawing:artifacts
  *
  * Output: apps/web/demo-output/simple-house/
+ *
+ * Gọi ĐÚNG 1 entry point `generateConceptDrawing()` — không tự lặp lại
+ * chuỗi bước pipeline (bài học thật: bản trước của file này tự gọi lại
+ * generateLayout/deriveWalls/... riêng, và thiếu `validation.warnings`
+ * khi `generateDrawing.ts` được cập nhật — lỗi 2-nơi-cùng-1-logic).
  */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { RequirementSchema, compileRequirementToConstraintSet } from "@acc/shared-types";
-import { generateLayout } from "@/lib/drawing/layoutGenerator";
-import { deriveWalls } from "@/lib/drawing/wall";
-import { placeDoors } from "@/lib/drawing/door";
-import { validateGeometry } from "@/lib/drawing/geometryValidator";
-import { buildDrawingPackage } from "@/lib/drawing/drawingDocument";
+import { generateConceptDrawing } from "@/lib/drawing/generateDrawing";
 import { renderFloorPlanToSvg } from "@/lib/drawing/svgRenderer";
 
 const fixtureDir = path.join(
@@ -34,24 +35,19 @@ const rawRequirement = JSON.parse(readFileSync(path.join(fixtureDir, "requiremen
 const requirement = RequirementSchema.parse(rawRequirement);
 const constraintSet = compileRequirementToConstraintSet(requirement);
 
-const { templateId, layoutGraph, geometry, warnings } = generateLayout(constraintSet);
-const walls = deriveWalls(geometry);
-const { doors, warnings: doorWarnings } = placeDoors(layoutGraph, walls);
-const validation = validateGeometry(geometry, layoutGraph, walls, doors, constraintSet);
-const drawingPackage = buildDrawingPackage(
-  geometry,
-  walls,
-  doors,
+const { templateId, drawingPackage, validation, intermediates } = generateConceptDrawing(
+  constraintSet,
   "Simple House Demo",
-  [...warnings, ...doorWarnings, ...validation.errors],
-  layoutGraph.envelope,
 );
 
 writeFileSync(
   path.join(outDir, "simple-house-layout-graph.json"),
-  JSON.stringify(layoutGraph, null, 2),
+  JSON.stringify(intermediates.layoutGraph, null, 2),
 );
-writeFileSync(path.join(outDir, "simple-house-geometry.json"), JSON.stringify(geometry, null, 2));
+writeFileSync(
+  path.join(outDir, "simple-house-geometry.json"),
+  JSON.stringify(intermediates.geometry, null, 2),
+);
 writeFileSync(
   path.join(outDir, "simple-house-drawing-package.json"),
   JSON.stringify(drawingPackage, null, 2),
@@ -64,22 +60,32 @@ const printHtml = `<!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="utf-8" />
-<title>Simple House — Concept Drawing (Stage 1.5)</title>
+<title>Simple House — Concept Drawing (Stage 1.6)</title>
 <style>
-  body { margin: 0; padding: 24px; font-family: system-ui, sans-serif; }
-  @media print { body { padding: 0; } }
+  /* Stage 1.6, Task 5 — A4 tường minh, SVG co giãn theo viewBox (không
+     phụ thuộc canvas pixel cố định), không cắt nội dung. */
+  @page { size: A4 portrait; margin: 15mm; }
+  html, body { margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+  .sheet { padding: 24px; }
+  svg { width: 100%; height: auto; display: block; }
+  @media print {
+    .sheet { padding: 0; }
+  }
 </style>
 </head>
 <body>
+<div class="sheet">
 ${svg}
+</div>
 </body>
 </html>`;
 writeFileSync(path.join(outDir, "simple-house-floor-plan-print.html"), printHtml);
 
-const readme = `# Simple House — Concept Drawing Artifacts (Stage 1.5)
+const readme = `# Simple House — Concept Drawing Artifacts (Stage 1.6)
 
 Sinh bởi \`npm run drawing:artifacts\`. Template: \`${templateId}\`.
 Geometry validation: ${validation.passed ? "PASSED" : "FAILED — " + validation.errors.join("; ")}.
+${validation.warnings.length ? `Warnings (không chặn, vẫn PASS): ${validation.warnings.join(" | ")}` : ""}
 
 ## Files
 
@@ -103,3 +109,4 @@ console.log(`\nĐã sinh artifact tại: ${outDir}`);
 console.log(`Template: ${templateId}`);
 console.log(`Validation: ${validation.passed ? "PASSED" : "FAILED"}`);
 if (!validation.passed) console.log(validation.errors.join("\n"));
+if (validation.warnings.length) console.log(`Warnings: ${validation.warnings.join(" | ")}`);

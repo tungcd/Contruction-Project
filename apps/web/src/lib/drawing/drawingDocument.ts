@@ -91,13 +91,22 @@ function buildFloorPlan(
       return { id: s.id, type: s.type, label: labelFor(s, idx), areaM2: areaOf(s.polygon), polygon: s.polygon };
     });
 
+  // Stage 1.6, Task 6 (Visual QA) — phát hiện qua kiểm tra file
+  // drawing-package.json thật: khi 1 phòng chiếm TRỌN cạnh mặt tiền
+  // (vd "Phòng khách" ở tầng đầu), dimension riêng của nó trùng khít
+  // dimension tổng của envelope (cùng toạ độ, nhãn khác định dạng "6 m"
+  // vs "6.0 m") — 2 đường/2 label đè lên nhau khi vẽ. Bỏ dimension riêng
+  // của phòng nếu nó trùng đúng cạnh envelope, không vẽ trùng lặp.
+  const isRedundantWithEnvelope = (b: { x0: number; y0: number; x1: number }) =>
+    b.y0 === 0 && b.x0 === 0 && b.x1 === envelope.frontage;
+
   const dimensions: Dimension[] = [
     { from: { x: 0, y: 0 }, to: { x: envelope.frontage, y: 0 }, label: `${envelope.frontage} m` },
     { from: { x: 0, y: 0 }, to: { x: 0, y: envelope.depth }, label: `${envelope.depth} m` },
-    ...rooms.map((r) => {
-      const b = bboxOf(r.polygon);
-      return { from: { x: b.x0, y: b.y0 }, to: { x: b.x1, y: b.y0 }, label: `${(b.x1 - b.x0).toFixed(1)} m` };
-    }),
+    ...rooms
+      .map((r) => bboxOf(r.polygon))
+      .filter((b) => !isRedundantWithEnvelope(b))
+      .map((b) => ({ from: { x: b.x0, y: b.y0 }, to: { x: b.x1, y: b.y0 }, label: `${(b.x1 - b.x0).toFixed(1)} m` })),
   ];
 
   return { level: geometryFloor.level, rooms, walls: wallsOnFloor, doors: doorsOnFloor, dimensions, envelope };
