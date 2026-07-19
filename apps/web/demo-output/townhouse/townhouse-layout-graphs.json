@@ -44,7 +44,7 @@
         "id": "staircase",
         "type": "staircase",
         "floor": 0,
-        "priority": 9,
+        "priority": 2,
         "areaWeight": 0
       }
     ],
@@ -86,7 +86,7 @@
         "id": "staircase",
         "type": "staircase",
         "floor": 1,
-        "priority": 9,
+        "priority": 2,
         "areaWeight": 0
       },
       {
@@ -151,7 +151,7 @@
         "id": "staircase",
         "type": "staircase",
         "floor": 2,
-        "priority": 9,
+        "priority": 2,
         "areaWeight": 0
       },
       {
@@ -181,6 +181,20 @@
         "floor": 2,
         "priority": 2,
         "areaWeight": 0.5
+      },
+      {
+        "id": "worship-1",
+        "type": "worshipRoom",
+        "floor": 2,
+        "priority": 2,
+        "areaWeight": 0.7
+      },
+      {
+        "id": "balcony-1",
+        "type": "balcony",
+        "floor": 2,
+        "priority": 2,
+        "areaWeight": 0.3
       }
     ],
     "edges": [
@@ -203,6 +217,16 @@
         "type": "door",
         "from": "circulation",
         "to": "wc-3"
+      },
+      {
+        "type": "door",
+        "from": "circulation",
+        "to": "worship-1"
+      },
+      {
+        "type": "door",
+        "from": "circulation",
+        "to": "balcony-1"
       }
     ]
   }

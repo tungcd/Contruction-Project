@@ -17,7 +17,13 @@ const ROOM_LABEL: Record<string, string> = {
   entrance: "Lối vào",
   circulation: "Sảnh / Hành lang",
   staircase: "Cầu thang",
+  worshipRoom: "Phòng thờ",
+  balcony: "Ban công",
+  residual: "Không gian chưa phân bổ",
 };
+
+/** Loại không cần đánh số toàn nhà (Stage 2B, Task 6) — hạ tầng dùng chung, không phải phòng khách hàng đếm số lượng. */
+const NO_GLOBAL_NUMBERING_TYPES = new Set(["circulation", "staircase", "residual", "entrance"]);
 
 /** Stage 2A, Task 5 — tên tầng hiển thị trên title block/selector. */
 function floorLabel(level: number, floorCount: number): string {
@@ -26,9 +32,23 @@ function floorLabel(level: number, floorCount: number): string {
   return `Tầng ${level}`;
 }
 
-function labelFor(space: GeometrySpace, indexInType: number): string {
+/**
+ * Stage 2B, Task 6 — sửa lỗi thật: đánh số theo bộ đếm RIÊNG TỪNG TẦNG
+ * (typeCounter reset mỗi tầng) khiến `bedroom-3` (tầng 2, phòng ngủ đầu
+ * tiên NHÌN THẤY Ở TẦNG ĐÓ) hiển thị "Phòng ngủ" (không số) còn
+ * `bedroom-4` hiển thị "Phòng ngủ 2" — số nhảy lộn xộn giữa các tầng.
+ * Sửa: lấy số thứ tự TỪ CHÍNH id (vd "bedroom-3" -> số 3) — id đã global
+ * duy nhất xuyên suốt toà nhà (do `floorAllocation.ts` đánh số), nên
+ * label cũng nhất quán xuyên suốt, không phụ thuộc thứ tự duyệt trong 1
+ * tầng. Hạ tầng dùng chung (circulation/staircase/residual/entrance)
+ * không đánh số (không cần, luôn chỉ có 1 cái/tầng).
+ */
+function labelFor(space: GeometrySpace): string {
   const base = ROOM_LABEL[space.type] ?? space.type;
-  return indexInType > 0 ? `${base} ${indexInType + 1}` : base;
+  if (NO_GLOBAL_NUMBERING_TYPES.has(space.type)) return base;
+  const match = space.id.match(/-(\d+)$/);
+  if (!match) return base;
+  return `${base} ${match[1]}`;
 }
 
 function bboxOf(polygon: Point[]) {
@@ -100,14 +120,9 @@ function buildFloorPlan(
   envelope: { frontage: number; depth: number },
   floorCount: number,
 ): FloorPlanView {
-  const typeCounter = new Map<string, number>();
   const rooms: FloorPlanRoom[] = geometryFloor.spaces
     .filter((s) => s.type !== "entrance") // entrance không có diện tích, không vẽ như 1 phòng
-    .map((s) => {
-      const idx = typeCounter.get(s.type) ?? 0;
-      typeCounter.set(s.type, idx + 1);
-      return { id: s.id, type: s.type, label: labelFor(s, idx), areaM2: areaOf(s.polygon), polygon: s.polygon };
-    });
+    .map((s) => ({ id: s.id, type: s.type, label: labelFor(s), areaM2: areaOf(s.polygon), polygon: s.polygon }));
 
   // Stage 1.6, Task 6 (Visual QA) — phát hiện qua kiểm tra file
   // drawing-package.json thật: khi 1 phòng chiếm TRỌN cạnh mặt tiền
@@ -140,6 +155,12 @@ function buildFloorPlan(
   };
 }
 
+/** Stage 2B, Task 8 — cảnh báo gắn tiền tố "[Tầng N]" (xem generateDrawing.ts) chỉ hiện trên ĐÚNG sheet đó; cảnh báo KHÔNG có tiền tố tầng nào (heuristic phân bổ tầng, v.v.) coi là toàn nhà, hiện trên mọi sheet. */
+function warningsForFloor(allWarnings: string[], level: number): string[] {
+  const floorTagPattern = /^\[Tầng \d+\]/;
+  return allWarnings.filter((w) => !floorTagPattern.test(w) || w.startsWith(`[Tầng ${level}]`));
+}
+
 export function buildDrawingPackage(
   geometry: Geometry,
   walls: Wall[],
@@ -154,6 +175,15 @@ export function buildDrawingPackage(
   const sheets: DrawingSheet[] = geometry.floors.map((floor) => {
     const wallsOnFloor = walls.filter((w) => w.id.startsWith(`wall-${floor.level}-`));
     const wallIdsOnFloor = new Set(wallsOnFloor.map((w) => w.id));
+    const floorPlan = buildFloorPlan(
+      floor,
+      wallsOnFloor,
+      doors.filter((d) => wallIdsOnFloor.has(d.wallId)),
+      windows.filter((w) => wallIdsOnFloor.has(w.wallId)),
+      envelope,
+      floorCount,
+    );
+
     const assumptions = [
       "Tỷ lệ diện tích từng phòng theo công thức mặc định, chưa qua kiến trúc sư duyệt.",
       "Vị trí cửa lấy tâm mỗi wall, chưa tối ưu theo lối đi thực tế.",
@@ -161,19 +191,25 @@ export function buildDrawingPackage(
     ];
     if (floorCount > 1) {
       assumptions.push(
-        "Nhà nhiều tầng: cầu thang đặt cố định 1 vị trí (chiều rộng = trọn mặt tiền, chiều sâu 3.0m) ở cuối mỗi tầng để đảm bảo thẳng hàng giữa các tầng — đơn giản hoá, chưa phải kích thước cầu thang thực tế.",
-        "Phân bổ phòng theo tầng dùng heuristic mặc định (xem ghi chú ở đầu warnings) — chưa qua kiến trúc sư duyệt.",
+        "Nhà nhiều tầng: cầu thang đặt cố định 1 vị trí (rộng 2.0m x sâu 4.0m ~ 8m², góc phải sau) ở cuối mỗi tầng để đảm bảo thẳng hàng giữa các tầng — kích thước mẫu cho bản demo, chưa phải tính toán cầu thang thực tế.",
+        "Phân bổ phòng theo tầng dùng heuristic mặc định (xem warnings) — chưa qua kiến trúc sư duyệt.",
       );
     }
+    // Task 8 — giả định gắn ĐÚNG tầng có phòng đó, không lặp lại ở mọi sheet.
+    if (floorPlan.rooms.some((r) => r.type === "worshipRoom")) {
+      assumptions.push("Phòng thờ đặt ở tầng này theo heuristic mặc định (tầng trên cùng) — chưa qua kiến trúc sư duyệt vị trí phong thuỷ/tâm linh.");
+    }
+    if (floorPlan.rooms.some((r) => r.type === "balcony")) {
+      assumptions.push("Ban công thể hiện dạng ban công lõm vào trong (inset) ở mặt tiền tầng này — mô hình sơ bộ, chưa tính công-xôn/kết cấu.");
+    }
+    if (floorPlan.rooms.some((r) => r.type === "residual")) {
+      assumptions.push(
+        "Còn diện tích chưa được phân bổ vào phòng nào cụ thể ở tầng này (hiển thị là \"Không gian chưa phân bổ\") — cần khách hàng/kiến trúc sư xác nhận công năng, KHÔNG tự ý gán cho 1 phòng nào.",
+      );
+    }
+
     return {
-      floorPlan: buildFloorPlan(
-        floor,
-        wallsOnFloor,
-        doors.filter((d) => wallIdsOnFloor.has(d.wallId)),
-        windows.filter((w) => wallIdsOnFloor.has(w.wallId)),
-        envelope,
-        floorCount,
-      ),
+      floorPlan,
       titleBlock: {
         projectName,
         scale: "NOT TO SCALE",
@@ -182,7 +218,7 @@ export function buildDrawingPackage(
         floorLabel: floorLabel(floor.level, floorCount),
         floorLevel: floor.level,
       },
-      warnings,
+      warnings: warningsForFloor(warnings, floor.level),
       assumptions,
     };
   });

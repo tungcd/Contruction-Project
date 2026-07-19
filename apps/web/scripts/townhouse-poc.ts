@@ -1,6 +1,6 @@
 /**
- * Manual POC — Concept Drawing Stage 2A (Multi-Floor Townhouse and
- * Stair Core POC).
+ * Manual POC — Concept Drawing Stage 2A/2B (Multi-Floor Townhouse,
+ * Stair Core, Program Completeness and Layout Quality).
  *
  *   npm run poc:townhouse
  *
@@ -136,7 +136,79 @@ try {
   const same = JSON.stringify(drawingPackage.sheets.map((s) => s.floorPlan.rooms)) === JSON.stringify(second.drawingPackage.sheets.map((s) => s.floorPlan.rooms));
   check("deterministic — chạy lại cho cùng hình học", same);
 
-  // 9. Regression Stage 1: assert không phá simple-house (kiểm nhanh qua poc:drawing riêng, không lặp lại ở đây).
+  // --- Stage 2B ---
+
+  // 9. Phòng thờ (nhận diện từ otherRooms "phòng thờ ông bà") và ban
+  //    công (yêu cầu tường minh) phải được phân bổ ĐÚNG 1 LẦN.
+  check(
+    "phòng thờ được phân bổ đúng 1 lần",
+    allRooms.filter((r) => r.type === "worshipRoom").length === 1,
+    `thực tế: ${allRooms.filter((r) => r.type === "worshipRoom").length}`,
+  );
+  check(
+    "ban công được phân bổ đúng 1 lần",
+    allRooms.filter((r) => r.type === "balcony").length === 1,
+    `thực tế: ${allRooms.filter((r) => r.type === "balcony").length}`,
+  );
+
+  // 10. "phòng đọc sách" (excludedRooms) không được xuất hiện dưới bất kỳ hình thức nào.
+  const allWarningsText = drawingPackage.sheets.flatMap((s) => s.warnings).join(" | ");
+  check(
+    "phòng đọc sách (excluded) không xuất hiện như 1 phòng",
+    !allRooms.some((r) => r.label.includes("đọc sách")),
+  );
+  check(
+    "phòng đọc sách vẫn được ghi nhận là loại trừ trong warnings",
+    allWarningsText.includes("phòng đọc sách"),
+  );
+
+  // 11. Không phòng WC/bedroom tiêu chuẩn nào vượt hardAreaMax.
+  const wcRooms = allRooms.filter((r) => r.type === "wc");
+  const bedroomRooms = allRooms.filter((r) => r.type === "bedroom");
+  check(
+    "không WC nào vượt hardAreaMax (7m²)",
+    wcRooms.every((r) => r.areaM2 <= 7 + 0.01),
+    wcRooms.map((r) => `${r.id}=${r.areaM2.toFixed(2)}`).join(", "),
+  );
+  check(
+    "không phòng ngủ nào vượt hardAreaMax (22m²)",
+    bedroomRooms.every((r) => r.areaM2 <= 22 + 0.01),
+    bedroomRooms.map((r) => `${r.id}=${r.areaM2.toFixed(2)}`).join(", "),
+  );
+
+  // 12. StaircaseCore tôn trọng khoảng rộng/diện tích đã yêu cầu (1.8-2.4m / 6-10m²).
+  if (staircaseCore) {
+    check(
+      "StaircaseCore rộng trong khoảng 1.8-2.4m",
+      staircaseCore.width >= 1.8 - 0.01 && staircaseCore.width <= 2.4 + 0.01,
+      `${staircaseCore.width}`,
+    );
+    const stairArea = drawingPackage.sheets[0].floorPlan.rooms.find((r) => r.type === "staircase")?.areaM2 ?? 0;
+    check("StaircaseCore diện tích trong khoảng 6-10m²", stairArea >= 6 - 0.01 && stairArea <= 10 + 0.01, `${stairArea}`);
+  }
+
+  // 13. Diện tích dư (residual) phải TƯỜNG MINH (có type "residual"), không bị âm thầm nuốt vào phòng khác.
+  const residualRooms = allRooms.filter((r) => r.type === "residual");
+  check("có residual space tường minh (không silent-absorb)", residualRooms.length > 0, `số lượng: ${residualRooms.length}`);
+  check(
+    "residual không tính vào số phòng ngủ/WC bắt buộc",
+    !residualRooms.some((r) => r.label.includes("Phòng ngủ") || r.label.includes("WC")),
+  );
+
+  // 14. Nhãn phòng ngủ/WC giữ số thứ tự TOÀN NHÀ (không reset theo tầng — bug thật Stage 2A).
+  const bedroomLabelsByFloor = drawingPackage.sheets.map((s) => s.floorPlan.rooms.filter((r) => r.type === "bedroom").map((r) => r.label));
+  check(
+    "nhãn phòng ngủ đúng thứ tự toàn nhà (không reset mỗi tầng)",
+    JSON.stringify(bedroomLabelsByFloor[1]) === JSON.stringify(["Phòng ngủ 1", "Phòng ngủ 2"]) &&
+      JSON.stringify(bedroomLabelsByFloor[2]) === JSON.stringify(["Phòng ngủ 3", "Phòng ngủ 4"]),
+    JSON.stringify(bedroomLabelsByFloor),
+  );
+
+  // 15. Warnings không phụ thuộc glyph Unicode không nhất quán giữa renderer.
+  check("warnings không dùng ký hiệu ⚠ (SVG dùng text tất định thay thế)", !svgs.some((svg) => svg.includes("⚠")));
+  check("SVG dùng marker cảnh báo tất định (CẢNH BÁO:)", svgs.some((svg) => svg.includes("CẢNH BÁO:")) || drawingPackage.sheets.every((s) => s.warnings.length === 0));
+
+  // 16. Regression Stage 1: assert không phá simple-house (kiểm nhanh qua poc:drawing riêng, không lặp lại ở đây).
 } catch (err) {
   console.log(`  FAIL  (crash) ${(err as Error).message}`);
   total++;

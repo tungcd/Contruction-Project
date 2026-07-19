@@ -56,7 +56,7 @@ export function generateConceptDrawing(
     const wallsOnFloor = walls.filter((w) => w.id.startsWith(`wall-${level}-`));
     const result = placeDoors(layoutGraph, wallsOnFloor, `f${level}-`);
     doors.push(...result.doors);
-    doorWarnings.push(...result.warnings);
+    doorWarnings.push(...result.warnings.map((w) => `[Tầng ${level}] ${w}`));
   }
   const { windows, warnings: windowWarnings } = placeWindows(geometry, walls, doors, layoutGraphs[0].envelope);
 

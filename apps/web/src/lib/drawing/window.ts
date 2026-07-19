@@ -104,7 +104,7 @@ export function placeWindows(
 
       const touch = findExteriorTouch(room, envelope, wallsOnThisFloor);
       if (!touch) {
-        warnings.push(`Phòng "${room.id}" không có cạnh nào chạm tường ngoài — không đặt được cửa sổ.`);
+        warnings.push(`[Tầng ${floor.level}] Phòng "${room.id}" không có cạnh nào chạm tường ngoài — không đặt được cửa sổ.`);
         continue;
       }
       const { wall, rangeStart, rangeEnd } = touch;
@@ -112,14 +112,14 @@ export function placeWindows(
       const rangeLength = rangeEnd - rangeStart;
       const width = Math.min(STANDARD_WINDOW_WIDTH, Math.max(0, rangeLength - 2 * MIN_CLEARANCE));
       if (width <= 0) {
-        warnings.push(`Phòng "${room.id}" không còn đủ chỗ trên tường ngoài để đặt cửa sổ (đã kín bởi cửa đi).`);
+        warnings.push(`[Tầng ${floor.level}] Phòng "${room.id}" không còn đủ chỗ trên tường ngoài để đặt cửa sổ (đã kín bởi cửa đi).`);
         continue;
       }
 
       const candidateCenters = [0.5, 0.25, 0.75].map((f) => rangeStart + rangeLength * f);
       const center = candidateCenters.find((c) => fitsFree(c - width / 2, c + width / 2, occupied));
       if (center === undefined) {
-        warnings.push(`Phòng "${room.id}" không tìm được vị trí cửa sổ không chồng cửa đi trên cùng tường.`);
+        warnings.push(`[Tầng ${floor.level}] Phòng "${room.id}" không tìm được vị trí cửa sổ không chồng cửa đi trên cùng tường.`);
         continue;
       }
 

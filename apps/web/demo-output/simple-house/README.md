@@ -3,7 +3,7 @@
 Sinh bởi `npm run drawing:artifacts`. Template: `townhouse-multi-floor-v1`.
 Số tầng / sheet: 1.
 Geometry validation: PASSED.
-Warnings (không chặn, vẫn PASS): [Tầng 0] Phòng "living" (living) tỷ lệ khung hình 2.10:1 — ngoài khoảng ưu tiên (tối đa 1.8:1), vẫn trong giới hạn chấp nhận được. | [Tầng 0] Phòng "bedroom-1" (bedroom) tỷ lệ khung hình 1.90:1 — ngoài khoảng ưu tiên (tối đa 1.5:1), vẫn trong giới hạn chấp nhận được.
+Warnings (không chặn, vẫn PASS): [Tầng 0] Phòng "living" (living) tỷ lệ khung hình 2.10:1 — ngoài khoảng ưu tiên (tối đa 1.8:1), vẫn trong giới hạn chấp nhận được. | [Tầng 0] Phòng "living" (living) diện tích 17.14m² — nhỏ hơn khoảng ưu tiên (tối thiểu 18m²), vẫn trong giới hạn chấp nhận được. | [Tầng 0] Phòng "kitchen" (kitchen) diện tích 8.93m² — nhỏ hơn khoảng ưu tiên (tối thiểu 10m²), vẫn trong giới hạn chấp nhận được. | [Tầng 0] Phòng "bedroom-2" (bedroom) diện tích 8.93m² — nhỏ hơn khoảng ưu tiên (tối thiểu 9m²), vẫn trong giới hạn chấp nhận được. | [Tầng 0] Phòng "bedroom-1" (bedroom) tỷ lệ khung hình 1.90:1 — ngoài khoảng ưu tiên (tối đa 1.5:1), vẫn trong giới hạn chấp nhận được.
 Staircase: không áp dụng (nhà 1 tầng).
 
 ## Files

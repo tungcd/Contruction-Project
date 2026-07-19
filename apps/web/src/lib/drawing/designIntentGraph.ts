@@ -97,6 +97,15 @@ function buildFloorDesignIntent(
   if (floorAlloc.hasKitchen) attachments.push({ id: "kitchen", type: "kitchen", zone: "public", areaWeight: 1.0 });
   for (const id of floorAlloc.bedroomIds) attachments.push({ id, type: "bedroom", zone: "private", areaWeight: 1.0 });
   for (const id of floorAlloc.bathroomIds) attachments.push({ id, type: "wc", zone: "service", areaWeight: 0.5 });
+  // Stage 2B, Task 1/2 — phòng thờ (nhận diện từ otherRooms qua
+  // roomProgramNormalizer.ts) và ban công (yêu cầu tường minh) giờ là
+  // yêu cầu CHÍNH THỨC phải phân bổ, không chỉ cảnh báo.
+  if (floorAlloc.hasWorshipRoom) {
+    attachments.push({ id: "worship-1", type: "worshipRoom", zone: "semiPrivate", areaWeight: 0.7 });
+  }
+  if (floorAlloc.hasBalcony) {
+    attachments.push({ id: "balcony-1", type: "balcony", zone: "public", areaWeight: 0.3 });
+  }
   if (floorAlloc.hasEntrance && hasStaircaseUp) {
     attachments.push({ id: STAIRCASE_TYPE, type: STAIRCASE_TYPE, zone: "circulation", areaWeight: 0 });
   }
@@ -152,11 +161,11 @@ export function generateDesignIntentGraph(
     verticalConnections.push({ staircaseId: STAIRCASE_TYPE, fromLevel: level, toLevel: level + 1 });
   }
 
-  if ((spaces.otherRooms?.value?.length ?? 0) > 0) {
-    warnings.push(
-      `Chưa hỗ trợ đặt vị trí cho phòng tự do: ${spaces.otherRooms!.value.join(", ")} — chưa xuất hiện trong bản vẽ.`,
-    );
-  }
+  // otherRooms: phần NHẬN DIỆN được (vd "phòng thờ ông bà" -> worshipRoom)
+  // đã trở thành yêu cầu chính thức ở buildFloorDesignIntent() phía trên;
+  // phần KHÔNG nhận diện được đã cảnh báo trong `allocation.assumptions`
+  // (xem floorAllocation.ts) — không lặp lại cảnh báo ở đây nữa (Stage
+  // 2B, Task 1 — sửa lỗi báo "chưa xuất hiện" cho phòng ĐÃ được xử lý).
   if ((spaces.excludedRooms?.value?.length ?? 0) > 0) {
     warnings.push(`Ghi nhận loại trừ (chưa cần xử lý hình học): ${spaces.excludedRooms!.value.join(", ")}.`);
   }

@@ -3,8 +3,8 @@
 Sinh bởi `npm run drawing:artifacts`. Template: `townhouse-multi-floor-v1`.
 Số tầng / sheet: 3.
 Geometry validation: PASSED.
-
-Staircase: thẳng hàng ở các tầng [0, 1, 2], rộng 5.00m.
+Warnings (không chặn, vẫn PASS): [Tầng 0] Phòng "wc-1" (wc) tỷ lệ khung hình 2.50:1 — ngoài khoảng ưu tiên (tối đa 1.8:1), vẫn trong giới hạn chấp nhận được. | [Tầng 0] Phòng "wc-1" (wc) diện tích 6.40m² — ngoài khoảng ưu tiên (tối đa 6m²), vẫn trong giới hạn chấp nhận được. | [Tầng 1] Phòng "wc-2" (wc) tỷ lệ khung hình 2.50:1 — ngoài khoảng ưu tiên (tối đa 1.8:1), vẫn trong giới hạn chấp nhận được. | [Tầng 1] Phòng "wc-2" (wc) diện tích 6.40m² — ngoài khoảng ưu tiên (tối đa 6m²), vẫn trong giới hạn chấp nhận được. | [Tầng 2] Phòng "wc-3" (wc) tỷ lệ khung hình 2.50:1 — ngoài khoảng ưu tiên (tối đa 1.8:1), vẫn trong giới hạn chấp nhận được. | [Tầng 2] Phòng "wc-3" (wc) diện tích 6.40m² — ngoài khoảng ưu tiên (tối đa 6m²), vẫn trong giới hạn chấp nhận được. | [Tầng 2] Phòng "balcony-1" (balcony) tỷ lệ khung hình 3.89:1 — ngoài khoảng ưu tiên (tối đa 3:1), vẫn trong giới hạn chấp nhận được.
+Staircase: thẳng hàng ở các tầng [0, 1, 2], rộng 2.00m.
 
 ## Files
 

@@ -69,6 +69,30 @@ export function validateAggregateRoomCounts(geometry: Geometry, constraintSet: C
   return errors;
 }
 
+/**
+ * Stage 2B, Task 9 — guard tường minh thay vì chỉ dựa vào quy ước gọi
+ * đúng (call-site convention): `validateGeometry` phải luôn nhận dữ
+ * liệu CỦA ĐÚNG 1 TẦNG. Trước đây (Stage 2A) đúng theo quy ước nhờ
+ * `generateDrawing.ts` luôn lọc trước khi gọi, nhưng không có gì CHẶN
+ * việc lỡ truyền LayoutGraph gộp nhiều tầng (id "circulation"/"staircase"
+ * lặp lại giữa các tầng có thể khiến kiểm tra door-wall consistency
+ * false-pass nhầm sang tầng khác — xem Completion Report Stage 2A, mục
+ * "Giới hạn còn lại").
+ */
+function assertSingleFloorScope(geometry: Geometry, layoutGraph: LayoutGraph, checkAggregateCounts: boolean): void {
+  const layoutFloorLevels = new Set(layoutGraph.nodes.map((n) => n.floor));
+  if (layoutFloorLevels.size > 1) {
+    throw new Error(
+      `validateGeometry() nhận LayoutGraph gộp nhiều tầng (${[...layoutFloorLevels].join(",")}) — phải gọi RIÊNG cho từng tầng (xem generateDrawing.ts).`,
+    );
+  }
+  if (!checkAggregateCounts && geometry.floors.length > 1) {
+    throw new Error(
+      `validateGeometry() với checkAggregateCounts=false phải nhận Geometry CHỈ 1 tầng (nhận ${geometry.floors.length} tầng) — lọc trước khi gọi.`,
+    );
+  }
+}
+
 export function validateGeometry(
   geometry: Geometry,
   layoutGraph: LayoutGraph,
@@ -78,6 +102,7 @@ export function validateGeometry(
   windows: Window[] = [],
   checkAggregateCounts = true,
 ): GeometryValidationResult {
+  assertSingleFloorScope(geometry, layoutGraph, checkAggregateCounts);
   const errors: string[] = [];
   const warnings: string[] = [];
 
@@ -126,6 +151,26 @@ export function validateGeometry(
         } else if (ratio > constraint.preferredAspectRatioMax + AREA_EPS) {
           warnings.push(
             `Phòng "${s.id}" (${s.type}) tỷ lệ khung hình ${ratio.toFixed(2)}:1 — ngoài khoảng ưu tiên (tối đa ${constraint.preferredAspectRatioMax}:1), vẫn trong giới hạn chấp nhận được.`,
+          );
+        }
+
+        // Stage 2B, Task 3 — giới hạn diện tích: aspect/minWidth/minDepth
+        // chặn được "khe hẹp" nhưng KHÔNG chặn phòng phình to (bug thật:
+        // WC 9-10.4m², phòng ngủ 20.8m² ở fixture `townhouse`). Vượt
+        // hardAreaMax -> fail cứng; ngoài preferredAreaMax (không vượt
+        // hard) -> chỉ cảnh báo.
+        const area = width * depth;
+        if (constraint.hardAreaMax && area > constraint.hardAreaMax + AREA_EPS) {
+          errors.push(
+            `Phòng "${s.id}" (${s.type}) diện tích ${area.toFixed(2)}m² — vượt ngưỡng cứng ${constraint.hardAreaMax}m².`,
+          );
+        } else if (constraint.preferredAreaMax && area > constraint.preferredAreaMax + AREA_EPS) {
+          warnings.push(
+            `Phòng "${s.id}" (${s.type}) diện tích ${area.toFixed(2)}m² — ngoài khoảng ưu tiên (tối đa ${constraint.preferredAreaMax}m²), vẫn trong giới hạn chấp nhận được.`,
+          );
+        } else if (constraint.preferredAreaMin && area < constraint.preferredAreaMin - AREA_EPS) {
+          warnings.push(
+            `Phòng "${s.id}" (${s.type}) diện tích ${area.toFixed(2)}m² — nhỏ hơn khoảng ưu tiên (tối thiểu ${constraint.preferredAreaMin}m²), vẫn trong giới hạn chấp nhận được.`,
           );
         }
       }

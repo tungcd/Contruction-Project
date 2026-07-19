@@ -55,7 +55,7 @@
           {
             "id": "bedroom-2",
             "type": "bedroom",
-            "label": "Phòng ngủ",
+            "label": "Phòng ngủ 2",
             "areaM2": 8.928571428571427,
             "polygon": [
               {
@@ -79,7 +79,7 @@
           {
             "id": "bedroom-1",
             "type": "bedroom",
-            "label": "Phòng ngủ 2",
+            "label": "Phòng ngủ 1",
             "areaM2": 11.904761904761905,
             "polygon": [
               {
@@ -103,7 +103,7 @@
           {
             "id": "wc-1",
             "type": "wc",
-            "label": "WC",
+            "label": "WC 1",
             "areaM2": 5.952380952380953,
             "polygon": [
               {
@@ -525,12 +525,15 @@
         "projectName": "Simple House Demo",
         "scale": "NOT TO SCALE",
         "disclaimer": "Bản vẽ khái niệm sơ bộ — dựa trên thông tin và giả định đã cung cấp, cần kiến trúc sư/kỹ sư kiểm tra lại, KHÔNG dùng để thi công trực tiếp.",
-        "generatedAt": "2026-07-19T17:18:34.857Z",
+        "generatedAt": "2026-07-19T17:54:13.974Z",
         "floorLabel": "Tầng trệt",
         "floorLevel": 0
       },
       "warnings": [
         "[Tầng 0] Phòng \"living\" (living) tỷ lệ khung hình 2.10:1 — ngoài khoảng ưu tiên (tối đa 1.8:1), vẫn trong giới hạn chấp nhận được.",
+        "[Tầng 0] Phòng \"living\" (living) diện tích 17.14m² — nhỏ hơn khoảng ưu tiên (tối thiểu 18m²), vẫn trong giới hạn chấp nhận được.",
+        "[Tầng 0] Phòng \"kitchen\" (kitchen) diện tích 8.93m² — nhỏ hơn khoảng ưu tiên (tối thiểu 10m²), vẫn trong giới hạn chấp nhận được.",
+        "[Tầng 0] Phòng \"bedroom-2\" (bedroom) diện tích 8.93m² — nhỏ hơn khoảng ưu tiên (tối thiểu 9m²), vẫn trong giới hạn chấp nhận được.",
         "[Tầng 0] Phòng \"bedroom-1\" (bedroom) tỷ lệ khung hình 1.90:1 — ngoài khoảng ưu tiên (tối đa 1.5:1), vẫn trong giới hạn chấp nhận được."
       ],
       "assumptions": [

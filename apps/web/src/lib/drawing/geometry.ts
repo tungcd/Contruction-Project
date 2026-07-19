@@ -89,6 +89,43 @@ function targetAspectRatio(type: string): number {
  *  thiểu thông thường trong nhà ở dân dụng. */
 const CIRCULATION_WIDTH = 1.0; // m
 
+const RESIDUAL_TYPE = "residual";
+const MIN_RESIDUAL_DEPTH = 0.3; // m — dưới ngưỡng này, không đáng tạo 1 space riêng (làm tròn/sai số)
+
+/**
+ * Stage 2B, Task 3/4 — sửa lỗi thật "phòng phình to vô lý khi lô đất
+ * dư diện tích" (WC 9-10.4m², phòng ngủ 20.8m² ở fixture `townhouse`):
+ * thay vì LUÔN chia hết `tierDepth` theo areaWeight (như trước), GIỚI
+ * HẠN chiều sâu mỗi phòng theo `preferredAreaMax` của chính loại phòng
+ * đó (không bao giờ VƯỢT quá chiều sâu lý tưởng theo areaWeight — chỉ
+ * co lại, không bao giờ phóng to hơn — nên tổng luôn <= tierDepth, không
+ * cần xử lý tràn). Phần dư ra trả về riêng (`residualDepth`) để gọi nơi
+ * tạo 1 GeometrySpace "residual" tường minh (Task 4) thay vì bị các
+ * phòng khác âm thầm nuốt hết.
+ */
+function capDepthsWithResidual(
+  items: LayoutNode[],
+  width: number,
+  tierDepth: number,
+): { depths: number[]; residualDepth: number } {
+  const totalWeight = items.reduce((s, n) => s + n.areaWeight, 0);
+  const depths = items.map((n) => {
+    const idealDepth = totalWeight > 0 ? (n.areaWeight / totalWeight) * tierDepth : tierDepth / items.length;
+    const constraint = constraintFor(n.type);
+    if (!constraint?.preferredAreaMax) return idealDepth;
+    const maxDepthForPreferredArea = constraint.preferredAreaMax / width;
+    const cappedDepth = Math.min(idealDepth, maxDepthForPreferredArea);
+    // Giới hạn diện tích không được ép tỷ lệ khung hình vượt ngưỡng cứng
+    // (bug thật: WC rộng chung cột 4m, cap theo diện tích ra chiều sâu
+    // quá nông, tỷ lệ 2.67:1 vượt hard 2.5:1) — không bao giờ để depth
+    // thấp hơn mức cần thiết để giữ đúng hardAspectRatioMax của width này.
+    const minDepthForAspect = width / constraint.hardAspectRatioMax;
+    return Math.max(cappedDepth, Math.min(minDepthForAspect, idealDepth));
+  });
+  const usedDepth = depths.reduce((s, d) => s + d, 0);
+  return { depths, residualDepth: Math.max(0, tierDepth - usedDepth) };
+}
+
 /**
  * Đặt hình cho 1 dải (tier) rộng `frontage`, sâu `tierDepth`.
  *
@@ -204,17 +241,31 @@ function placeTierRowWithCirculation(
   // 2.5:1). Với LÔ ĐẤT SÂU (townhouse depth=16m), xếp CHỒNG tất cả rest
   // vào 1 CỘT DUY NHẤT (rộng = roomsAreaWidth, không chia đôi) cho tỷ lệ
   // tốt hơn nhiều (mỗi phòng có bề rộng đủ, chiều sâu chia theo
-  // areaWeight như bình thường). Chỉ chia 2 cột khi rest.length >= 4 (đủ
-  // để mỗi cột có >=2 phòng, đã xác nhận đúng cho `simple-house`) —
-  // "small fixed candidate catalog", không phải solver tổng quát.
-  if (rest.length <= 3) {
+  // areaWeight như bình thường).
+  //
+  // Stage 2B — bài học thật thứ 2: thêm worshipRoom/balcony (Task 1/2)
+  // có thể đẩy rest.length từ 3 lên 5 trên CÙNG fixture `townhouse`,
+  // kích hoạt nhánh 2 cột cũ (ngưỡng "rest.length>=4") — colWidth lúc đó
+  // (2.0m) NHỎ HƠN minWidth của bedroom (2.4m), gãy cứng. Sửa: chỉ chia
+  // 2 cột khi CẢ HAI đúng: rest.length>=4 VÀ colWidth đủ cho minWidth
+  // LỚN NHẤT trong số các phòng sẽ vào cột đó — nếu không, xếp 1 cột
+  // duy nhất bất kể số lượng (an toàn hơn, đã xác nhận capping diện
+  // tích ở trên vẫn giữ tỷ lệ hợp lý dù nhiều phòng dùng chung 1 cột
+  // rộng) — "small fixed candidate catalog", không phải solver tổng quát.
+  const colWidthIfSplit = roomsAreaWidth / 2;
+  const maxMinWidthNeeded = Math.max(0, ...rest.map((n) => constraintFor(n.type)?.minWidth ?? 0));
+  const useSingleColumn = rest.length <= 3 || colWidthIfSplit < maxMinWidthNeeded;
+
+  if (useSingleColumn) {
     const spaces: GeometrySpace[] = [];
-    const restWeight = rest.reduce((s, n) => s + n.areaWeight, 0);
+    const { depths, residualDepth } = capDepthsWithResidual(rest, roomsAreaWidth, tierDepth);
     let subY = y0;
-    for (const n of rest) {
-      const subDepth = restWeight > 0 ? (n.areaWeight / restWeight) * tierDepth : tierDepth / rest.length;
-      spaces.push({ id: n.id, type: n.type, polygon: rect(0, subY, roomsAreaWidth, subY + subDepth) });
-      subY += subDepth;
+    rest.forEach((n, i) => {
+      spaces.push({ id: n.id, type: n.type, polygon: rect(0, subY, roomsAreaWidth, subY + depths[i]) });
+      subY += depths[i];
+    });
+    if (residualDepth > MIN_RESIDUAL_DEPTH) {
+      spaces.push({ id: `residual-col-${y0}`, type: RESIDUAL_TYPE, polygon: rect(0, subY, roomsAreaWidth, subY + residualDepth) });
     }
     spaces.push({
       id: circulation.id,
@@ -232,16 +283,22 @@ function placeTierRowWithCirculation(
   const spaces: GeometrySpace[] = [];
   columns.forEach((col, colIndex) => {
     if (col.length === 0) return;
-    const colWeight = col.reduce((s, n) => s + n.areaWeight, 0);
+    const { depths, residualDepth } = capDepthsWithResidual(col, colWidth, tierDepth);
     let subY = y0;
-    for (const n of col) {
-      const subDepth = colWeight > 0 ? (n.areaWeight / colWeight) * tierDepth : tierDepth / col.length;
+    col.forEach((n, i) => {
       spaces.push({
         id: n.id,
         type: n.type,
-        polygon: rect(colXStarts[colIndex], subY, colXStarts[colIndex] + colWidth, subY + subDepth),
+        polygon: rect(colXStarts[colIndex], subY, colXStarts[colIndex] + colWidth, subY + depths[i]),
       });
-      subY += subDepth;
+      subY += depths[i];
+    });
+    if (residualDepth > MIN_RESIDUAL_DEPTH) {
+      spaces.push({
+        id: `residual-col-${colIndex}-${y0}`,
+        type: RESIDUAL_TYPE,
+        polygon: rect(colXStarts[colIndex], subY, colXStarts[colIndex] + colWidth, subY + residualDepth),
+      });
     }
   });
 
@@ -254,17 +311,21 @@ function placeTierRowWithCirculation(
 }
 
 /**
- * Chiều sâu cố định của cầu thang (Stage 2A, Task 2) — dải TRỌN CHIỀU
- * RỘNG mặt tiền, đặt ở cuối cùng (xa mặt tiền nhất) của MỌI tầng có cầu
- * thang. Vị trí tính THUẦN theo `envelope` (không phụ thuộc phòng nào
- * khác trên tầng đó) — đây chính là cách đảm bảo "Staircase footprint is
- * aligned across connected floors" (yêu cầu bắt buộc của Task 2): cùng
- * 1 envelope -> cùng 1 công thức -> cùng 1 polygon, không cần thuật toán
- * căn chỉnh chéo tầng nào khác. Chiều rộng = trọn mặt tiền là đơn giản
- * hoá có chủ đích (thực tế cầu thang thường hẹp hơn nhiều) — xem "Giới
- * hạn còn lại" trong Completion Report.
+ * Kích thước cầu thang (Stage 2A Task 2, thu nhỏ ở Stage 2B Task 5 —
+ * bản Stage 2A rộng TRỌN mặt tiền (5m x 3m = 15m²) bị Tech Lead Review
+ * xác nhận là phi thực tế; giờ 2.0m x 4.0m = 8m² (trong khoảng 6-10m²,
+ * chiều rộng trong khoảng 1.8-2.4m theo yêu cầu). Vẫn đặt ở góc SAU,
+ * cùng phía với circulation (bên phải — xem `placeTierRowWithCirculation`,
+ * circulation luôn ở cạnh phải khi dùng 1 cột), tính THUẦN theo
+ * `envelope` (không phụ thuộc phòng nào khác trên tầng đó) — đây chính
+ * là cách đảm bảo "Staircase footprint is aligned across connected
+ * floors": cùng 1 envelope -> cùng 1 công thức -> cùng 1 polygon,
+ * không cần thuật toán căn chỉnh chéo tầng nào khác. Phần còn lại của
+ * dải sau (mặt tiền trừ đi chiều rộng cầu thang) KHÔNG bị bỏ qua —
+ * trở thành 1 "residual" tường minh (Task 4), không lặng lẽ biến mất.
  */
-const STAIRCASE_DEPTH = 3.0; // m
+const STAIRCASE_WIDTH = 2.0; // m
+const STAIRCASE_DEPTH = 4.0; // m (diện tích 8m²)
 
 export function solveGeometry(layoutGraph: LayoutGraph, level = 0): Geometry {
   const { envelope } = layoutGraph;
@@ -303,11 +364,19 @@ export function solveGeometry(layoutGraph: LayoutGraph, level = 0): Geometry {
   });
 
   if (staircaseNode) {
+    const stairX0 = envelope.frontage - STAIRCASE_WIDTH;
     spaces.push({
       id: staircaseNode.id,
       type: staircaseNode.type,
-      polygon: rect(0, usableDepth, envelope.frontage, envelope.depth),
+      polygon: rect(stairX0, usableDepth, envelope.frontage, envelope.depth),
     });
+    if (stairX0 > MIN_RESIDUAL_DEPTH) {
+      spaces.push({
+        id: `residual-stair-${level}`,
+        type: RESIDUAL_TYPE,
+        polygon: rect(0, usableDepth, stairX0, envelope.depth),
+      });
+    }
   }
 
   return { floors: [{ level, spaces }] };

@@ -28,9 +28,16 @@ const PAGE_HEIGHT = 842;
 const PAGE_MARGIN = 24;
 const HEADER_HEIGHT = 46;
 // Khoảng chừa bên trong viewport CHO dimension tổng (width phía trên,
-// depth phía trái) — tách biệt khỏi vùng mặt bằng thực tế.
-const DIM_TOP = 28;
+// depth phía trái) — tách biệt khỏi vùng mặt bằng thực tế. Stage 2B,
+// Task 7 — TĂNG DIM_TOP (28 -> 44) để có đủ chỗ cho 2 LANE riêng biệt
+// (dimension tổng ở lane NGOÀI, dimension từng phòng ở lane TRONG, gần
+// mặt bằng hơn) — sửa lỗi thật: khi nhiều phòng cùng bắt đầu ở y=0
+// (đỉnh 1 dải), nhãn dimension riêng của chúng ("4.0 m"/"1.0 m") từng
+// đè lên nhãn dimension tổng ("5 m") vì chỉ cách nhau vài px.
+const DIM_TOP = 44;
 const DIM_LEFT = 42;
+const SUB_DIM_LANE_OFFSET = 8; // px — lane TRONG, gần mặt bằng
+const OVERALL_DIM_LANE_OFFSET = 26; // px — lane NGOÀI, xa mặt bằng hơn (cách SUB_DIM_LANE_OFFSET đủ xa)
 
 function esc(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -215,7 +222,10 @@ export function renderFloorPlanToSvg(sheet: DrawingSheet): string {
   // Task 8 — bọc trước disclaimer/warnings để biết chính xác chiều cao
   // vùng footer cần chừa (không đoán 1 số cố định như Stage 1.6).
   const disclaimerLines = wrapText(titleBlock.disclaimer, contentWidth, 8);
-  const warningLines = warnings.flatMap((w) => wrapText(`⚠ ${w}`, contentWidth, 9));
+  // Task 7 — KHÔNG dùng glyph Unicode (⚠) phụ thuộc font hệ thống, có
+  // thể không hiển thị nhất quán giữa các renderer/máy in khác nhau;
+  // dùng text tất định thay thế.
+  const warningLines = warnings.flatMap((w) => wrapText(`CẢNH BÁO: ${w}`, contentWidth, 9));
   const disclaimerHeight = disclaimerLines.length * 11 + 8;
   const warningsHeight = warningLines.length > 0 ? warningLines.length * 12 + 12 : 0;
   const footerHeight = 16 + warningsHeight + disclaimerHeight + 8;
@@ -250,18 +260,25 @@ export function renderFloorPlanToSvg(sheet: DrawingSheet): string {
       const y = Math.min(...ys);
       const w = Math.max(...xs) - x;
       const h = Math.max(...ys) - y;
-      const cx = x + w / 2;
+      const isStaircase = r.type === "staircase";
+      const isBalcony = r.type === "balcony";
+      // Task 7 — nhãn/diện tích cầu thang lệch khỏi trục mũi tên (mũi
+      // tên luôn ở chính giữa, xem stairSymbol) để không đè lên chữ.
+      const labelCx = isStaircase ? x + w * 0.22 : x + w / 2;
       const labelCy = y + h * 0.38;
       const areaCy = y + h * 0.72;
-      const { fontSize, lines } = fitLabel(r.label, w, h);
-      const labelBlock = tspanBlock(cx, labelCy, lines, fontSize, `text-anchor="middle" font-weight="600"`);
-      const fill = r.type === "staircase" ? "#f0f0f0" : "#fafafa";
-      const stairLines = r.type === "staircase" ? stairSymbol(x, y, w, h, floorPlan.hasStairUp, floorPlan.hasStairDown) : "";
+      const { fontSize, lines } = fitLabel(r.label, isStaircase ? w * 0.42 : w, h);
+      const labelBlock = tspanBlock(labelCx, labelCy, lines, fontSize, `text-anchor="middle" font-weight="600"`);
+      const fill = isStaircase ? "#f0f0f0" : isBalcony ? "#eef6ff" : "#fafafa";
+      const stairLines = isStaircase ? stairSymbol(x, y, w, h, floorPlan.hasStairUp, floorPlan.hasStairDown) : "";
+      // Task 2 — ban công phân biệt trực quan với phòng nội thất: viền
+      // nét đứt (bán-ngoại-thất), không phải nét liền như phòng thường.
+      const rectStroke = isBalcony ? `stroke="#60a5fa" stroke-width="1" stroke-dasharray="4,2"` : `stroke="none"`;
       return `
-        <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="none" />
+        <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" ${rectStroke} />
         ${stairLines}
         ${labelBlock}
-        <text x="${cx}" y="${areaCy}" text-anchor="middle" font-size="9" fill="#666">${r.areaM2.toFixed(1)} m²</text>
+        <text x="${labelCx}" y="${areaCy}" text-anchor="middle" font-size="9" fill="#666">${r.areaM2.toFixed(1)} m²</text>
       `;
     })
     .join("");
@@ -302,7 +319,7 @@ export function renderFloorPlanToSvg(sheet: DrawingSheet): string {
 
   let overallDimSvg = "";
   if (overallWidthDim) {
-    const y = planAreaY0 - 8;
+    const y = planAreaY0 - OVERALL_DIM_LANE_OFFSET;
     const x0 = offsetX;
     const x1 = offsetX + planPxWidth;
     overallDimSvg += `
@@ -328,7 +345,7 @@ export function renderFloorPlanToSvg(sheet: DrawingSheet): string {
     .map((d) => {
       const a = toPx(d.from);
       const b = toPx(d.to);
-      const y = a.y - 10;
+      const y = a.y - SUB_DIM_LANE_OFFSET;
       const midX = (a.x + b.x) / 2;
       return `
         <line x1="${a.x}" y1="${y}" x2="${b.x}" y2="${y}" stroke="#ccc" stroke-width="0.5" />

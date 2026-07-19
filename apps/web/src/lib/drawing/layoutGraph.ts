@@ -54,6 +54,9 @@ const TYPE_PRIORITY: Record<string, number> = {
   kitchen: 2,
   bedroom: 2,
   wc: 2,
+  worshipRoom: 2,
+  balcony: 2,
+  staircase: 2,
 };
 
 function priorityOf(type: string): number {
